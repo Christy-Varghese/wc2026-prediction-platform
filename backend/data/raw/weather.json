@@ -1,0 +1,226 @@
+{
+  "New York/NJ|2026-06-11": {
+    "temp_c": 34.4,
+    "humidity": 70
+  },
+  "Los Angeles|2026-06-15": {
+    "temp_c": 22.6,
+    "humidity": 84
+  },
+  "Dallas|2026-06-20": {
+    "temp_c": 34.6,
+    "humidity": 70
+  },
+  "Atlanta|2026-06-23": {
+    "temp_c": 31.3,
+    "humidity": 71
+  },
+  "Houston|2026-06-27": {
+    "temp_c": 34.8,
+    "humidity": 65
+  },
+  "Kansas City|2026-07-02": {
+    "temp_c": 33.0,
+    "humidity": 75
+  },
+  "Philadelphia|2026-06-12": {
+    "temp_c": 35.5,
+    "humidity": 76
+  },
+  "San Francisco|2026-06-16": {
+    "temp_c": 21.1,
+    "humidity": 84
+  },
+  "Seattle|2026-06-21": {
+    "temp_c": 26.1,
+    "humidity": 58
+  },
+  "Miami|2026-06-24": {
+    "temp_c": 34.8,
+    "humidity": 57
+  },
+  "Boston|2026-06-28": {
+    "temp_c": 25.4,
+    "humidity": 77
+  },
+  "Mexico City|2026-07-03": {
+    "temp_c": 21.7,
+    "humidity": 76
+  },
+  "Toronto|2026-06-13": {
+    "temp_c": 24.8,
+    "humidity": 75
+  },
+  "Vancouver|2026-06-17": {
+    "temp_c": 22.9,
+    "humidity": 67
+  },
+  "Guadalajara|2026-06-22": {
+    "temp_c": 23.9,
+    "humidity": 87
+  },
+  "Monterrey|2026-06-25": {
+    "temp_c": 35.3,
+    "humidity": 58
+  },
+  "New York/NJ|2026-06-29": {
+    "temp_c": 28.4,
+    "humidity": 84
+  },
+  "Dallas|2026-06-14": {
+    "temp_c": 32.7,
+    "humidity": 74
+  },
+  "Atlanta|2026-06-18": {
+    "temp_c": 29.3,
+    "humidity": 83
+  },
+  "Houston|2026-06-23": {
+    "temp_c": 35.4,
+    "humidity": 69
+  },
+  "Kansas City|2026-06-26": {
+    "temp_c": 25.5,
+    "humidity": 92
+  },
+  "Philadelphia|2026-06-30": {
+    "temp_c": 35.1,
+    "humidity": 68
+  },
+  "Seattle|2026-06-15": {
+    "temp_c": 32.2,
+    "humidity": 50
+  },
+  "Miami|2026-06-19": {
+    "temp_c": 33.5,
+    "humidity": 71
+  },
+  "Boston|2026-06-24": {
+    "temp_c": 26.2,
+    "humidity": 68
+  },
+  "Mexico City|2026-06-27": {
+    "temp_c": 20.4,
+    "humidity": 79
+  },
+  "Toronto|2026-07-01": {
+    "temp_c": 31.7,
+    "humidity": 80
+  },
+  "Guadalajara|2026-06-16": {
+    "temp_c": 25.5,
+    "humidity": 75
+  },
+  "Monterrey|2026-06-20": {
+    "temp_c": 32.4,
+    "humidity": 69
+  },
+  "New York/NJ|2026-06-25": {
+    "temp_c": 25.9,
+    "humidity": 76
+  },
+  "Los Angeles|2026-06-28": {
+    "temp_c": 25.1,
+    "humidity": 60
+  },
+  "Dallas|2026-07-02": {
+    "temp_c": 36.9,
+    "humidity": 47
+  },
+  "Houston|2026-06-17": {
+    "temp_c": 30.2,
+    "humidity": 88
+  },
+  "Kansas City|2026-06-21": {
+    "temp_c": 27.1,
+    "humidity": 86
+  },
+  "Philadelphia|2026-06-26": {
+    "temp_c": 29.0,
+    "humidity": 50
+  },
+  "San Francisco|2026-06-29": {
+    "temp_c": 31.1,
+    "humidity": 45
+  },
+  "Seattle|2026-07-03": {
+    "temp_c": 26.0,
+    "humidity": 63
+  },
+  "Boston|2026-06-18": {
+    "temp_c": 24.0,
+    "humidity": 71
+  },
+  "Mexico City|2026-06-22": {
+    "temp_c": 21.7,
+    "humidity": 76
+  },
+  "Toronto|2026-06-27": {
+    "temp_c": 25.0,
+    "humidity": 59
+  },
+  "Vancouver|2026-06-30": {
+    "temp_c": 19.0,
+    "humidity": 72
+  },
+  "New York/NJ|2026-06-19": {
+    "temp_c": 29.2,
+    "humidity": 44
+  },
+  "Los Angeles|2026-06-23": {
+    "temp_c": 23.1,
+    "humidity": 67
+  },
+  "Dallas|2026-06-28": {
+    "temp_c": 37.2,
+    "humidity": 56
+  },
+  "Atlanta|2026-07-01": {
+    "temp_c": 38.2,
+    "humidity": 52
+  },
+  "Philadelphia|2026-06-20": {
+    "temp_c": 28.0,
+    "humidity": 42
+  },
+  "San Francisco|2026-06-24": {
+    "temp_c": 32.2,
+    "humidity": 42
+  },
+  "Seattle|2026-06-29": {
+    "temp_c": 20.8,
+    "humidity": 67
+  },
+  "Miami|2026-07-02": {
+    "temp_c": 33.4,
+    "humidity": 57
+  },
+  "Toronto|2026-06-21": {
+    "temp_c": 23.9,
+    "humidity": 54
+  },
+  "Vancouver|2026-06-25": {
+    "temp_c": 22.8,
+    "humidity": 61
+  },
+  "Guadalajara|2026-06-30": {
+    "temp_c": 23.3,
+    "humidity": 85
+  },
+  "Monterrey|2026-07-03": {
+    "temp_c": 35.7,
+    "humidity": 50
+  },
+  "Dallas|2026-06-22": {
+    "temp_c": 37.7,
+    "humidity": 59
+  },
+  "Atlanta|2026-06-26": {
+    "temp_c": 30.6,
+    "humidity": 47
+  },
+  "Houston|2026-07-01": {
+    "temp_c": 36.1,
+    "humidity": 58
+  }
+}

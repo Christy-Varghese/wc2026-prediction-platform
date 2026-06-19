@@ -1,0 +1,53 @@
+"""Predictions, home dashboard, and insights (dark horses / upset alerts)."""
+from fastapi import APIRouter
+
+from .. import fixtures, ml_engine, services
+
+router = APIRouter(prefix="/api", tags=["predictions"])
+
+
+@router.get("/predict")
+def predict(home: str, away: str, neutral: bool = True):
+    return services.predict(home, away, neutral)
+
+
+@router.get("/home")
+def home():
+    upcoming = [m for m in fixtures.schedule() if not m.get("played")]
+    featured = [services.match_card(m) for m in upcoming[:6]]
+    sim = ml_engine.sim_table(top=10)
+    return {
+        "featured_matches": featured,
+        "top_winners": [{"team": r["team"],
+                         "title_prob": round(r.get("Champion", 0), 3)}
+                        for r in sim],
+        "title_chart": [{"team": r["team"],
+                         "Champion": round(r.get("Champion", 0), 3),
+                         "Final": round(r.get("Final", 0), 3),
+                         "SF": round(r.get("SF", 0), 3)} for r in sim],
+        "dark_horses": ml_engine.dark_horses(4),
+        "model_update": ml_engine.meta(),
+    }
+
+
+@router.get("/knockout")
+def knockout():
+    """Knockout bracket (R32 -> Final). Team slots are placeholders until the
+    group stage resolves; grouped by round for the bracket view."""
+    rows = fixtures.knockout()
+    rounds: dict[str, list] = {}
+    for m in rows:
+        rounds.setdefault(m["round"], []).append(m)
+    return {"rounds": [{"round": r, "matches": ms} for r, ms in rounds.items()],
+            "matches": rows}
+
+
+@router.get("/insights")
+def insights():
+    upcoming = [m for m in fixtures.schedule() if not m.get("played")][:24]
+    fx = [{"home": m["home_team"], "away": m["away_team"],
+           "neutral": m["neutral"]} for m in upcoming]
+    return {
+        "dark_horses": ml_engine.dark_horses(6),
+        "upset_alerts": ml_engine.upset_alerts(fx, threshold=0.32)[:8],
+    }

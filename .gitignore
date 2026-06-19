@@ -1,0 +1,31 @@
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.pkl
+*.pt
+
+# data artifacts (large / regenerated — see README "Data & model pipeline")
+backend/data/raw/*
+backend/data/processed/*
+!backend/data/raw/.gitkeep
+!backend/data/processed/.gitkeep
+# ship the small, real sample data so the app demos out-of-the-box
+!backend/data/raw/injuries.csv
+!backend/data/raw/odds.csv
+!backend/data/raw/weather.json
+!backend/data/raw/match_events.json
+
+# node / next
+node_modules/
+.next/
+out/
+frontend/next-env.d.ts
+
+# env / os / tooling
+.env
+.DS_Store
+.claude/
+.playwright-mcp/
+/tmp/

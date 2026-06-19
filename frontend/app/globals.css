@@ -1,0 +1,235 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  color-scheme: dark;
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+/* ─── Body / global background ─────────────────────────────────────────────── */
+body {
+  @apply text-stadium font-sans antialiased;
+  background-color: #071226;
+  background-image:
+    radial-gradient(ellipse 160% 60% at 50% -10%, rgba(0,212,255,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 50% at 100% 0%,  rgba(0,255,178,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 80%  50% at 0%   60%, rgba(255,215,0,0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #0F1D3D 0%, #071226 60%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* ─── Scanline overlay (subtle HUD texture) ─────────────────────────────────── */
+body::after {
+  content: "";
+  position: fixed; inset: 0; z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,0.015) 2px, rgba(0,0,0,0.015) 4px
+  );
+  pointer-events: none;
+}
+
+/* ─── Floodlight hero section beams ────────────────────────────────────────── */
+.floodlight {
+  position: relative;
+  background: linear-gradient(180deg, #0F1D3D 0%, #071226 100%);
+}
+.floodlight::before {
+  content: "";
+  position: absolute; inset: -1px; z-index: 0; border-radius: inherit;
+  background:
+    conic-gradient(from 200deg at 15% -15%, rgba(0,212,255,0.22), transparent 28%),
+    conic-gradient(from 120deg at 85% -15%, rgba(0,255,178,0.16), transparent 28%),
+    conic-gradient(from 160deg at 50% -20%, rgba(255,215,0,0.10), transparent 25%);
+  pointer-events: none;
+}
+
+/* ─── Particle layer ────────────────────────────────────────────────────────── */
+.particles {
+  position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+}
+.particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: #00D4FF;
+  animation: particleFade 3s ease-in-out infinite;
+}
+
+@keyframes particleFade {
+  0%   { opacity: 0; transform: scale(0) translateY(0); }
+  50%  { opacity: 0.8; }
+  100% { opacity: 0; transform: scale(1.5) translateY(-20px); }
+}
+
+/* ─── Component layer ───────────────────────────────────────────────────────── */
+@layer components {
+
+  /* glass card */
+  .glass {
+    @apply rounded-2xl border border-line bg-ink-2/80 backdrop-blur-xl shadow-card;
+  }
+  .card { @apply glass p-5; }
+
+  /* premium card with inner glow border */
+  .card-premium {
+    @apply rounded-2xl border border-cyan/20 bg-ink-2/90
+           backdrop-blur-xl shadow-card p-5
+           transition-all duration-300
+           hover:border-cyan/40 hover:shadow-glow;
+  }
+
+  /* broadcast hero card */
+  .card-broadcast {
+    @apply relative overflow-hidden rounded-3xl border border-cyan/20
+           bg-gradient-to-br from-ink-2 to-ink
+           shadow-card p-6 sm:p-8;
+  }
+
+  /* chip / badge */
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-line
+           bg-white/[0.04] px-2.5 py-0.5 text-[11px] font-medium text-muted;
+  }
+  .chip-cyan {
+    @apply inline-flex items-center gap-1 rounded-full border border-cyan/30
+           bg-cyan/10 px-2.5 py-0.5 text-[11px] font-medium text-cyan;
+  }
+  .chip-gold {
+    @apply inline-flex items-center gap-1 rounded-full border border-gold/30
+           bg-gold/10 px-2.5 py-0.5 text-[11px] font-medium text-gold;
+  }
+  .chip-danger {
+    @apply inline-flex items-center gap-1 rounded-full border border-danger/30
+           bg-danger/10 px-2.5 py-0.5 text-[11px] font-medium text-danger;
+  }
+
+  /* section heading */
+  .h2 {
+    @apply mb-3 font-display text-[11px] uppercase tracking-[0.22em] text-cyan/80;
+  }
+  .h1-display {
+    @apply font-display font-bold uppercase tracking-tight;
+  }
+
+  /* CTA buttons */
+  .btn {
+    @apply rounded-xl bg-cyan px-5 py-2.5 font-display text-sm
+           font-bold uppercase tracking-widest text-ink shadow-glow
+           transition-all hover:bg-cyan/80 hover:shadow-glow active:scale-95;
+  }
+  .btn-gold {
+    @apply rounded-xl bg-gold px-5 py-2.5 font-display text-sm
+           font-bold uppercase tracking-widest text-ink shadow-glow-gold
+           transition-all hover:bg-gold/80 active:scale-95;
+  }
+  .btn-ghost {
+    @apply rounded-xl border border-line px-4 py-2 font-display text-sm
+           uppercase tracking-wide text-muted
+           transition hover:border-cyan/40 hover:text-cyan;
+  }
+  .btn-sm {
+    @apply rounded-lg bg-cyan/10 border border-cyan/25 px-3 py-1.5
+           font-display text-xs font-semibold uppercase tracking-wider text-cyan
+           transition hover:bg-cyan/20;
+  }
+
+  /* text effects */
+  .gold-text {
+    @apply bg-gold-sheen bg-[length:200%_auto] bg-clip-text text-transparent animate-sheen;
+  }
+  .cyan-text {
+    @apply bg-cyan-sheen bg-[length:200%_auto] bg-clip-text text-transparent animate-sheen;
+  }
+
+  /* number/stats */
+  .stat-num { @apply font-display tabular-nums; }
+
+  /* live pulse dot */
+  .live-dot { @apply inline-block h-2 w-2 rounded-full bg-danger animate-live; }
+
+  /* section divider */
+  .section-divider {
+    @apply my-8 h-px w-full;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2), transparent);
+  }
+
+  /* stat row in tables */
+  .stat-row {
+    @apply flex justify-between border-b border-line py-2.5 text-sm;
+  }
+
+  /* match status indicator */
+  .status-ft   { @apply text-success text-xs font-display uppercase tracking-widest; }
+  .status-live { @apply text-danger text-xs font-display uppercase tracking-widest; }
+  .status-pre  { @apply text-muted text-xs; }
+
+  /* progress bar track */
+  .bar-track {
+    @apply h-2 w-full overflow-hidden rounded-full bg-white/5;
+  }
+
+  /* HUD panel border */
+  .hud-border {
+    @apply relative rounded-2xl overflow-hidden;
+    background: linear-gradient(#15284A, #15284A) padding-box,
+                linear-gradient(135deg, rgba(0,212,255,0.5), rgba(0,255,178,0.2), rgba(0,212,255,0.1)) border-box;
+    border: 1px solid transparent;
+  }
+}
+
+/* ─── Scrollbars ────────────────────────────────────────────────────────────── */
+.tabnum { font-variant-numeric: tabular-nums; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb {
+  background: rgba(0,212,255,0.2); border-radius: 8px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ─── Ticker / live bar ─────────────────────────────────────────────────────── */
+.ticker-wrap {
+  @apply relative overflow-hidden;
+}
+.ticker-track {
+  display: flex; width: max-content;
+  animation: ticker 35s linear infinite;
+}
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ─── Broadcast score bug ────────────────────────────────────────────────────── */
+.score-bug {
+  @apply inline-flex items-center gap-3 rounded-full px-4 py-2
+         border border-line bg-ink-2/90 backdrop-blur font-display text-sm;
+}
+
+/* ─── Match card hover spotlight ────────────────────────────────────────────── */
+.match-card-hover {
+  @apply relative overflow-hidden cursor-pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.match-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px -8px rgba(0,212,255,0.35);
+}
+.match-card-hover::after {
+  content: "";
+  position: absolute; inset: 0; border-radius: inherit;
+  background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(0,212,255,0.07), transparent 50%);
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.match-card-hover:hover::after { opacity: 1; }
+

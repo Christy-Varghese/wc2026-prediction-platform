@@ -1,0 +1,27 @@
+# --- core / data / ML ---
+pandas>=2.0
+numpy>=1.24
+scipy>=1.11
+pyarrow>=15.0
+requests>=2.31
+kagglehub>=0.3.6
+scikit-learn>=1.4
+xgboost>=2.0
+lightgbm>=4.3
+# torch is heavy + optional; install separately if you want the NN member:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+soccerdata>=1.8
+
+# --- web / api ---
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+pydantic-settings>=2.2
+
+# --- db / cache / auth ---
+sqlalchemy>=2.0
+psycopg[binary]>=3.1
+redis>=5.0
+PyJWT>=2.8
+passlib[bcrypt]>=1.7
+python-multipart>=0.0.9

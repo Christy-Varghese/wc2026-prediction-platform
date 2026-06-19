@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fifa
+      POSTGRES_PASSWORD: fifa
+      POSTGRES_DB: fifa2026
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fifa"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://fifa:fifa@db:5432/fifa2026
+      REDIS_URL: redis://redis:6379/0
+      USE_DB: "false"        # set true after running seed.py
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      CORS_ORIGINS: http://localhost:3000
+    ports: ["8000:8000"]
+    volumes: ["./backend/data:/srv/data"]
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_started }
+
+  frontend:
+    build: ./frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports: ["3000:3000"]
+    depends_on: [backend]
+
+volumes:
+  pgdata:

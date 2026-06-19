@@ -1,0 +1,322 @@
+[
+ {
+  "id": 73,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-06-28T15:00:00-04:00",
+  "city": "Los Angeles",
+  "home_label": "Runner-up Group A",
+  "away_label": "Runner-up Group B"
+ },
+ {
+  "id": 76,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-06-29T13:00:00-04:00",
+  "city": "Houston",
+  "home_label": "Winner Group C",
+  "away_label": "Runner-up Group F"
+ },
+ {
+  "id": 74,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-06-29T16:30:00-04:00",
+  "city": "Boston",
+  "home_label": "Winner Group E",
+  "away_label": "3rd Group A/B/C/D/F"
+ },
+ {
+  "id": 75,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-06-29T21:00:00-04:00",
+  "city": "Monterrey",
+  "home_label": "Winner Group F",
+  "away_label": "Runner-up Group C"
+ },
+ {
+  "id": 78,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-06-30T13:00:00-04:00",
+  "city": "Dallas",
+  "home_label": "Runner-up Group E",
+  "away_label": "Runner-up Group I"
+ },
+ {
+  "id": 77,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-06-30T17:00:00-04:00",
+  "city": "New York/NJ",
+  "home_label": "Winner Group I",
+  "away_label": "3rd Group C/D/F/G/H"
+ },
+ {
+  "id": 79,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-06-30T21:00:00-04:00",
+  "city": "Mexico City",
+  "home_label": "Winner Group A",
+  "away_label": "3rd Group C/E/F/H/I"
+ },
+ {
+  "id": 80,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-07-01T12:00:00-04:00",
+  "city": "Atlanta",
+  "home_label": "Winner Group L",
+  "away_label": "3rd Group E/H/I/J/K"
+ },
+ {
+  "id": 82,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-07-01T16:00:00-04:00",
+  "city": "Seattle",
+  "home_label": "Winner Group G",
+  "away_label": "3rd Group A/E/H/I/J"
+ },
+ {
+  "id": 81,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-07-01T20:00:00-04:00",
+  "city": "San Francisco",
+  "home_label": "Winner Group D",
+  "away_label": "3rd Group B/E/F/I/J"
+ },
+ {
+  "id": 84,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-07-02T15:00:00-04:00",
+  "city": "Los Angeles",
+  "home_label": "Winner Group H",
+  "away_label": "Runner-up Group J"
+ },
+ {
+  "id": 83,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-07-02T19:00:00-04:00",
+  "city": "Toronto",
+  "home_label": "Runner-up Group K",
+  "away_label": "Runner-up Group L"
+ },
+ {
+  "id": 85,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-07-02T23:00:00-04:00",
+  "city": "Vancouver",
+  "home_label": "Winner Group B",
+  "away_label": "3rd Group E/F/G/I/J"
+ },
+ {
+  "id": 88,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-07-03T14:00:00-04:00",
+  "city": "Dallas",
+  "home_label": "Runner-up Group D",
+  "away_label": "Runner-up Group G"
+ },
+ {
+  "id": 86,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-07-03T18:00:00-04:00",
+  "city": "Miami",
+  "home_label": "Winner Group J",
+  "away_label": "Runner-up Group H"
+ },
+ {
+  "id": 87,
+  "type": "r32",
+  "round": "Round of 32",
+  "matchday": 4,
+  "kickoff": "2026-07-03T21:30:00-04:00",
+  "city": "Kansas City",
+  "home_label": "Winner Group K",
+  "away_label": "3rd Group D/E/I/J/L"
+ },
+ {
+  "id": 90,
+  "type": "r16",
+  "round": "Round of 16",
+  "matchday": 5,
+  "kickoff": "2026-07-04T13:00:00-04:00",
+  "city": "Houston",
+  "home_label": "Winner Match 73",
+  "away_label": "Winner Match 75"
+ },
+ {
+  "id": 89,
+  "type": "r16",
+  "round": "Round of 16",
+  "matchday": 5,
+  "kickoff": "2026-07-04T17:00:00-04:00",
+  "city": "Philadelphia",
+  "home_label": "Winner Match 74",
+  "away_label": "Winner Match 77"
+ },
+ {
+  "id": 91,
+  "type": "r16",
+  "round": "Round of 16",
+  "matchday": 5,
+  "kickoff": "2026-07-05T16:00:00-04:00",
+  "city": "New York/NJ",
+  "home_label": "Winner Match 76",
+  "away_label": "Winner Match 78"
+ },
+ {
+  "id": 92,
+  "type": "r16",
+  "round": "Round of 16",
+  "matchday": 5,
+  "kickoff": "2026-07-05T20:00:00-04:00",
+  "city": "Mexico City",
+  "home_label": "Winner Match 79",
+  "away_label": "Winner Match 80"
+ },
+ {
+  "id": 93,
+  "type": "r16",
+  "round": "Round of 16",
+  "matchday": 5,
+  "kickoff": "2026-07-06T15:00:00-04:00",
+  "city": "Dallas",
+  "home_label": "Winner Match 83",
+  "away_label": "Winner Match 84"
+ },
+ {
+  "id": 94,
+  "type": "r16",
+  "round": "Round of 16",
+  "matchday": 5,
+  "kickoff": "2026-07-06T20:00:00-04:00",
+  "city": "Seattle",
+  "home_label": "Winner Match 81",
+  "away_label": "Winner Match 82"
+ },
+ {
+  "id": 95,
+  "type": "r16",
+  "round": "Round of 16",
+  "matchday": 5,
+  "kickoff": "2026-07-07T12:00:00-04:00",
+  "city": "Atlanta",
+  "home_label": "Winner Match 86",
+  "away_label": "Winner Match 88"
+ },
+ {
+  "id": 96,
+  "type": "r16",
+  "round": "Round of 16",
+  "matchday": 5,
+  "kickoff": "2026-07-07T16:00:00-04:00",
+  "city": "Vancouver",
+  "home_label": "Winner Match 85",
+  "away_label": "Winner Match 87"
+ },
+ {
+  "id": 97,
+  "type": "qf",
+  "round": "Quarter-final",
+  "matchday": 6,
+  "kickoff": "2026-07-09T16:00:00-04:00",
+  "city": "Boston",
+  "home_label": "Winner Match 89",
+  "away_label": "Winner Match 90"
+ },
+ {
+  "id": 98,
+  "type": "qf",
+  "round": "Quarter-final",
+  "matchday": 6,
+  "kickoff": "2026-07-10T15:00:00-04:00",
+  "city": "Los Angeles",
+  "home_label": "Winner Match 93",
+  "away_label": "Winner Match 94"
+ },
+ {
+  "id": 99,
+  "type": "qf",
+  "round": "Quarter-final",
+  "matchday": 6,
+  "kickoff": "2026-07-11T17:00:00-04:00",
+  "city": "Miami",
+  "home_label": "Winner Match 91",
+  "away_label": "Winner Match 92"
+ },
+ {
+  "id": 100,
+  "type": "qf",
+  "round": "Quarter-final",
+  "matchday": 6,
+  "kickoff": "2026-07-11T21:00:00-04:00",
+  "city": "Kansas City",
+  "home_label": "Winner Match 95",
+  "away_label": "Winner Match 96"
+ },
+ {
+  "id": 101,
+  "type": "sf",
+  "round": "Semi-final",
+  "matchday": 7,
+  "kickoff": "2026-07-14T15:00:00-04:00",
+  "city": "Dallas",
+  "home_label": "Winner Match 97",
+  "away_label": "Winner Match 98"
+ },
+ {
+  "id": 102,
+  "type": "sf",
+  "round": "Semi-final",
+  "matchday": 7,
+  "kickoff": "2026-07-15T15:00:00-04:00",
+  "city": "Atlanta",
+  "home_label": "Winner Match 99",
+  "away_label": "Winner Match 100"
+ },
+ {
+  "id": 103,
+  "type": "third",
+  "round": "Third place",
+  "matchday": 8,
+  "kickoff": "2026-07-18T17:00:00-04:00",
+  "city": "Miami",
+  "home_label": "Loser Match 101",
+  "away_label": "Loser Match 102"
+ },
+ {
+  "id": 104,
+  "type": "final",
+  "round": "Final",
+  "matchday": 9,
+  "kickoff": "2026-07-19T15:00:00-04:00",
+  "city": "New York/NJ",
+  "home_label": "Winner Match 101",
+  "away_label": "Winner Match 102"
+ }
+]
