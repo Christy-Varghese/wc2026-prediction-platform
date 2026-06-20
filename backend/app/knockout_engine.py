@@ -1,0 +1,280 @@
+"""Knockout bracket projection.
+
+Resolves the official 48-team knockout bracket (`knockout.json`, R32 -> Final)
+into concrete projected teams and per-tie predictions:
+
+  1. project_group_standings() - final group tables. PLAYED group matches use real
+     scores; UNPLAYED matches use `services.predict` expected points + expected GD.
+  2. best_eight_thirds()      - rank the 12 third-placed teams, take the top 8.
+  3. assign_third_slots()     - place the 8 qualifying thirds into the R32 "3rd
+     Group X/Y/..." slots (backtracking perfect matching, greedy fallback).
+  4. resolve_bracket()        - fill R32 from the group projection, then walk
+     R16 -> QF -> SF -> Third/Final resolving "Winner/Loser Match N" from prior
+     ties. Each tie is run through `services.predict` (neutral); the higher
+     win-prob side advances (knockouts have no draw).
+
+Everything is resolved at runtime (never mutates knockout.json) so the bracket
+re-projects automatically as MD2/MD3 results land. The whole resolution is
+memoised; call `invalidate()` after new results are ingested.
+"""
+from __future__ import annotations
+
+import re
+from functools import lru_cache
+
+from . import fixtures, services
+
+
+def _bracket_rows() -> list[dict]:
+    # fixtures.knockout() carries real venue/city/kickoff + original slot labels.
+    return fixtures.knockout()
+
+
+def _flag(team: str | None) -> str:
+    code = fixtures.FLAG.get(team or "", "")
+    return f"https://flagcdn.com/96x72/{code}.png" if code else ""
+
+
+def _title_odds() -> dict[str, float]:
+    """team -> Monte-Carlo champion probability (0-1) from the latest sim."""
+    from . import ml_engine
+    return {r["team"]: r.get("Champion", 0.0) for r in ml_engine.sim_table()}
+
+
+# ── 1. group standings projection ───────────────────────────────────────────
+def project_group_standings() -> dict[str, list[dict]]:
+    """Per group, ranked list of teams with projected pts + GD.
+
+    Real (played) results contribute exact pts/GD; unplayed matches contribute
+    expected pts (3*p_win + p_draw) and expected GD (xg_home - xg_away).
+    """
+    stats: dict[str, dict] = {}
+    for g, teams in fixtures.REAL_GROUPS.items():
+        for t in teams:
+            stats[t] = {"team": t, "group": g, "pts": 0.0, "gd": 0.0,
+                        "played": 0, "projected": 0}
+
+    for m in fixtures.schedule():
+        if m["stage"] != "group":
+            continue
+        h, a = m["home_team"], m["away_team"]
+        if h not in stats or a not in stats:
+            continue
+        if m["played"]:
+            hs, as_ = m["home_score"], m["away_score"]
+            gd = hs - as_
+            stats[h]["gd"] += gd
+            stats[a]["gd"] -= gd
+            stats[h]["pts"] += 3 if hs > as_ else (1 if hs == as_ else 0)
+            stats[a]["pts"] += 3 if as_ > hs else (1 if hs == as_ else 0)
+            stats[h]["played"] += 1
+            stats[a]["played"] += 1
+        else:
+            p = services.predict(h, a, neutral=True, match=None)
+            ph, pd_, pa = p["p_home"], p["p_draw"], p["p_away"]
+            eg = p.get("expected_goals", {})
+            egd = float(eg.get("home", 0.0)) - float(eg.get("away", 0.0))
+            stats[h]["pts"] += 3 * ph + pd_
+            stats[a]["pts"] += 3 * pa + pd_
+            stats[h]["gd"] += egd
+            stats[a]["gd"] -= egd
+            stats[h]["projected"] += 1
+            stats[a]["projected"] += 1
+
+    tables: dict[str, list[dict]] = {}
+    for g, teams in fixtures.REAL_GROUPS.items():
+        rows = sorted((stats[t] for t in teams),
+                      key=lambda s: (s["pts"], s["gd"]), reverse=True)
+        for i, r in enumerate(rows):
+            r["rank"] = i + 1
+        tables[g] = rows
+    return tables
+
+
+# ── 2 + 3. third-place qualification + slot assignment ──────────────────────
+def best_eight_thirds(tables: dict[str, list[dict]]) -> list[dict]:
+    thirds = [tbl[2] for tbl in tables.values()]
+    thirds.sort(key=lambda s: (s["pts"], s["gd"]), reverse=True)
+    return thirds[:8]
+
+
+def _allowed_groups(label: str) -> set[str]:
+    # "3rd Group A/B/C/D/F" -> {"A","B","C","D","F"}
+    m = re.search(r"3rd Group ([A-L/]+)", label)
+    return set(m.group(1).split("/")) if m else set()
+
+
+def assign_third_slots(third_slots: list[dict],
+                       qualifying: list[dict]) -> dict[int, dict]:
+    """Match the 8 qualifying thirds to the 8 R32 third-place slots.
+
+    Backtracking perfect matching, slots ordered fewest-options-first. Falls
+    back to greedy-by-rank if no perfect matching exists.
+    """
+    by_group = {t["group"]: t for t in qualifying}
+    qual_groups = set(by_group)
+
+    slots = sorted(third_slots,
+                   key=lambda s: len(_allowed_groups(s["away_label"]) & qual_groups))
+    assignment: dict[int, str] = {}
+    used: set[str] = set()
+
+    def backtrack(i: int) -> bool:
+        if i == len(slots):
+            return True
+        slot = slots[i]
+        options = sorted((_allowed_groups(slot["away_label"]) & qual_groups) - used)
+        for grp in options:
+            assignment[slot["id"]] = grp
+            used.add(grp)
+            if backtrack(i + 1):
+                return True
+            used.discard(grp)
+            del assignment[slot["id"]]
+        return False
+
+    if backtrack(0):
+        return {sid: by_group[g] for sid, g in assignment.items()}
+
+    # Greedy fallback: strongest third to the most-constrained slot it can fill.
+    result: dict[int, dict] = {}
+    pool = list(qualifying)
+    for slot in slots:
+        allowed = _allowed_groups(slot["away_label"])
+        pick = next((t for t in pool if t["group"] in allowed), None)
+        if pick:
+            result[slot["id"]] = pick
+            pool.remove(pick)
+    return result
+
+
+# ── 4. bracket resolution ───────────────────────────────────────────────────
+def _resolve_tie(home: str, away: str, rows_by_id: dict, match_id: int) -> dict:
+    p = services.predict(home, away, neutral=True, match=None)
+    ph, pa = p["p_home"], p["p_away"]
+    # No draws in knockout: redistribute the draw mass proportionally and pick
+    # the higher post-draw win prob.
+    winner = home if ph >= pa else away
+    loser = away if winner == home else home
+    win_p = ph if winner == home else pa
+    cond = p.get("condition", {}) or {}
+    analysis = {
+        # player squad condition composite (0-1) per side
+        "home_condition": cond.get("home_cond"),
+        "away_condition": cond.get("away_cond"),
+        # manager track-record proxy (0-1) per side
+        "home_manager_wr": cond.get("home_manager_wr"),
+        "away_manager_wr": cond.get("away_manager_wr"),
+        "home_momentum": cond.get("home_momentum"),
+        "away_momentum": cond.get("away_momentum"),
+        # expected goals
+        "expected_goals": p.get("expected_goals"),
+    }
+    return {
+        "winner": winner, "loser": loser,
+        "home_team": home, "away_team": away,
+        "prediction": {
+            "p_home": round(ph, 4), "p_draw": round(p["p_draw"], 4),
+            "p_away": round(pa, 4),
+        },
+        "predicted_winner": winner,
+        "win_probability": round(win_p / (ph + pa), 4) if (ph + pa) else 0.5,
+        "predicted_score": p["top_scores"][0]["score"] if p.get("top_scores") else None,
+        "confidence": p.get("confidence"),
+        "reasons": p.get("win_reasons", []),
+        "analysis": analysis,
+    }
+
+
+@lru_cache(maxsize=1)
+def resolve_bracket() -> dict:
+    rows = _bracket_rows()
+    rows_by_id = {m["id"]: m for m in rows}
+
+    tables = project_group_standings()
+    winners = {g: tbl[0]["team"] for g, tbl in tables.items()}
+    runners = {g: tbl[1]["team"] for g, tbl in tables.items()}
+
+    third_slots = [m for m in rows
+                   if m["type"] == "r32" and m["away_label"].startswith("3rd Group")]
+    qualifying = best_eight_thirds(tables)
+    third_by_slot = assign_third_slots(third_slots, qualifying)
+
+    results: dict[int, dict] = {}
+    title = _title_odds()
+
+    def resolve_label(label: str, slot_id: int) -> str | None:
+        if label.startswith("Winner Group "):
+            return winners.get(label.split()[-1])
+        if label.startswith("Runner-up Group "):
+            return runners.get(label.split()[-1])
+        if label.startswith("3rd Group "):
+            t = third_by_slot.get(slot_id)
+            return t["team"] if t else None
+        m = re.match(r"(Winner|Loser) Match (\d+)", label)
+        if m:
+            ref = results.get(int(m.group(2)))
+            if not ref:
+                return None
+            return ref["winner"] if m.group(1) == "Winner" else ref["loser"]
+        return None
+
+    enriched: list[dict] = []
+    # Process in bracket order so "Winner/Loser Match N" references resolve first.
+    order = {"r32": 0, "r16": 1, "qf": 2, "sf": 3, "third": 4, "final": 5}
+    for m in sorted(rows, key=lambda x: (order.get(x["type"], 9), x["id"])):
+        home = resolve_label(m["home_label"], m["id"])
+        away = resolve_label(m["away_label"], m["id"])
+        row = dict(m)  # keep original labels + venue/city/kickoff
+        if home and away:
+            tie = _resolve_tie(home, away, rows_by_id, m["id"])
+            results[m["id"]] = tie
+            row.update({
+                "home_team": home, "away_team": away,
+                "home_flag": _flag(home), "away_flag": _flag(away),
+                "home_title_pct": round(title.get(home, 0.0), 4),
+                "away_title_pct": round(title.get(away, 0.0), 4),
+                "prediction": tie["prediction"],
+                "predicted_winner": tie["predicted_winner"],
+                "win_probability": tie["win_probability"],
+                "predicted_score": tie["predicted_score"],
+                "confidence": tie["confidence"],
+                "reasons": tie["reasons"],
+                "analysis": tie["analysis"],
+                "resolved": True,
+            })
+        else:
+            row.update({"home_team": None, "away_team": None, "resolved": False})
+        enriched.append(row)
+
+    final = results.get(104)
+    champion = final["winner"] if final else None
+    runner_up = final["loser"] if final else None
+    third = results.get(103, {}).get("winner")
+
+    def _podium(team: str | None) -> dict | None:
+        if not team:
+            return None
+        return {"team": team, "flag": _flag(team),
+                "title_pct": round(title.get(team, 0.0), 4)}
+
+    rounds: dict[str, list] = {}
+    for m in enriched:
+        rounds.setdefault(m["round"], []).append(m)
+
+    return {
+        "projected": True,
+        "champion": champion,
+        "runner_up": runner_up,
+        "third_place_winner": third,
+        "podium": {"champion": _podium(champion),
+                   "runner_up": _podium(runner_up),
+                   "third": _podium(third)},
+        "rounds": [{"round": r, "matches": ms} for r, ms in rounds.items()],
+        "matches": enriched,
+    }
+
+
+def invalidate() -> None:
+    """Drop the memoised bracket (call after ingesting new results)."""
+    resolve_bracket.cache_clear()

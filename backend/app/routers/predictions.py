@@ -1,7 +1,7 @@
 """Predictions, home dashboard, and insights (dark horses / upset alerts)."""
 from fastapi import APIRouter
 
-from .. import fixtures, ml_engine, services
+from .. import fixtures, knockout_engine, ml_engine, services
 
 router = APIRouter(prefix="/api", tags=["predictions"])
 
@@ -32,14 +32,23 @@ def home():
 
 @router.get("/knockout")
 def knockout():
-    """Knockout bracket (R32 -> Final). Team slots are placeholders until the
-    group stage resolves; grouped by round for the bracket view."""
-    rows = fixtures.knockout()
-    rounds: dict[str, list] = {}
-    for m in rows:
-        rounds.setdefault(m["round"], []).append(m)
-    return {"rounds": [{"round": r, "matches": ms} for r, ms in rounds.items()],
-            "matches": rows}
+    """Projected knockout bracket (R32 -> Final).
+
+    Group slots are resolved from projected final standings (real results +
+    predicted remaining games); each tie is run through the predictor. Enriched
+    matches keep their original `home_label`/`away_label` and add `home_team`/
+    `away_team` + a `prediction` block. Falls back to placeholder labels if the
+    projection engine errors."""
+    try:
+        return knockout_engine.resolve_bracket()
+    except Exception:  # noqa: BLE001 - never 500 the bracket view
+        rows = fixtures.knockout()
+        rounds: dict[str, list] = {}
+        for m in rows:
+            rounds.setdefault(m["round"], []).append(m)
+        return {"projected": False, "champion": None,
+                "rounds": [{"round": r, "matches": ms} for r, ms in rounds.items()],
+                "matches": rows}
 
 
 @router.get("/insights")
