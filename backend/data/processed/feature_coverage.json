@@ -1,0 +1,22 @@
+{
+  "n_rows": 49437,
+  "features": {
+    "elo_diff": 0.9993,
+    "elo_home": 1.0,
+    "elo_away": 1.0,
+    "form_pts_diff": 0.9123,
+    "form_gd_diff": 0.9505,
+    "rest_diff": 0.6513,
+    "h2h_home_rate": 0.7824,
+    "neutral": 1.0,
+    "avail_diff": 0.0,
+    "squad_val_diff": 0.0,
+    "market_home_edge": 0.0
+  },
+  "dead": [
+    "avail_diff",
+    "squad_val_diff",
+    "market_home_edge"
+  ],
+  "recommendation": "backfill historical values for these features, or drop them from FEATURE_COLS until a historical source exists"
+}

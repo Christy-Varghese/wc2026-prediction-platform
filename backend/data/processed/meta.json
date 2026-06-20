@@ -1,0 +1,36 @@
+{
+  "started": "2026-06-19T21:32:21.512919+00:00",
+  "n_matches": 49433,
+  "latest_match": "2026-06-18",
+  "ingest": {
+    "ok": true,
+    "secs": 0.5
+  },
+  "n_players": 1215,
+  "players": {
+    "ok": true,
+    "secs": 0.0
+  },
+  "elo": {
+    "ok": true,
+    "secs": 0.2
+  },
+  "dixon_coles": {
+    "ok": true,
+    "secs": 173.6
+  },
+  "xgboost": {
+    "ok": true,
+    "secs": 2.1
+  },
+  "neural_net": {
+    "ok": false,
+    "error": "ModuleNotFoundError: No module named 'torch'",
+    "secs": 0.0
+  },
+  "simulate": {
+    "ok": true,
+    "secs": 36.3
+  },
+  "finished": "2026-06-19T21:35:54.278635+00:00"
+}

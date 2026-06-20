@@ -1,0 +1,51 @@
+{
+  "dc": {
+    "log_loss": 0.9878,
+    "rps": 0.2052,
+    "brier": 0.5804,
+    "sample_count": 192
+  },
+  "elo": {
+    "log_loss": 0.9915,
+    "rps": 0.2065,
+    "brier": 0.5839,
+    "sample_count": 192
+  },
+  "poisson": {
+    "log_loss": 0.9933,
+    "rps": 0.2113,
+    "brier": 0.5916,
+    "sample_count": 192
+  },
+  "market": {
+    "log_loss": 0.9844,
+    "rps": 0.2061,
+    "brier": 0.5816,
+    "sample_count": 192
+  },
+  "_meta": {
+    "fitted_at": "2026-06-19T22:45:46.332752+00:00",
+    "min_samples": 30,
+    "fitted_weights": {
+      "market": 0.1859,
+      "dc": 0.1853,
+      "xgb": 0.18,
+      "elo": 0.1846,
+      "poisson": 0.1842,
+      "nn": 0.08
+    },
+    "production_weights": {
+      "dc": 0.22,
+      "elo": 0.1,
+      "poisson": 0.07,
+      "market": 0.0875
+    },
+    "synth_market_penalty": 0.25,
+    "members_scored": [
+      "dc",
+      "elo",
+      "poisson",
+      "market"
+    ]
+  }
+}

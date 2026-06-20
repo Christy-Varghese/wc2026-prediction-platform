@@ -1,0 +1,36 @@
+{
+  "method": "vector_temperature",
+  "temperature_vector": [
+    1.0,
+    1.0,
+    1.0003
+  ],
+  "metadata": {
+    "fitted_at": "2026-06-19T22:45:46.332767+00:00",
+    "n_samples": 192,
+    "val_year": 2022,
+    "members": [
+      "dc",
+      "elo",
+      "poisson",
+      "market"
+    ],
+    "synth_market_penalty": 0.25,
+    "val_before": {
+      "log_loss": 1.0199,
+      "rps": 0.2149,
+      "brier": 0.6056,
+      "ece": 0.1274,
+      "acc": 0.5469,
+      "n": 64
+    },
+    "val_after": {
+      "log_loss": 1.0219,
+      "rps": 0.2148,
+      "brier": 0.6053,
+      "ece": 0.1468,
+      "acc": 0.5469,
+      "n": 64
+    }
+  }
+}

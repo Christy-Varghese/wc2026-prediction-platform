@@ -1,0 +1,24 @@
+# Render deployment for the FastAPI backend.
+# Pre-built ML artifacts are committed under backend/data, so no retrain runs on
+# boot — the service installs deps and serves immediately.
+#
+# After the frontend is live on Vercel, set CORS_ORIGINS (below) to that domain.
+services:
+  - type: web
+    name: wc2026-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.4"
+      - key: ENVIRONMENT
+        value: production
+      - key: USE_DB
+        value: "false"
+      # Comma-separated allowed origins. Replace with your Vercel domain(s).
+      - key: CORS_ORIGINS
+        value: "https://wc2026-prediction-platform.vercel.app,http://localhost:3000"
