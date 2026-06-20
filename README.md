@@ -30,6 +30,7 @@ concrete reasons the favoured team can win — not just numbers.
 ## Table of contents
 - [What it predicts](#what-it-predicts)
 - [How the prediction works](#how-the-prediction-works)
+- [How calibration + dynamic weighting works](#how-calibration--dynamic-weighting-works)
 - [Tech stack](#tech-stack)
 - [Project structure](#project-structure)
 - [Quick start](#quick-start)
@@ -79,6 +80,41 @@ On top of the blend:
 The same squad-condition signal is baked into the **Monte Carlo simulation**:
 each of the 2,256 pairwise Dixon-Coles score matrices is tilted by that matchup's
 condition shift before sampling, so the champion odds reflect squad quality too.
+
+## How calibration + dynamic weighting works
+The engine separates **what it predicts** (the blend) from **how much to trust
+it** (calibration + reliability). Three small artifacts, all fit offline by the
+walk-forward backtest (`backtest.py` → `calibration.py`) over held-out World
+Cups (2014/2018/2022) and consumed at runtime by `ensemble.py`. Every one
+degrades to a safe default when missing or corrupt — the engine never hard-
+depends on them.
+
+| Artifact (`data/processed/`) | Fit from | Used for |
+|------------------------------|----------|----------|
+| `member_metrics.json` | per-member out-of-sample LogLoss/RPS/Brier + sample count | dynamic blend weights (∝ 1/LogLoss, capped, min-sample-gated) |
+| `calibrator.json` | temperature / vector-temperature fit | post-blend probability calibration |
+| `reliability.json` | ECE + confidence-bucket gaps | reliability-aware confidence |
+
+- **Dynamic weights.** Each member is weighted by inverse out-of-sample
+  LogLoss, normalized, clipped to `[WEIGHT_MIN, WEIGHT_MAX]`, and only trusted
+  once it clears `MIN_MEMBER_SAMPLES` held-out matches. Falls back to the static
+  `WEIGHTS` when evidence is thin.
+- **Calibration.** A post-blend calibrator (`softmax(log p / T)`, scalar or
+  per-class `T`) corrects probability magnitudes toward observed frequencies.
+  It is **fit on earlier tournaments and adopted only if it beats identity on
+  the held-out latest tournament** — otherwise it ships as the identity. No
+  cosmetic sharpening.
+- **Synthetic-market de-trust.** When no real book exists the market member is
+  Elo-synthesised (a strictly degraded Elo clone). At predict time its weight is
+  shrunk (`SYNTH_MARKET_WEIGHT_PENALTY`) and a few points of confidence are
+  docked, so a fabricated "market" can't masquerade as signal.
+- **Reliability-aware confidence.** `confidence` blends member *agreement* +
+  *decisiveness* + *coverage* + *reliability* (recent ECE / bucket consistency),
+  stays clipped to 5–99 and monotonic, and is **penalised when recent
+  calibration is poor** — so a sharp-but-miscalibrated forecast doesn't report
+  false certainty.
+
+Rebuild the artifacts any time (idempotent): `cd backend/ml && python backtest.py`.
 
 ## Tech stack
 - **Backend:** Python 3.14, FastAPI, Uvicorn, pandas/NumPy/SciPy, scikit-learn,
