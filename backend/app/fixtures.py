@@ -83,9 +83,9 @@ MD23: list[tuple] = [
     ("2026-06-18T21:00:00-04:00", "B", "MD2", "Canada", "Qatar", 6, 0, "Vancouver"),
     ("2026-06-18T21:00:00-04:00", "A", "MD2", "Mexico", "South Korea", 1, 0, "Guadalajara"),
     ("2026-06-19T15:00:00-04:00", "D", "MD2", "United States", "Australia", 2, 0, "Seattle"),
-    ("2026-06-19T18:00:00-04:00", "C", "MD2", "Scotland", "Morocco", None, None, "Boston"),
-    ("2026-06-19T21:00:00-04:00", "C", "MD2", "Brazil", "Haiti", None, None, "Philadelphia"),
-    ("2026-06-20T00:00:00-04:00", "D", "MD2", "Paraguay", "Turkey", None, None, "San Francisco"),
+    ("2026-06-19T18:00:00-04:00", "C", "MD2", "Scotland", "Morocco", 0, 1, "Boston"),
+    ("2026-06-19T21:00:00-04:00", "C", "MD2", "Brazil", "Haiti", 3, 0, "Philadelphia"),
+    ("2026-06-20T00:00:00-04:00", "D", "MD2", "Paraguay", "Turkey", 1, 0, "San Francisco"),
     ("2026-06-20T13:00:00-04:00", "F", "MD2", "Netherlands", "Sweden", None, None, "Houston"),
     ("2026-06-20T16:00:00-04:00", "E", "MD2", "Germany", "Ivory Coast", None, None, "Toronto"),
     ("2026-06-20T20:00:00-04:00", "E", "MD2", "Ecuador", "Curaçao", None, None, "Kansas City"),
@@ -158,11 +158,47 @@ FLAG = {
     "Portugal": "pt", "DR Congo": "cd", "Uzbekistan": "uz", "Colombia": "co",
     "England": "gb-eng", "Croatia": "hr", "Ghana": "gh", "Panama": "pa",
 }
+# All 48 WC2026 head coaches (names web-verified June 2026, FIFPlay/Bolavip/FIFA).
+# Second value = manager international win-rate proxy (0-1), used as a low-weight
+# signal in the prediction model (see ml/player_condition.MANAGER_WINRATE — kept
+# in sync). Win-rate is an approximate career-with-nation proxy, not a live stat.
 MANAGERS = {
-    "Argentina": ("Lionel Scaloni", 0.74), "France": ("Didier Deschamps", 0.66),
-    "Brazil": ("Dorival Júnior", 0.60), "England": ("Thomas Tuchel", 0.62),
-    "Spain": ("Luis de la Fuente", 0.70), "Portugal": ("Roberto Martínez", 0.64),
-    "Germany": ("Julian Nagelsmann", 0.61), "Netherlands": ("Ronald Koeman", 0.63),
+    # Group A
+    "Mexico": ("Javier Aguirre", 0.56), "South Africa": ("Hugo Broos", 0.55),
+    "South Korea": ("Hong Myung-bo", 0.55), "Czech Republic": ("Miroslav Koubek", 0.50),
+    # Group B
+    "Canada": ("Jesse Marsch", 0.56), "Bosnia and Herzegovina": ("Sergej Barbarez", 0.50),
+    "Qatar": ("Julen Lopetegui", 0.56), "Switzerland": ("Murat Yakin", 0.56),
+    # Group C
+    "Brazil": ("Carlo Ancelotti", 0.60), "Morocco": ("Mohamed Ouahbi", 0.62),
+    "Haiti": ("Sébastien Migné", 0.45), "Scotland": ("Steve Clarke", 0.50),
+    # Group D
+    "United States": ("Mauricio Pochettino", 0.56), "Paraguay": ("Gustavo Alfaro", 0.56),
+    "Australia": ("Tony Popovic", 0.54), "Turkey": ("Vincenzo Montella", 0.55),
+    # Group E
+    "Germany": ("Julian Nagelsmann", 0.61), "Curaçao": ("Dick Advocaat", 0.52),
+    "Ivory Coast": ("Emerse Faé", 0.58), "Ecuador": ("Sebastián Beccacece", 0.53),
+    # Group F
+    "Netherlands": ("Ronald Koeman", 0.63), "Japan": ("Hajime Moriyasu", 0.62),
+    "Sweden": ("Graham Potter", 0.50), "Tunisia": ("Sami Trabelsi", 0.52),
+    # Group G
+    "Belgium": ("Rudi Garcia", 0.55), "Egypt": ("Hossam Hassan", 0.60),
+    "Iran": ("Amir Ghalenoei", 0.60), "New Zealand": ("Darren Bazeley", 0.50),
+    # Group H
+    "Spain": ("Luis de la Fuente", 0.70), "Cape Verde": ("Bubista", 0.50),
+    "Saudi Arabia": ("Giorgos Donis", 0.48), "Uruguay": ("Marcelo Bielsa", 0.58),
+    # Group I
+    "France": ("Didier Deschamps", 0.66), "Senegal": ("Pape Thiaw", 0.56),
+    "Iraq": ("Graham Arnold", 0.52), "Norway": ("Ståle Solbakken", 0.55),
+    # Group J
+    "Argentina": ("Lionel Scaloni", 0.74), "Algeria": ("Vladimir Petković", 0.52),
+    "Austria": ("Ralf Rangnick", 0.62), "Jordan": ("Jamal Sellami", 0.52),
+    # Group K
+    "Portugal": ("Roberto Martínez", 0.64), "DR Congo": ("Sébastien Desabre", 0.53),
+    "Uzbekistan": ("Fabio Cannavaro", 0.50), "Colombia": ("Néstor Lorenzo", 0.64),
+    # Group L
+    "England": ("Thomas Tuchel", 0.62), "Croatia": ("Zlatko Dalić", 0.60),
+    "Ghana": ("Otto Addo", 0.50), "Panama": ("Thomas Christiansen", 0.52),
 }
 
 # Curated squads for marquee teams (rest get a generic squad).

@@ -906,5 +906,75 @@
   },
   "source": "ESPN",
   "date": "20260619"
+ },
+ "Scotland|Morocco": {
+  "home": "Scotland",
+  "away": "Morocco",
+  "score": [
+   0,
+   1
+  ],
+  "scorers": {
+   "home": [],
+   "away": [
+    {
+     "player": "Ismael Saibari",
+     "minute": 2,
+     "type": "goal"
+    }
+   ]
+  },
+  "source": "ESPN",
+  "date": "20260619"
+ },
+ "Brazil|Haiti": {
+  "home": "Brazil",
+  "away": "Haiti",
+  "score": [
+   3,
+   0
+  ],
+  "scorers": {
+   "home": [
+    {
+     "player": "Matheus Cunha",
+     "minute": 23,
+     "type": "goal"
+    },
+    {
+     "player": "Matheus Cunha",
+     "minute": 36,
+     "type": "goal"
+    },
+    {
+     "player": "Vinícius Júnior",
+     "minute": 45,
+     "type": "goal"
+    }
+   ],
+   "away": []
+  },
+  "source": "ESPN",
+  "date": "20260619"
+ },
+ "Paraguay|Turkey": {
+  "home": "Paraguay",
+  "away": "Turkey",
+  "score": [
+   1,
+   0
+  ],
+  "scorers": {
+   "home": [
+    {
+     "player": "Matías Galarza",
+     "minute": 2,
+     "type": "goal"
+    }
+   ],
+   "away": []
+  },
+  "source": "ESPN",
+  "date": "20260619"
  }
 }
