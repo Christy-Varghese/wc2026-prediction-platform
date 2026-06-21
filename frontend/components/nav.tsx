@@ -110,12 +110,6 @@ export function Nav() {
               <span className="font-display text-[10px] uppercase tracking-widest text-danger">Live</span>
             </div>
 
-            {/* Admin link */}
-            <Link href="/admin"
-              className="hidden rounded-lg border border-line px-3 py-1.5 font-display text-xs uppercase tracking-wider text-muted hover:border-gold/30 hover:text-gold transition sm:block">
-              Admin
-            </Link>
-
             {/* Mobile hamburger */}
             <button
               className="ml-1 rounded-lg border border-line p-2 text-muted hover:text-cyan md:hidden"
