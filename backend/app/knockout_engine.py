@@ -198,6 +198,9 @@ def _resolve_tie(home: str, away: str, rows_by_id: dict, match_id: int) -> dict:
         # manager track-record proxy (0-1) per side
         "home_manager_wr": cond.get("home_manager_wr"),
         "away_manager_wr": cond.get("away_manager_wr"),
+        # goalkeeper quality (0-1) per side
+        "home_gk_quality": cond.get("home_gk_quality"),
+        "away_gk_quality": cond.get("away_gk_quality"),
         "home_momentum": cond.get("home_momentum"),
         "away_momentum": cond.get("away_momentum"),
         # expected goals

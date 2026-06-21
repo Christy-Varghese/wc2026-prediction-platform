@@ -1053,5 +1053,54 @@
   },
   "source": "ESPN",
   "date": "20260620"
+ },
+ "Ecuador|Curaçao": {
+  "home": "Ecuador",
+  "away": "Curaçao",
+  "score": [
+   0,
+   0
+  ],
+  "scorers": {
+   "home": [],
+   "away": []
+  },
+  "source": "ESPN",
+  "date": "20260620"
+ },
+ "Tunisia|Japan": {
+  "home": "Tunisia",
+  "away": "Japan",
+  "score": [
+   0,
+   4
+  ],
+  "scorers": {
+   "home": [],
+   "away": [
+    {
+     "player": "Daichi Kamada",
+     "minute": 4,
+     "type": "goal"
+    },
+    {
+     "player": "Ayase Ueda",
+     "minute": 31,
+     "type": "goal"
+    },
+    {
+     "player": "Junya Ito",
+     "minute": 69,
+     "type": "goal"
+    },
+    {
+     "player": "Ayase Ueda",
+     "minute": 83,
+     "type": "goal"
+    }
+   ]
+  },
+  "source": "ESPN",
+  "date": "20260620"
  }
 }

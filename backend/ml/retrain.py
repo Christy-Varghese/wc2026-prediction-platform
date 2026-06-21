@@ -19,11 +19,12 @@ import pickle
 import time
 import traceback
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pandas as pd
 
 from config import PROC
-import ingest, elo as elo_mod, model as model_mod, simulate, xgb_model, nn_model
+import ingest, elo as elo_mod, model as model_mod, xgb_model, nn_model
 import backtest
 
 META = PROC / "meta.json"
@@ -78,11 +79,25 @@ def run(force_download: bool = True) -> dict:
         nn_model.train(state["enriched"])
 
     def _sim():
-        with open(PROC / "dc_model.pkl", "rb") as f:
-            m = pickle.load(f)
-        table = simulate.run(m)
-        # Archives prior sim_results before overwriting (see simulate.save_results).
-        simulate.save_results(table)
+        # Run the Monte Carlo in a *fresh subprocess* (simulate.py __main__).
+        # Two reasons: (1) a clean process avoids any BLAS/threadpool state left
+        # by the Dixon-Coles scipy.optimize refit + XGBoost OpenMP earlier in
+        # this same process; (2) CRITICAL — its stdout must NOT inherit the
+        # parent's stdout pipe. simulate.py prints progress hundreds of times;
+        # if that inherited pipe's buffer fills while the parent is blocked in
+        # wait(), the child blocks on write() and the whole run deadlocks at 0%
+        # CPU (observed hanging for hours). Redirect child output to a log file
+        # so the pipe can never fill. simulate.main() also applies the
+        # tournament-form Elo patch + archives the prior sim_results.
+        import subprocess
+        import sys
+        sim_py = Path(__file__).resolve().parent / "simulate.py"
+        sim_log = PROC / "sim_run.log"
+        with open(sim_log, "w") as out:
+            subprocess.run([sys.executable, "-u", str(sim_py)],
+                           cwd=sim_py.parent, check=True, timeout=900,
+                           stdout=out, stderr=subprocess.STDOUT,
+                           stdin=subprocess.DEVNULL)
 
     def _calibrate():
         # Walk-forward backtest -> per-member metrics + fit calibrator + dynamic

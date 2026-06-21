@@ -422,6 +422,33 @@ MANAGER_WINRATE: dict[str, float] = {
 }
 MANAGER_DEFAULT = 0.50
 
+# ── goalkeeper quality (0-1) ────────────────────────────────────────────────
+# Starter shot-stopping reputation proxy for each nation's #1 keeper. The squad
+# `impact` metric does not separate world-class keepers from backups (all ~0.45-
+# 0.50), so this curated table supplies the signal that folds into defence_rating
+# (a stronger keeper concedes fewer goals). Web-informed reputation tiers, not a
+# precise stat; teams not listed fall back to GK_QUALITY_DEFAULT. Motivated by
+# Curaçao's Eloy Room (15 saves, 0-0 vs Ecuador) — keeper form swings results.
+GK_QUALITY: dict[str, float] = {
+    # elite
+    "Brazil": 0.86, "Argentina": 0.86, "Belgium": 0.85, "France": 0.82,
+    "Spain": 0.78, "Germany": 0.80, "Morocco": 0.80, "Slovenia": 0.82,
+    # very good
+    "England": 0.76, "Portugal": 0.74, "Netherlands": 0.72, "Croatia": 0.72,
+    "Switzerland": 0.72, "Uruguay": 0.70, "Mexico": 0.70, "United States": 0.70,
+    "Senegal": 0.70, "Colombia": 0.70, "Japan": 0.68, "Australia": 0.68,
+    # solid
+    "Curaçao": 0.66, "Ecuador": 0.64, "Canada": 0.64, "Norway": 0.64,
+    "Iran": 0.64, "South Korea": 0.64, "Egypt": 0.64, "Ivory Coast": 0.62,
+    "Saudi Arabia": 0.62, "Scotland": 0.62, "Austria": 0.62, "Sweden": 0.62,
+    "Tunisia": 0.60, "Paraguay": 0.60, "Turkey": 0.60, "Algeria": 0.60,
+}
+GK_QUALITY_DEFAULT = 0.55
+# Goalkeeper logit-shift weight. Kept below player form (0.55) and manager
+# (0.20): the keeper matters but the outfield squad matters more. An elite-vs-
+# weak keeper gap (~0.3) yields ~0.075 logit ≈ ~2% win-prob swing.
+GK_COEF = 0.25
+
 
 class TeamConditionEngine:
     """
@@ -558,6 +585,7 @@ class TeamConditionEngine:
                 "star_player_loss": 0.0, "form_rating": 7.0,
                 "key_players": [], "momentum": self._elo_delta.get(team, 0.0),
                 "attack_rating": 1.4, "defence_rating": 1.2,
+                "gk_quality": GK_QUALITY.get(team, GK_QUALITY_DEFAULT),
             }
 
         fit = [p for p in squad if p["status"] == "fit"]
@@ -582,6 +610,14 @@ class TeamConditionEngine:
             for p in squad if p["position"] in ("FW", "CM")
         )
         attack = max(0.5, min(attack, 3.5))
+
+        # Goalkeeper quality: curated reputation, dimmed if the #1 keeper is
+        # not fully fit (best available fit GK's fitness scales the rating).
+        gk_base = GK_QUALITY.get(team, GK_QUALITY_DEFAULT)
+        gks = [p for p in squad if p["position"] == "GK"]
+        fit_gk = [p for p in gks if p["status"] == "fit"]
+        gk_fitness = max((p["fitness"] for p in (fit_gk or gks)), default=1.0)
+        gk_quality = gk_base * (0.85 + 0.15 * gk_fitness)  # backup/unfit keeper dims it
 
         # Key players (top-3 by impact)
         key = sorted(squad, key=lambda p: p["impact"], reverse=True)[:3]
@@ -617,6 +653,10 @@ class TeamConditionEngine:
             "momentum":        round(self._elo_delta.get(team, 0.0), 2),
             "attack_rating":   round(attack, 3),
             "defence_rating":  round(1.4 - attack * 0.15, 3),
+            # Keeper quality (0-1), applied as its own term in the match logit
+            # shift (see match_condition_adjustment), not folded into the
+            # ambiguous defence_rating above.
+            "gk_quality":      round(gk_quality, 3),
         }
 
     @staticmethod
@@ -652,6 +692,8 @@ class TeamConditionEngine:
         # Manager track-record delta (win rate, 0-1)
         mgr_delta   = (MANAGER_WINRATE.get(home, MANAGER_DEFAULT)
                        - MANAGER_WINRATE.get(away, MANAGER_DEFAULT))
+        # Goalkeeper quality delta (0-1): a stronger, fit keeper helps his side.
+        gk_delta    = hc["gk_quality"] - ac["gk_quality"]
 
         # Combined logit shift (tuned so ±0.2 = ±5% probability swing).
         # Squad form, team combination and manager record are PRIORITISED here;
@@ -659,7 +701,8 @@ class TeamConditionEngine:
         logit_shift = (
             0.55 * cond_delta            +   # player form / fitness / availability
             0.30 * att_def_adv * 0.15    +   # team combination (attack vs defence)
-            0.20 * mgr_delta                 # manager track record
+            0.20 * mgr_delta             +   # manager track record
+            GK_COEF * gk_delta               # goalkeeper quality / form
         )
         if include_momentum:
             logit_shift += 0.35 * mom_delta
@@ -671,6 +714,8 @@ class TeamConditionEngine:
             "away_momentum": ac["momentum"],
             "home_manager_wr": MANAGER_WINRATE.get(home, MANAGER_DEFAULT),
             "away_manager_wr": MANAGER_WINRATE.get(away, MANAGER_DEFAULT),
+            "home_gk_quality": hc["gk_quality"],
+            "away_gk_quality": ac["gk_quality"],
         }
 
     # ── plain-language "why this team wins" reasons ─────────────────────

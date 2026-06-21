@@ -213,6 +213,10 @@ function AnalysisModal({ m, onClose }: { m: any; onClose: () => void }) {
             h={a.home_condition} a={a.away_condition} fmt={(v) => pctStr(v)} />
           <CompareBar label="Manager track record" hi={m.home_team} ai={m.away_team}
             h={a.home_manager_wr} a={a.away_manager_wr} fmt={(v) => pctStr(v)} />
+          {a.home_gk_quality != null && (
+            <CompareBar label="Goalkeeper" hi={m.home_team} ai={m.away_team}
+              h={a.home_gk_quality} a={a.away_gk_quality} fmt={(v) => pctStr(v)} />
+          )}
           {a.expected_goals && (
             <div className="flex justify-between pt-1 text-[12px] text-muted">
               <span>Expected goals</span>
