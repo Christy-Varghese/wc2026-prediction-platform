@@ -102,6 +102,34 @@ played games) and clustered too low for blowouts. Fixed:
   feed, confirmed kickoff lineups, real over/under + handicap odds, match-event
   (red cards/pens) data. See the chat analysis for the ranked list.
 
+## 9. Confidence rescale + toss-up flag — DONE (commits a198450, c3d27cd)
+- **Why:** raw ensemble confidence (`ensemble._confidence`, 4 ingredients:
+  agreement / decisiveness / coverage / reliability) is calibrated but, for
+  football's 3-way W/D/L outcome (draws cap a single-match favourite near ~70%),
+  realistically lands in a compressed **~27..58** band. The bar never looked
+  "full" — a 76%-favourite (Jordan v Argentina) read only 45/100, and group
+  coin-flips clustered 31–34. NOT a bug: per-match confidence ≠ tournament
+  champion %. Argentina is the sim favourite *and* faces coin-flippy group games.
+- **Display rescale** (`ensemble.py`): `CONF_DISPLAY_LO=27 / CONF_DISPLAY_HI=58`
+  + `_display_confidence()` — a **monotonic** stretch of `[27,58] → 1..100`,
+  applied in `predict()` AFTER the synthetic-market penalty. Order-preserving;
+  the underlying probabilities and calibration are UNTOUCHED (presentation only).
+  Live range is now 13..61 (e.g. Argentina v Austria 35→26, Norway v France
+  31→13, Jordan v Argentina 45→58). Blowouts (host vs minnow) will climb to
+  90–99 as they enter the slate.
+- **Explanation tone cutoffs** (`ensemble._explain`) re-scaled: High ≥55,
+  Moderate ≥26, Low <26 — Low now aligns with the UI toss-up flag.
+- **Toss-up flag** (`frontend/components/ui.tsx`): `LOW_CONFIDENCE = 26`
+  (= `stretch(35)`), `isLowConfidence()` + `<LowConfidenceTag>` (neutral chip,
+  not alarmist). Wired into matches grid + table, knockout bracket + detail, and
+  the match-detail prediction engine. Flags any unplayed match below 26 (8 games
+  currently). `match_flow.py`'s `conf < 55` "modest confidence" risk still valid
+  (= "not High" in the new scale).
+- **If you re-tune the spread:** change only `CONF_DISPLAY_LO/HI` in `ensemble.py`,
+  move `LOW_CONFIDENCE` (ui.tsx) and the `_explain` cutoffs to match, then
+  regenerate snapshots. Stays a pure display transform — never feed the stretched
+  value back into calibration/backtest.
+
 ## Known issues / watch-outs
 - **Custom alias is not on the Vercel project, so deploys don't update it.**
   Root cause (diagnosed Jun 21): `chris-fifaworldcup26-prediction.vercel.app` is
