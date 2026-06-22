@@ -40,4 +40,38 @@ modal should all load from the live backend.
 
 ## Auto-deploy
 
-Both platforms redeploy on every push to `main` once connected.
+Both platforms **build** on every push to `main` once connected.
+
+## Production alias / promotion ⚠️
+
+A push to `main` triggers a Vercel build (visible as a green "Vercel" check on the
+commit), but that build does **not** always take over the custom production alias
+`chris-fifaworldcup26-prediction.vercel.app` automatically — new deploys can land
+without the alias following, so the live URL keeps serving the previous build.
+
+If the live site is stale after a successful push, promote the latest deploy:
+
+```bash
+# from the repo root, logged in to the Vercel CLI:
+cd frontend && npx vercel --prod        # deploys + assigns the production alias
+# — or in the dashboard: Deployments → latest → ⋯ → "Promote to Production"
+```
+
+To confirm `main` auto-promotes in future, set **Settings ▸ Git ▸ Production
+Branch = `main`** on the Vercel project.
+
+## Verify the live data
+
+The frontend falls back to static snapshots in `frontend/public/snapshot/` when
+the backend is unreachable, so the fastest way to confirm a deploy actually
+shipped new results is to read a snapshot off the live host:
+
+```bash
+curl -s https://chris-fifaworldcup26-prediction.vercel.app/snapshot/api_matches.json \
+  | python3 -c "import json,sys; d=json.load(sys.stdin); \
+print([f\"{m['home_team']} {m['home_score']}-{m['away_score']} {m['away_team']}\" \
+for m in d if m['played']][-5:])"
+```
+
+Stale tells: response header `age` is large (hours) and `last-modified` predates
+your push — the alias is still on an old deployment (see promotion step above).

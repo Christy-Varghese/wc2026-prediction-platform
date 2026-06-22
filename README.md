@@ -24,7 +24,8 @@ numbers. The UI labels its calls **"CAI picks"**.
 ![Dashboard — next match, title odds, dark horses](docs/assets/dashboard.png)
 
 > Post-match analytics: real goalscorers (scraped from ESPN) plus a model-generated
-> shot map, passing network and heat maps.
+> shot map, passing network and heat maps. Squads and scorers carry free-licensed
+> player headshots (Wikipedia/Commons), with an initials avatar fallback.
 >
 > ![Match analytics](docs/assets/match-analytics.png)
 
@@ -58,6 +59,13 @@ numbers. The UI labels its calls **"CAI picks"**.
   runner-up / 3rd) and a per-tie **analysis modal** (player condition, manager
   record, goalkeeper, xG). Penalty shootouts flagged on level ties.
 - **Tournament winner** — champion odds from 50k Monte Carlo runs
+- **Match-flow simulation** — a full-tie Monte Carlo (regulation 90′ → extra time
+  120′ → kick-by-kick shootout) yielding regulation/ET/shootout probabilities, a
+  minute-by-minute narrative with turning points, key players and risk factors
+  (`backend/ml/match_flow.py`, rendered by `frontend/components/match-flow.tsx`)
+- **In-tournament form** — once games are played, real results + goalscorers feed
+  team form, GK/defence and manager-form signals that blend on top of the curated
+  pre-tournament priors (`backend/ml/tournament_stats.py`)
 - **Dark horses & upset alerts** — teams over-performing their seed
 - **Post-match analysis** — news-sourced (ESPN + others) write-up per completed
   match: headline, summary, star man, turning point, what was missing — plus real
@@ -252,6 +260,13 @@ A daily cron wrapper is provided (`backend/refresh_events.sh`). Install it:
 Shot maps, heat maps and passing networks are **model-generated** (deterministic,
 seeded by match id) and labeled as such — that coordinate-level data is not
 openly available (providers like Sofascore/FotMob block automated access).
+
+Player headshots are fetched once from Wikipedia/Wikimedia lead images
+(free-licensed, hotlinkable) and cached to `data/raw/player_images.json`. Refresh
+when squads or scorers change:
+```bash
+cd backend && python gen_player_images.py
+```
 
 ## API reference
 | Method | Path | Notes |

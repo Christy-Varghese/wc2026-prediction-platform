@@ -79,6 +79,15 @@ Branch: `main` · all work committed + pushed to
 ---
 
 ## Known issues / watch-outs
+- **Vercel production alias does not auto-promote.** A push to `main` builds
+  successfully (green "Vercel" check on the commit), but the custom alias
+  `chris-fifaworldcup26-prediction.vercel.app` can stay on the previous deploy —
+  the live URL then serves stale data even though the repo + build are correct
+  (seen Jun 21: two successful deploys, alias stuck on the 11:36 EDT build).
+  Fix: `cd frontend && npx vercel --prod`, or dashboard → latest deploy →
+  "Promote to Production"; set Production Branch = `main` to make it automatic.
+  Verify live with the snapshot `curl` in `DEPLOY.md` (watch `age`/`last-modified`).
+  Vercel MCP is 403 for this team scope, so promotion can't be done from the agent.
 - **`retrain.py` full run can hang at the sim step** in this macOS/Python 3.14
   environment (BLAS/multiprocessing + the subprocess stdout pipe). `_sim` now runs
   `simulate.py` in a subprocess writing to a log file (not the inherited pipe) with
