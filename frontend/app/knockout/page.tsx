@@ -3,7 +3,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
-import { Flag } from "@/components/ui";
+import { Flag, LowConfidenceTag, isLowConfidence } from "@/components/ui";
 import { MatchFlowReport } from "@/components/match-flow";
 
 const fetcher = (p: string) => api(p);
@@ -127,8 +127,11 @@ function Tie({ m, delay, onClick }: { m: any; delay: number; onClick: () => void
             <span className="text-muted">
               Win prob <span className="font-bold text-stadium">{wp}%</span>
             </span>
-            {m.confidence != null &&
-              <span className="text-gold font-bold">{m.confidence} conf</span>}
+            <span className="inline-flex items-center gap-1.5">
+              {isLowConfidence(m) && <LowConfidenceTag confidence={m.confidence} />}
+              {m.confidence != null &&
+                <span className="text-gold font-bold">{m.confidence} conf</span>}
+            </span>
           </div>
           {wp != null && (
             <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
@@ -205,6 +208,7 @@ function AnalysisModal({ m, onClose }: { m: any; onClose: () => void }) {
           <span className="font-bold text-gold">{m.predicted_winner}</span> advances ·
           win prob <span className="font-bold">{Math.round((m.win_probability ?? 0) * 100)}%</span>
           {m.confidence != null && <> · conf <span className="font-bold">{m.confidence}</span></>}
+          {isLowConfidence(m) && <span className="ml-2"><LowConfidenceTag confidence={m.confidence} /></span>}
         </div>
 
         {/* player condition + manager strategy comparison */}

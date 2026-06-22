@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
 import { api, pct0 } from "@/lib/api";
-import { Flag, ProbBar, LiveBadge, SectionHeader } from "@/components/ui";
+import { Flag, ProbBar, LiveBadge, SectionHeader, LowConfidenceTag, isLowConfidence } from "@/components/ui";
 
 const fetcher = (p: string) => api(p);
 const GROUPS = "ABCDEFGHIJKL".split("");
@@ -207,6 +207,7 @@ function BroadcastMatchCard({ m, onClick }: { m: any; onClick: () => void }) {
         <div className="flex gap-1">
           {m.market_used && <span className="chip">📈</span>}
           {m.upset_probability >= 0.32 && <span className="chip-gold text-[10px]">⚠ UPSET</span>}
+          {!m.played && isLowConfidence(m) && <LowConfidenceTag confidence={m.confidence} />}
           {m.confidence && <span className="text-gold font-bold">{m.confidence}</span>}
         </div>
       </div>
@@ -275,7 +276,11 @@ function TableView({ data, router }: { data: any[]; router: any }) {
                   )}
                 </td>
                 <td className="px-3 py-3 text-right">
-                  <b className="text-gold">{m.confidence}</b>
+                  <span className="inline-flex items-center justify-end gap-1.5">
+                    {!m.played && isLowConfidence(m) &&
+                      <span title={`Low confidence (${m.confidence}/100) — near coin-flip`} className="text-muted">⚠</span>}
+                    <b className={isLowConfidence(m) ? "text-muted" : "text-gold"}>{m.confidence}</b>
+                  </span>
                 </td>
               </tr>
             );

@@ -34,6 +34,29 @@ export function LiveBadge({ label = "LIVE", color = "danger" }: { label?: string
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
+   LOW-CONFIDENCE / TOSS-UP FLAG
+   The ensemble's calibrated confidence (0-100). Below this the predicted W/D/L
+   lean is barely ahead of the next outcome (often the likeliest scoreline is a
+   draw) — flag it so users don't read a coin-flip as a call.
+══════════════════════════════════════════════════════════════════════════════ */
+export const LOW_CONFIDENCE = 35;
+
+export function isLowConfidence(m: { confidence?: number | null; played?: boolean }) {
+  return !m.played && m.confidence != null && m.confidence < LOW_CONFIDENCE;
+}
+
+export function LowConfidenceTag({ confidence, className = "" }:
+  { confidence?: number | null; className?: string }) {
+  if (confidence == null || confidence >= LOW_CONFIDENCE) return null;
+  return (
+    <span className={`chip text-[10px] ${className}`}
+      title={`Low confidence (${confidence}/100) — near coin-flip; treat the predicted lean as weak`}>
+      ⚠ TOSS-UP
+    </span>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
    PROBABILITY BAR (tri-segment broadcast style)
 ══════════════════════════════════════════════════════════════════════════════ */
 export function ProbBar({ home, draw, away, animate = true, height = 10 }:
@@ -315,6 +338,7 @@ export function MatchCard({ m }: { m: any }) {
         <div className="flex items-center gap-1.5">
           {m.market_used && <span className="chip-cyan">📈 mkt</span>}
           {m.upset_probability >= 0.32 && <span className="chip-gold">⚡ upset</span>}
+          {!played && isLowConfidence(m) && <LowConfidenceTag confidence={m.confidence} />}
           {!played && <span className="font-bold text-gold">{m.confidence}</span>}
         </div>
       </div>

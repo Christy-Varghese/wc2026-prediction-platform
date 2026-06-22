@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { api, pct, pct0 } from "@/lib/api";
 import {
   Flag, ProbBar, ProbRing, Countdown, MomentumBar, Meter, PlayerCard,
-  LiveBadge, AIInsightCard, SectionHeader, StatRow,
+  LiveBadge, AIInsightCard, SectionHeader, StatRow, LowConfidenceTag, isLowConfidence,
 } from "@/components/ui";
 import { MatchAnalytics } from "@/components/match-analytics";
 import { MatchFlowReport } from "@/components/match-flow";
@@ -116,6 +116,8 @@ export default function MatchCenter({ params }: { params: { id: string } }) {
               <div className="pt-1 text-[11px] text-muted">
                 xG {xg.home} – {xg.away}
                 {p.market_used && <span className="chip ml-2 text-[10px]">📈 Market</span>}
+                {isLowConfidence({ confidence: p.confidence, played: m.played }) &&
+                  <span className="ml-2"><LowConfidenceTag confidence={p.confidence} /></span>}
               </div>
             </div>
           </div>
