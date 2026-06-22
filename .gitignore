@@ -31,3 +31,5 @@ frontend/next-env.d.ts
 .claude/
 .playwright-mcp/
 /tmp/
+.vercel
+.env*

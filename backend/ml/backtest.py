@@ -194,6 +194,50 @@ def fit_reliability_artifacts(preds: pd.DataFrame | None = None) -> dict:
     return report
 
 
+def scoreline_calibration() -> dict | None:
+    """Goal-model calibration on the WC2026 games played so far.
+
+    Distinct from the historical W/D/L backtest: checks whether modeled goals
+    track reality at the tournament's scoring level — the thing GOAL_SCALE and
+    the Poisson-member fix target. Reports mean total (modeled vs actual),
+    per-team goal MAE, and over/under-2.5 accuracy.
+    """
+    try:
+        import pickle
+        from tournament_form import WC2026_PLAYED
+        with open(PROC / "dc_model.pkl", "rb") as f:
+            dc = pickle.load(f)
+    except Exception:  # noqa: BLE001
+        return None
+
+    n = 0
+    mod_tot = act_tot = mae = ou_hit = 0.0
+    for home, away, hs, as_, neutral in WC2026_PLAYED:
+        try:
+            m = dc.score_matrix(home, away, neutral=neutral)
+        except Exception:  # noqa: BLE001
+            continue
+        g = np.arange(m.shape[0])
+        lh = float((m.sum(1) * g).sum())
+        la = float((m.sum(0) * g).sum())
+        tot_grid = g[:, None] + g[None, :]
+        p_over = float(m[tot_grid >= 3].sum())
+        mod_tot += lh + la
+        act_tot += hs + as_
+        mae += abs(lh - hs) + abs(la - as_)
+        ou_hit += int((p_over >= 0.5) == ((hs + as_) >= 3))
+        n += 1
+    if not n:
+        return None
+    rep = {"n": n,
+           "modeled_total_per_match": round(mod_tot / n, 3),
+           "actual_total_per_match": round(act_tot / n, 3),
+           "goal_mae": round(mae / (2 * n), 3),
+           "over_under_acc": round(ou_hit / n, 3),
+           "implied_scale": round(act_tot / mod_tot, 3) if mod_tot else None}
+    return rep
+
+
 def run(name: str = "FIFA World Cup",
         years: list[int] | None = None,
         train_years: int = 12) -> pd.DataFrame:
@@ -229,6 +273,14 @@ def run(name: str = "FIFA World Cup",
     print("\n=== Calibration (Dixon-Coles home-win prob) ===")
     print(calibration(preds).to_string(index=False))
     print("\nLower RPS/LogLoss = better. DC should beat elo > base_rate > uniform.")
+
+    sc = scoreline_calibration()
+    if sc:
+        print("\n=== Scoreline calibration (WC2026 games played) ===")
+        print(f"n={sc['n']}  modeled_total/match={sc['modeled_total_per_match']}  "
+              f"actual={sc['actual_total_per_match']}  goal_MAE={sc['goal_mae']}  "
+              f"O/U-2.5_acc={sc['over_under_acc']}  implied_scale={sc['implied_scale']}")
+        print("implied_scale near 1.0 => goal baseline is calibrated to this tournament.")
 
     summ.to_json(PROC / "backtest_summary.json", orient="records")
     return calib_report

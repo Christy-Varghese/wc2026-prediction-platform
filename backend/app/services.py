@@ -122,7 +122,10 @@ def match_card(m: dict) -> dict:
             "p_home": pred["p_home"], "p_draw": pred["p_draw"],
             "p_away": pred["p_away"], "confidence": pred["confidence"],
             "top_score": pred["top_scores"][0] if pred["top_scores"] else None,
+            "top_scores": pred.get("top_scores"),
             "predicted_winner": pred.get("predicted_winner"),
             "expected_goals": pred.get("expected_goals"),
+            "total_goals": pred.get("total_goals"),
+            "over_2_5": pred.get("over_2_5"),
             "upset_probability": pred["upset_probability"],
             "market_used": pred.get("market_used", False)}

@@ -32,6 +32,25 @@ ELO_MOV = True        # scale K by margin of victory
 # Dixon-Coles params
 DC_XI = 0.0018        # time-decay (per day); ~0.5 weight at ~1 year
 DC_MAX_GOALS = 10     # truncate Poisson grid
+# rho (low-score correlation) is fit by MLE but bounded so a sparse/odd training
+# slice can't drive an extreme low-score correction that over-damps high scores.
+DC_RHO_BOUNDS = (-0.15, 0.10)
+
+# --- Goal calibration ------------------------------------------------------
+# Multiplicative scale on modeled expected goals. The team-strength priors come
+# from all 2010+ internationals (~2.6 goals/match), but a 48-team World Cup runs
+# hotter (WC2026 group stage ~3.0 goals/match) thanks to strength mismatches.
+# Calibrated on the played WC2026 games: actual/modeled total = 1.155. Lifts both
+# lambdas so the scoreline grid (and totals/over-under) tracks reality without
+# distorting per-team attack/defense identifiability.
+GOAL_SCALE = 1.15
+
+# Independent-Poisson member shape: how goal supremacy and total goals respond to
+# the Elo gap. Without these the member was flat (every match -> 2.70 total,
+# per-team capped 0.81-1.89) and could never represent a blowout.
+POISSON_SUP_K = 1.10     # goal supremacy (favourite - underdog) per unit Elo diff
+POISSON_TOT_GAMMA = 0.55  # total-goals lift as the mismatch widens
+POISSON_GOAL_FLOOR = 0.18  # min per-team lambda
 
 # Monte Carlo
 N_SIMS = 50000

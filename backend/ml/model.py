@@ -14,7 +14,7 @@ import pandas as pd
 from scipy.optimize import minimize
 from scipy.stats import poisson
 
-from config import DC_XI, DC_MAX_GOALS, PROC
+from config import DC_XI, DC_MAX_GOALS, DC_RHO_BOUNDS, GOAL_SCALE, PROC
 
 
 @dataclass
@@ -35,7 +35,9 @@ class DCModel:
             la = np.exp(np.clip(self.base_mu + self.attack[away] + self.defense[home], -4.0, 3.0))
         else:
             lh, la = self._elo_lambdas(home, away, ha)
-        return float(lh), float(la)
+        # tournament goal calibration (see config.GOAL_SCALE)
+        scale = getattr(self, "goal_scale", GOAL_SCALE)
+        return float(lh) * scale, float(la) * scale
 
     def _elo_lambdas(self, home: str, away: str, ha: float) -> tuple[float, float]:
         """Fallback: map Elo diff -> expected goals when team unseen in fit."""
@@ -120,7 +122,10 @@ def fit(df: pd.DataFrame, elo: dict[str, float] | None = None,
 
     # sum-to-zero on attack for identifiability
     cons = {"type": "eq", "fun": lambda x: x[:n].sum()}
-    res = minimize(nll, x0, method="SLSQP", constraints=cons,
+    # bound rho so an odd training slice can't over-damp high scores; leave the
+    # attack/defense/home_adv params free.
+    bounds = [(None, None)] * (2 * n + 1) + [DC_RHO_BOUNDS]
+    res = minimize(nll, x0, method="SLSQP", constraints=cons, bounds=bounds,
                    options={"maxiter": 200, "ftol": 1e-6})
     att, dfn, ha, rho = unpack(res.x)
 

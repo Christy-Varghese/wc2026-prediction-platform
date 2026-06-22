@@ -434,7 +434,7 @@ class Ensemble:
 
         ph, pd_, pa = (float(x) for x in blended)
 
-        scores, xg_home, xg_away = self._scorelines(home, away, neutral)
+        scores, xg_home, xg_away, p_over = self._scorelines(home, away, neutral)
         conf = self._confidence(stack, blended, len(members),
                                 TOTAL_MEMBERS, self.reliability)
         # Don't report book-grade confidence off a synthetic market.
@@ -455,6 +455,8 @@ class Ensemble:
             "home": home, "away": away, "neutral": neutral,
             "p_home": round(ph, 4), "p_draw": round(pd_, 4), "p_away": round(pa, 4),
             "expected_goals": {"home": round(xg_home, 2), "away": round(xg_away, 2)},
+            "total_goals": round(xg_home + xg_away, 2),
+            "over_2_5": round(p_over, 4),
             "top_scores": scores,
             "confidence": conf,
             "upset_probability": round(upset, 4),
@@ -488,7 +490,10 @@ class Ensemble:
         goals = np.arange(m.shape[0])
         xg_home = float((m.sum(1) * goals).sum())
         xg_away = float((m.sum(0) * goals).sum())
-        return scores, xg_home, xg_away
+        # P(total goals >= 3) i.e. over 2.5, summed over the scoreline grid
+        tot = goals[:, None] + goals[None, :]
+        p_over = float(m[tot >= 3].sum())
+        return scores, xg_home, xg_away, p_over
 
     @staticmethod
     def _confidence(stack: np.ndarray, blended: np.ndarray, n_members: int,
