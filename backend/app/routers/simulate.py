@@ -1,7 +1,7 @@
 """Tournament simulator: standings, bracket odds, champion probabilities."""
 from fastapi import APIRouter, Query
 
-from .. import fixtures, ml_engine
+from .. import fixtures, knockout_engine, ml_engine
 
 router = APIRouter(prefix="/api/simulate", tags=["simulate"])
 
@@ -27,10 +27,21 @@ def group_standings():
     tables = fixtures.group_tables()
     sim = {r["team"]: r for r in ml_engine.sim_table()}
     tidx = fixtures.team_index()
+    # Projected FINAL points: played pts + expected pts (3*p_win + p_draw) from
+    # each team's remaining group games. Explains why a strong side on few points
+    # can still have a high advance %.
+    proj: dict[str, float] = {}
+    try:
+        for rows in knockout_engine.project_group_standings().values():
+            for r in rows:
+                proj[r["team"]] = round(r["pts"], 1)
+    except Exception:  # noqa: BLE001 — projection is non-fatal enrichment
+        proj = {}
     out = {}
     for g, rows in tables.items():
         out[g] = [{**r,
                    "flag_url": tidx.get(r["team"], {}).get("flag_url", ""),
+                   "proj_pts": proj.get(r["team"]),
                    "advance_prob": round(sim.get(r["team"], {}).get("R32", 0), 3),
                    "win_title": round(sim.get(r["team"], {}).get("Champion", 0), 3)}
                   for r in rows]

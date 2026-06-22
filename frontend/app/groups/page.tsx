@@ -22,6 +22,10 @@ export default function GroupsPage() {
       <p className="text-sm text-muted">
         Top two from each group advance automatically. Eight best third-placed
         teams also qualify. <span className="text-teal">Q</span> = projected to advance.
+        <span className="text-stadium"> Pts</span> = earned so far ·
+        <span className="text-gold"> Proj</span> = projected final points (incl. remaining games) ·
+        <span className="text-cyan"> Adv%</span> = simulated chance to advance. A strong side can sit
+        on few points yet show a high Proj/Adv% if its remaining fixtures are favourable.
       </p>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {Object.entries(data).map(([g, teams]: any, gi: number) => (
@@ -45,8 +49,9 @@ export default function GroupsPage() {
                     <th className="px-1 py-1.5 text-center font-medium" title="Drawn">D</th>
                     <th className="px-1 py-1.5 text-center font-medium" title="Lost">L</th>
                     <th className="px-1.5 py-1.5 text-center font-medium" title="Goal difference">GD</th>
-                    <th className="px-1.5 py-1.5 text-center font-semibold text-stadium" title="Points">Pts</th>
-                    <th className="py-1.5 pl-1.5 text-right font-medium" title="Advance probability">Adv%</th>
+                    <th className="px-1.5 py-1.5 text-center font-semibold text-stadium" title="Points so far (played matches)">Pts</th>
+                    <th className="px-1.5 py-1.5 text-center font-medium text-gold/80" title="Projected final points: points so far + expected points from remaining group games">Proj</th>
+                    <th className="py-1.5 pl-1.5 text-right font-medium" title="Advance probability (forward-looking, from 50k Monte Carlo sims)">Adv%</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -78,6 +83,10 @@ export default function GroupsPage() {
                         </td>
                         <td className="px-1.5 py-2 text-center font-display font-bold tabnum text-stadium">
                           {t.pts}
+                        </td>
+                        <td className="px-1.5 py-2 text-center font-display tabnum text-gold/90 text-xs"
+                          title="Projected final points (incl. remaining games)">
+                          {t.proj_pts != null ? t.proj_pts.toFixed(1) : "—"}
                         </td>
                         <td className="py-2 pl-1.5 text-right font-bold tabnum text-cyan text-xs">
                           {pct(t.advance_prob)}
