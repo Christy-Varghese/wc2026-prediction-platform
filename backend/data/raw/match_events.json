@@ -1,4 +1,29 @@
 {
+  "Argentina|Austria": {
+    "home": "Argentina",
+    "away": "Austria",
+    "score": [
+      2,
+      0
+    ],
+    "scorers": {
+      "home": [
+        {
+          "player": "Lionel Messi",
+          "minute": 38,
+          "type": "goal"
+        },
+        {
+          "player": "Lionel Messi",
+          "minute": 95,
+          "type": "goal"
+        }
+      ],
+      "away": []
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260622"
+  },
   "Mexico|South Africa": {
     "home": "Mexico",
     "away": "South Africa",
