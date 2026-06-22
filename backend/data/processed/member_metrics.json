@@ -1,8 +1,8 @@
 {
   "dc": {
-    "log_loss": 0.9878,
-    "rps": 0.2052,
-    "brier": 0.5804,
+    "log_loss": 0.984,
+    "rps": 0.205,
+    "brier": 0.5776,
     "sample_count": 192
   },
   "elo": {
@@ -12,9 +12,9 @@
     "sample_count": 192
   },
   "poisson": {
-    "log_loss": 0.9933,
-    "rps": 0.2113,
-    "brier": 0.5916,
+    "log_loss": 0.9999,
+    "rps": 0.214,
+    "brier": 0.5955,
     "sample_count": 192
   },
   "market": {
@@ -24,14 +24,14 @@
     "sample_count": 192
   },
   "_meta": {
-    "fitted_at": "2026-06-22T01:38:00.056431+00:00",
+    "fitted_at": "2026-06-22T16:07:31.022135+00:00",
     "min_samples": 30,
     "fitted_weights": {
-      "market": 0.1859,
-      "dc": 0.1853,
+      "market": 0.186,
+      "dc": 0.1861,
       "xgb": 0.18,
-      "elo": 0.1846,
-      "poisson": 0.1842,
+      "elo": 0.1847,
+      "poisson": 0.1832,
       "nn": 0.08
     },
     "production_weights": {

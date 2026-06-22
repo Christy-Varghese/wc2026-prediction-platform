@@ -14,6 +14,21 @@ the run. Returns a summary dict the Admin API surfaces.
 """
 from __future__ import annotations
 
+import os
+
+# Single-thread the math libraries for the whole retrain process. MUST run
+# before numpy/pandas/xgboost import — their OpenMP/BLAS thread pools size at
+# import. retrain.run() executes several OpenMP steps (Dixon-Coles scipy refit,
+# XGBoost, the sim/backtest subprocesses) back-to-back in one process; on this
+# macOS + Python 3.14 box that deadlocks in libomp's join barrier
+# (__kmpc_fork_call -> __kmp_join_call -> _pthread_cond_wait, 0% CPU, hung 12h+).
+# Capping to 1 thread removes the oversubscription and the deadlock; standalone
+# steps run fine single-threaded (DC fit ~3min, sim ~1min). Use setdefault so a
+# caller can still override per-launch.
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+           "VECLIB_MAXIMUM_THREADS", "NUMEXPR_NUM_THREADS"):
+    os.environ.setdefault(_v, "1")
+
 import json
 import pickle
 import time
@@ -25,7 +40,6 @@ import pandas as pd
 
 from config import PROC
 import ingest, elo as elo_mod, model as model_mod, xgb_model, nn_model
-import backtest
 
 META = PROC / "meta.json"
 
@@ -102,9 +116,32 @@ def run(force_download: bool = True) -> dict:
     def _calibrate():
         # Walk-forward backtest -> per-member metrics + fit calibrator + dynamic
         # weights. Writes member_metrics.json / reliability.json / calibrator.json.
-        report = backtest.run()
-        log["calibration"] = report.get("after_val") if isinstance(report, dict) \
-            else None
+        #
+        # Runs backtest.py in a *fresh subprocess*, same rationale as _sim: the
+        # walk-forward does 3x Elo compute + 3x Dixon-Coles scipy.optimize refits,
+        # whose BLAS calls DEADLOCK at 0% CPU when run in-process after the earlier
+        # DC fit + XGBoost (OpenMP) here — observed hanging the whole retrain for
+        # ~12h. Single-thread the math libs (kills the oversubscription deadlock;
+        # standalone runs at 100% CPU and finishes in minutes) and redirect stdout
+        # to a log so the inherited pipe can't fill. backtest.run() writes
+        # member_metrics/reliability/calibrator/backtest_summary .json to PROC.
+        import os
+        import subprocess
+        import sys
+        bt_py = Path(__file__).resolve().parent / "backtest.py"
+        calib_log = PROC / "calib_run.log"
+        env = {**os.environ,
+               "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1",
+               "MKL_NUM_THREADS": "1", "VECLIB_MAXIMUM_THREADS": "1",
+               "NUMEXPR_NUM_THREADS": "1"}
+        with open(calib_log, "w") as out:
+            subprocess.run([sys.executable, "-u", str(bt_py)],
+                           cwd=bt_py.parent, check=True, timeout=1200,
+                           stdout=out, stderr=subprocess.STDOUT,
+                           stdin=subprocess.DEVNULL, env=env)
+        summ = PROC / "backtest_summary.json"
+        if summ.exists():
+            log["calibration"] = json.loads(summ.read_text())
 
     _step("ingest", _ingest, log)
     _step("players", _players, log)

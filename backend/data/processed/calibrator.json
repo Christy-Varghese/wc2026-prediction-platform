@@ -1,12 +1,8 @@
 {
-  "method": "vector_temperature",
-  "temperature_vector": [
-    1.0,
-    1.0,
-    1.0003
-  ],
+  "method": "temperature",
+  "temperature": 1.0,
   "metadata": {
-    "fitted_at": "2026-06-22T01:38:00.056792+00:00",
+    "fitted_at": "2026-06-22T16:07:31.022170+00:00",
     "n_samples": 192,
     "val_year": 2022,
     "members": [
@@ -17,18 +13,18 @@
     ],
     "synth_market_penalty": 0.25,
     "val_before": {
-      "log_loss": 1.0199,
-      "rps": 0.2149,
-      "brier": 0.6056,
-      "ece": 0.1274,
+      "log_loss": 1.0211,
+      "rps": 0.2153,
+      "brier": 0.6071,
+      "ece": 0.1534,
       "acc": 0.5469,
       "n": 64
     },
     "val_after": {
-      "log_loss": 1.0219,
-      "rps": 0.2148,
-      "brier": 0.6053,
-      "ece": 0.1468,
+      "log_loss": 1.0221,
+      "rps": 0.2153,
+      "brier": 0.607,
+      "ece": 0.1496,
       "acc": 0.5469,
       "n": 64
     }
