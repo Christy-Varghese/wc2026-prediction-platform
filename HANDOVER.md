@@ -79,15 +79,19 @@ Branch: `main` · all work committed + pushed to
 ---
 
 ## Known issues / watch-outs
-- **Vercel production alias does not auto-promote.** A push to `main` builds
-  successfully (green "Vercel" check on the commit), but the custom alias
-  `chris-fifaworldcup26-prediction.vercel.app` can stay on the previous deploy —
-  the live URL then serves stale data even though the repo + build are correct
-  (seen Jun 21: two successful deploys, alias stuck on the 11:36 EDT build).
-  Fix: `cd frontend && npx vercel --prod`, or dashboard → latest deploy →
-  "Promote to Production"; set Production Branch = `main` to make it automatic.
-  Verify live with the snapshot `curl` in `DEPLOY.md` (watch `age`/`last-modified`).
-  Vercel MCP is 403 for this team scope, so promotion can't be done from the agent.
+- **Custom alias is not on the Vercel project, so deploys don't update it.**
+  Root cause (diagnosed Jun 21): `chris-fifaworldcup26-prediction.vercel.app` is
+  **not in the project's Domains list**. Prod deploys only auto-alias the domains
+  the project owns — here `frontend-five-iota-33.vercel.app`. The custom alias was
+  set manually once and stays pinned; pushes to `main` build fine but never move
+  it, so the live URL serves stale data while the repo + build are correct.
+  **Permanent fix:** add `chris-fifaworldcup26-prediction.vercel.app` under
+  Vercel → project → Settings → Domains (then it follows every deploy).
+  **Manual fix (used Jun 21):** from the repo ROOT (not `frontend/`, or Vercel
+  looks for `frontend/frontend`): `npx vercel --prod --yes` then
+  `npx vercel alias set <printed-hash-url> chris-fifaworldcup26-prediction.vercel.app`.
+  Verify with the snapshot `curl` in `DEPLOY.md` (`last-modified` ≈ now, low `age`).
+  Vercel MCP is 403 for this team scope, so the agent can't do it — needs the CLI.
 - **`retrain.py` full run can hang at the sim step** in this macOS/Python 3.14
   environment (BLAS/multiprocessing + the subprocess stdout pipe). `_sim` now runs
   `simulate.py` in a subprocess writing to a log file (not the inherited pipe) with

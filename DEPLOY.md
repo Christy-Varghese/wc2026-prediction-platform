@@ -42,23 +42,35 @@ modal should all load from the live backend.
 
 Both platforms **build** on every push to `main` once connected.
 
-## Production alias / promotion ⚠️
+## Production alias ⚠️ (root cause + permanent fix)
 
-A push to `main` triggers a Vercel build (visible as a green "Vercel" check on the
-commit), but that build does **not** always take over the custom production alias
-`chris-fifaworldcup26-prediction.vercel.app` automatically — new deploys can land
-without the alias following, so the live URL keeps serving the previous build.
+**Symptom:** a push to `main` builds successfully (green "Vercel" check on the
+commit) and the deploy is marked Production, yet
+`chris-fifaworldcup26-prediction.vercel.app` keeps serving the *previous* build.
 
-If the live site is stale after a successful push, promote the latest deploy:
+**Root cause:** the custom alias `chris-fifaworldcup26-prediction.vercel.app` is
+**not in the Vercel project's Domains list**. Production deploys auto-assign only
+the domains the project owns — here that's the auto-generated
+`frontend-five-iota-33.vercel.app` (the project's Root Directory is `frontend`,
+hence the `frontend-*` name). The custom alias was attached manually once and is
+**not** updated by subsequent deploys, so it stays pinned to whatever deployment
+it was last set to.
+
+**Permanent fix (do once):** Vercel → project `chris-fifaworldcup26-prediction` →
+**Settings ▸ Domains ▸ Add** `chris-fifaworldcup26-prediction.vercel.app`. After
+that it follows every production deploy automatically and the steps below are no
+longer needed.
+
+**Manual fix (until the domain is added):** deploy, then re-point the alias.
+The CLI is linked to this project; **run from the repo root**, not from
+`frontend/` (the project already applies Root Directory `frontend`, so running
+inside it makes Vercel look for `frontend/frontend` and fail):
 
 ```bash
-# from the repo root, logged in to the Vercel CLI:
-cd frontend && npx vercel --prod        # deploys + assigns the production alias
-# — or in the dashboard: Deployments → latest → ⋯ → "Promote to Production"
+# from the repo ROOT, logged in to the Vercel CLI:
+npx vercel --prod --yes                  # prints a Production URL: chris-...-<hash>.vercel.app
+npx vercel alias set <that-hash-url> chris-fifaworldcup26-prediction.vercel.app
 ```
-
-To confirm `main` auto-promotes in future, set **Settings ▸ Git ▸ Production
-Branch = `main`** on the Vercel project.
 
 ## Verify the live data
 
