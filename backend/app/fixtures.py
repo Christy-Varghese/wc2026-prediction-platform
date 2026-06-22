@@ -213,7 +213,7 @@ SQUADS = {
     ],
     "France": [
         ("Kylian Mbappé", "FW", "Real Madrid", 9, 3, 8.4, 2.2, 94, "fit"),
-        ("Antoine Griezmann", "MF", "Atlético Madrid", 5, 6, 4.0, 5.1, 86, "fit"),
+        ("Michael Olise", "MF", "Bayern Munich", 4, 5, 3.5, 4.2, 85, "fit"),
         ("Ousmane Dembélé", "FW", "PSG", 6, 5, 5.0, 4.0, 85, "fit"),
         ("Aurélien Tchouaméni", "MF", "Real Madrid", 1, 2, 0.6, 1.4, 84, "fit"),
         ("William Saliba", "DF", "Arsenal", 1, 0, 0.5, 0.2, 86, "fit"),

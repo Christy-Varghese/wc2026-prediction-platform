@@ -57,7 +57,7 @@ STAR_IMPACT: dict[str, dict[str, int]] = {
     # Group I
     "France": {
         "Kylian Mbappé":      97,
-        "Antoine Griezmann":  89,
+        "Michael Olise":      89,
         "Aurélien Tchouaméni":80,  # doubt
         "Ousmane Dembélé":    82,  # doubt
         "Mike Maignan":       82,

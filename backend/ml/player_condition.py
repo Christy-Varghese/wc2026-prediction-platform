@@ -90,11 +90,11 @@ PLAYER_DB: dict[str, dict[str, Any]] = {
         "impact": 0.96, "status": "fit",
         "club": "Real Madrid", "age": 27, "caps": 88,
     },
-    "Antoine Griezmann": {
-        "team": "France", "position": "FW",
-        "form": 8.2, "fitness": 0.94, "goals_last5": 3, "assists_last5": 4,
+    "Michael Olise": {
+        "team": "France", "position": "MF",
+        "form": 8.4, "fitness": 0.95, "goals_last5": 3, "assists_last5": 4,
         "impact": 0.82, "status": "fit",
-        "club": "Atlético Madrid", "age": 35, "caps": 137,
+        "club": "Bayern Munich", "age": 24, "caps": 20,
     },
     "Aurélien Tchouaméni": {
         "team": "France", "position": "CM",
