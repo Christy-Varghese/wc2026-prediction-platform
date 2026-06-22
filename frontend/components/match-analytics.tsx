@@ -210,9 +210,9 @@ export function MatchAnalytics({ matchId }: { matchId: number | string }) {
             {scorers.home.length === 0 && <li className="text-muted/50 text-xs">No goals</li>}
             {scorers.home.map((s: any, i: number) => (
               <li key={i} className="flex items-center gap-2">
-                <span style={{ color: HOME }}>⚽</span>
+                <span style={{ color: s.type === "own goal" ? "var(--danger,#ff4d4d)" : HOME }}>{s.type === "own goal" ? "🥅" : "⚽"}</span>
                 <span className="break-words">{s.player}</span>
-                <span className="text-muted text-xs">{s.minute}'{s.type === "penalty" ? " (P)" : ""}</span>
+                <span className="text-muted text-xs">{s.minute}'{s.type === "penalty" ? " (P)" : s.type === "own goal" ? " (OG)" : ""}</span>
               </li>
             ))}
           </ul>
@@ -220,9 +220,9 @@ export function MatchAnalytics({ matchId }: { matchId: number | string }) {
             {scorers.away.length === 0 && <li className="text-muted/50 text-xs">No goals</li>}
             {scorers.away.map((s: any, i: number) => (
               <li key={i} className="flex items-center justify-end gap-2">
-                <span className="text-muted text-xs">{s.minute}'{s.type === "penalty" ? " (P)" : ""}</span>
+                <span className="text-muted text-xs">{s.minute}'{s.type === "penalty" ? " (P)" : s.type === "own goal" ? " (OG)" : ""}</span>
                 <span className="break-words">{s.player}</span>
-                <span style={{ color: AWAY }}>⚽</span>
+                <span style={{ color: s.type === "own goal" ? "var(--danger,#ff4d4d)" : AWAY }}>{s.type === "own goal" ? "🥅" : "⚽"}</span>
               </li>
             ))}
           </ul>
