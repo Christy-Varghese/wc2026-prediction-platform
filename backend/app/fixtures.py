@@ -417,6 +417,10 @@ def squad(name: str) -> list[dict]:
     tg = _tournament_goals()
     for p in out:
         p["goals"] = int(tg.get(p["name"], 0))
+        # No real per-player assist feed exists (unlike goals), so zero it rather
+        # than show a curated pre-tournament number that reads as a WC2026 stat.
+        # (xG/xA stay — they're explicitly *expected* model metrics, not actuals.)
+        p["assists"] = 0
     return out
 
 
