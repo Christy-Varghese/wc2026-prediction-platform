@@ -5,6 +5,7 @@
  "/api/awards": "api_awards.json",
  "/api/teams": "api_teams.json",
  "/api/simulate/groups": "api_simulate_groups.json",
+ "/api/simulate/champion-trend": "api_simulate_champion_trend.json",
  "/api/simulate?top=16": "api_simulate_top_16.json",
  "/api/simulate?top=24": "api_simulate_top_24.json",
  "/api/matches?upcoming=true&limit=18": "api_matches_upcoming_true_limit_18.json",
