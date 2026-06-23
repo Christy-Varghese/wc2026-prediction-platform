@@ -16,6 +16,20 @@ const LINKS: [string, string, string][] = [
   ["/analytics", "Analytics",  "◈"],
 ];
 
+// Top news ticker. Refresh alongside result ingests (latest = Jun 22 MD2).
+const NEWS: string[] = [
+  "🏆 FIFA World Cup 2026 · Matchday 3 underway",
+  "🇦🇷 Argentina 2-0 Austria — Messi brace, now WC all-time top scorer",
+  "🇫🇷 France 3-0 Iraq — Mbappé double on his 100th cap",
+  "🇳🇴 Norway 3-2 Senegal — Haaland brace, Norway into last 32",
+  "🇩🇿 Algeria 2-1 Jordan — Gouiri's late winner; Jordan eliminated",
+  "🇪🇬 Egypt 3-1 New Zealand — Salah on target",
+  "👟 Golden Boot: Messi 5 · Haaland & Mbappé 4",
+  "📊 CAI projects 🇦🇷 Argentina champions (32.6%)",
+  "🎯 Model outcome accuracy: 31/44 (70%)",
+  "🤖 CAI Ensemble: Dixon-Coles + Elo + XGBoost + Market",
+];
+
 export function Nav() {
   const path = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -26,30 +40,7 @@ export function Nav() {
       <div className="border-b border-line/50 bg-ink/95 px-4 py-1.5">
         <div className="ticker-wrap mx-auto max-w-7xl overflow-hidden">
           <div className="ticker-track flex gap-12 text-[11px] text-muted">
-            {[
-              "🏆 FIFA World Cup 2026",
-              "🔴 Matchday 2 underway",
-              "🇳🇱 Netherlands 5-1 Sweden",
-              "🇯🇵 Japan 4-0 Tunisia",
-              "🇩🇪 Germany 2-1 Ivory Coast — Undav 90+4' winner",
-              "🇲🇦 Morocco 1-0 Scotland",
-              "🇧🇷 Brazil 3-0 Haiti — Cunha double",
-              "🇵🇾 Paraguay 1-0 Turkey — early upset",
-              "🇨🇼 Curaçao hold Ecuador 0-0 — Room 15 saves",
-              "📊 CAI projects 🇪🇸 Spain champions",
-              "🤖 CAI Ensemble: Dixon-Coles + Elo + XGBoost + Market",
-              "🏆 FIFA World Cup 2026",
-              "🔴 Matchday 2 underway",
-              "🇳🇱 Netherlands 5-1 Sweden",
-              "🇯🇵 Japan 4-0 Tunisia",
-              "🇩🇪 Germany 2-1 Ivory Coast — Undav 90+4' winner",
-              "🇲🇦 Morocco 1-0 Scotland",
-              "🇧🇷 Brazil 3-0 Haiti — Cunha double",
-              "🇵🇾 Paraguay 1-0 Turkey — early upset",
-              "🇨🇼 Curaçao hold Ecuador 0-0 — Room 15 saves",
-              "📊 CAI projects 🇪🇸 Spain champions",
-              "🤖 CAI Ensemble: Dixon-Coles + Elo + XGBoost + Market",
-            ].map((item, i) => (
+            {[...NEWS, ...NEWS].map((item, i) => (
               <span key={i} className="shrink-0 flex items-center gap-2">
                 {item}
                 <span className="text-line">·</span>
