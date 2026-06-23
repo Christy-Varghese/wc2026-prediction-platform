@@ -20,6 +20,12 @@ for r in (predictions, matches, teams, players, simulate, awards, admin):
     app.include_router(r.router)
 
 
+@app.get("/api/news")
+def news():
+    from . import news as news_mod
+    return news_mod.build()
+
+
 @app.get("/api/health")
 def health():
     from . import ml_engine

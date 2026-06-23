@@ -46,6 +46,7 @@ def main() -> None:
 
     # ── static / list endpoints ──────────────────────────────────────────
     grab("/api/home")
+    grab("/api/news")
     grab("/api/insights")
     grab("/api/knockout")
     grab("/api/awards")

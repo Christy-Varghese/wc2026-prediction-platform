@@ -2,7 +2,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
+import { api } from "@/lib/api";
 
 const LINKS: [string, string, string][] = [
   ["/",          "Home",       "⌂"],
@@ -16,8 +18,8 @@ const LINKS: [string, string, string][] = [
   ["/analytics", "Analytics",  "◈"],
 ];
 
-// Top news ticker. Refresh alongside result ingests (latest = Jun 22 MD2).
-const NEWS: string[] = [
+// Static fallback for the news ticker if /api/news is unavailable.
+const NEWS_FALLBACK: string[] = [
   "🏆 FIFA World Cup 2026 · Matchday 3 underway",
   "🇦🇷 Argentina 2-0 Austria — Messi brace, now WC all-time top scorer",
   "🇫🇷 France 3-0 Iraq — Mbappé double on his 100th cap",
@@ -33,6 +35,10 @@ const NEWS: string[] = [
 export function Nav() {
   const path = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  // Data-driven ticker: rebuilt from live state on every ingest. Falls back to
+  // the static list if /api/news (or its snapshot) is unavailable.
+  const { data: news } = useSWR("/api/news", (p: string) => api(p));
+  const ticker: string[] = news?.items?.length ? news.items : NEWS_FALLBACK;
 
   return (
     <header className="sticky top-0 z-50">
@@ -40,7 +46,7 @@ export function Nav() {
       <div className="border-b border-line/50 bg-ink/95 px-4 py-1.5">
         <div className="ticker-wrap mx-auto max-w-7xl overflow-hidden">
           <div className="ticker-track flex gap-12 text-[11px] text-muted">
-            {[...NEWS, ...NEWS].map((item, i) => (
+            {[...ticker, ...ticker].map((item, i) => (
               <span key={i} className="shrink-0 flex items-center gap-2">
                 {item}
                 <span className="text-line">·</span>

@@ -1,5 +1,6 @@
 {
  "/api/home": "api_home.json",
+ "/api/news": "api_news.json",
  "/api/insights": "api_insights.json",
  "/api/knockout": "api_knockout.json",
  "/api/awards": "api_awards.json",
