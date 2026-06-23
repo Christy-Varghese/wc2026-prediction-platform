@@ -1,4 +1,44 @@
 {
+  "Portugal|Uzbekistan": {
+    "home": "Portugal",
+    "away": "Uzbekistan",
+    "score": [
+      5,
+      0
+    ],
+    "scorers": {
+      "home": [
+        {
+          "player": "Cristiano Ronaldo",
+          "minute": 6,
+          "type": "goal"
+        },
+        {
+          "player": "Nuno Mendes",
+          "minute": 17,
+          "type": "goal"
+        },
+        {
+          "player": "Cristiano Ronaldo",
+          "minute": 39,
+          "type": "goal"
+        },
+        {
+          "player": "Abduvohid Nematov",
+          "minute": 60,
+          "type": "own goal"
+        },
+        {
+          "player": "Rafael Leão",
+          "minute": 87,
+          "type": "goal"
+        }
+      ],
+      "away": []
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260623"
+  },
   "France|Iraq": {
     "home": "France",
     "away": "Iraq",
