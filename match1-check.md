@@ -1,0 +1,546 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - text: 🏆 FIFA World Cup 2026 · MD3 latest
+        - generic [ref=e7]: ·
+      - generic [ref=e8]:
+        - text: 🇨🇿 Czech Republic 0-3 Mexico — Mateo Chávez
+        - generic [ref=e9]: ·
+      - generic [ref=e10]:
+        - text: 🇿🇦 South Africa 1-0 South Korea — Thapelo Maseko
+        - generic [ref=e11]: ·
+      - generic [ref=e12]:
+        - text: ⚽ Scotland 0-3 Brazil — Vinícius Júnior ⚽⚽
+        - generic [ref=e13]: ·
+      - generic [ref=e14]:
+        - text: 🇲🇦 Morocco 4-2 Haiti — Achraf Hakimi
+        - generic [ref=e15]: ·
+      - generic [ref=e16]:
+        - text: 🇨🇭 Switzerland 2-1 Canada — Rubén Vargas
+        - generic [ref=e17]: ·
+      - generic [ref=e18]:
+        - text: 🇧🇦 Bosnia and Herzegovina 3-1 Qatar — Kerim Alajbegović
+        - generic [ref=e19]: ·
+      - generic [ref=e20]:
+        - text: "👟 Golden Boot: Lionel Messi (5 goals)"
+        - generic [ref=e21]: ·
+      - generic [ref=e22]:
+        - text: 📊 CAI projects 🇦🇷 Argentina champions (27.3%)
+        - generic [ref=e23]: ·
+      - generic [ref=e24]:
+        - text: "🎯 CAI outcome accuracy: 39/54 (72%)"
+        - generic [ref=e25]: ·
+      - generic [ref=e26]:
+        - text: "🤖 CAI: current form + momentum led · 3-scenario knockout xG"
+        - generic [ref=e27]: ·
+      - generic [ref=e28]:
+        - text: 🏆 FIFA World Cup 2026 · MD3 latest
+        - generic [ref=e29]: ·
+      - generic [ref=e30]:
+        - text: 🇨🇿 Czech Republic 0-3 Mexico — Mateo Chávez
+        - generic [ref=e31]: ·
+      - generic [ref=e32]:
+        - text: 🇿🇦 South Africa 1-0 South Korea — Thapelo Maseko
+        - generic [ref=e33]: ·
+      - generic [ref=e34]:
+        - text: ⚽ Scotland 0-3 Brazil — Vinícius Júnior ⚽⚽
+        - generic [ref=e35]: ·
+      - generic [ref=e36]:
+        - text: 🇲🇦 Morocco 4-2 Haiti — Achraf Hakimi
+        - generic [ref=e37]: ·
+      - generic [ref=e38]:
+        - text: 🇨🇭 Switzerland 2-1 Canada — Rubén Vargas
+        - generic [ref=e39]: ·
+      - generic [ref=e40]:
+        - text: 🇧🇦 Bosnia and Herzegovina 3-1 Qatar — Kerim Alajbegović
+        - generic [ref=e41]: ·
+      - generic [ref=e42]:
+        - text: "👟 Golden Boot: Lionel Messi (5 goals)"
+        - generic [ref=e43]: ·
+      - generic [ref=e44]:
+        - text: 📊 CAI projects 🇦🇷 Argentina champions (27.3%)
+        - generic [ref=e45]: ·
+      - generic [ref=e86]:
+        - text: "🎯 CAI outcome accuracy: 39/54 (72%)"
+        - generic [ref=e87]: ·
+      - generic [ref=e88]:
+        - text: "🤖 CAI: current form + momentum led · 3-scenario knockout xG"
+        - generic [ref=e89]: ·
+    - navigation [ref=e46]:
+      - generic [ref=e47]:
+        - link "⚽ WC26 CAI Predictor" [ref=e48] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e50]: ⚽
+          - generic [ref=e51]:
+            - generic [ref=e52]: WC26
+            - generic [ref=e53]: CAI Predictor
+        - generic [ref=e54]:
+          - link "Home" [ref=e55] [cursor=pointer]:
+            - /url: /
+          - link "Live" [ref=e56] [cursor=pointer]:
+            - /url: /live
+            - text: Live
+          - link "Matches" [ref=e58] [cursor=pointer]:
+            - /url: /matches
+            - text: Matches
+          - link "Groups" [ref=e60] [cursor=pointer]:
+            - /url: /groups
+          - link "Knockout" [ref=e61] [cursor=pointer]:
+            - /url: /knockout
+          - link "Simulator" [ref=e62] [cursor=pointer]:
+            - /url: /simulator
+          - link "Teams" [ref=e63] [cursor=pointer]:
+            - /url: /teams
+          - link "Awards" [ref=e64] [cursor=pointer]:
+            - /url: /awards
+          - link "Analytics" [ref=e65] [cursor=pointer]:
+            - /url: /analytics
+        - generic [ref=e69]: Live
+  - main [ref=e70]:
+    - generic [ref=e90]:
+      - generic [ref=e92]:
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - generic [ref=e95]: FULL TIME
+            - generic [ref=e97]: GROUP A · MD1
+          - generic [ref=e98]: 🏟 Estadio Azteca · Jun 11, 03:00 PM
+        - generic [ref=e99]:
+          - generic [ref=e100]:
+            - generic [ref=e101]:
+              - img "Mexico" [ref=e102]
+              - generic [ref=e103]: ★
+            - generic [ref=e104]: Mexico
+            - generic [ref=e105]: 83%
+          - generic [ref=e106]:
+            - generic [ref=e107]: 2 – 0
+            - generic [ref=e108]: FULL TIME
+            - generic "Model predicted Mexico — correct" [ref=e109]: ✓ Prediction correct
+            - generic [ref=e110]: Draw 9%
+          - generic [ref=e111]:
+            - img "South Africa" [ref=e113]
+            - generic [ref=e114]: South Africa
+            - generic [ref=e115]: 7%
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - generic [ref=e124]: Mexico
+            - generic [ref=e125]: 83%
+          - generic [ref=e126]:
+            - generic [ref=e127]: DRAW
+            - generic [ref=e128]: 9%
+          - generic [ref=e129]:
+            - generic [ref=e130]: South Africa
+            - generic [ref=e131]: 7%
+      - generic [ref=e132]:
+        - generic [ref=e134]:
+          - generic [ref=e135]: Post-match breakdown
+          - heading "MATCH ANALYTICS" [level=2] [ref=e136]
+        - generic [ref=e137]:
+          - generic [ref=e138]:
+            - generic [ref=e139]: 📰 Post-match analysis
+            - generic [ref=e140]: auto-summary
+          - heading "Mexico see off South Africa" [level=3] [ref=e141]
+          - paragraph [ref=e142]: Mexico beat South Africa 2-0. Julián Quiñones scored for the result.
+          - generic [ref=e144]:
+            - generic [ref=e145]: ⭐ Star man
+            - generic [ref=e146]: Julián Quiñones
+            - generic [ref=e147]: Scored 1 in the match.
+        - generic [ref=e148]:
+          - generic [ref=e149]: Scorers · live from web (ESPN)
+          - generic [ref=e151]: 🤖 Maps · model-generated
+        - paragraph [ref=e152]: Goalscorers are real, collected from the web (ESPN). Shot map, heat map and passing network are model-generated illustrations — that coordinate-level data is not openly available (Sofascore/FotMob block automated access).
+        - generic [ref=e153]:
+          - generic [ref=e154]:
+            - generic [ref=e155]: Mexico
+            - generic [ref=e156]: 2 – 0
+            - generic [ref=e157]: South Africa
+          - generic [ref=e158]:
+            - list [ref=e159]:
+              - listitem [ref=e160]:
+                - generic [ref=e161]: ⚽
+                - generic [ref=e162]: Julián Quiñones
+                - generic [ref=e163]: 9'
+              - listitem [ref=e164]:
+                - generic [ref=e165]: ⚽
+                - generic [ref=e166]: Raúl Jiménez
+                - generic [ref=e167]: 67'
+            - list [ref=e168]:
+              - listitem [ref=e169]: No goals
+        - generic [ref=e170]:
+          - generic [ref=e171]: Match Stats
+          - generic [ref=e173]:
+            - generic [ref=e174]: 66%
+            - generic [ref=e175]: Possession
+            - generic [ref=e176]: 34%
+          - generic [ref=e181]:
+            - generic [ref=e182]: "15"
+            - generic [ref=e183]: Shots
+            - generic [ref=e184]: "10"
+          - generic [ref=e189]:
+            - generic [ref=e190]: "7"
+            - generic [ref=e191]: On target
+            - generic [ref=e192]: "5"
+          - generic [ref=e197]:
+            - generic [ref=e198]: "1.4"
+            - generic [ref=e199]: xG
+            - generic [ref=e200]: "0.4"
+          - generic [ref=e205]:
+            - generic [ref=e206]: "3"
+            - generic [ref=e207]: Corners
+            - generic [ref=e208]: "4"
+          - generic [ref=e213]:
+            - generic [ref=e214]: "8"
+            - generic [ref=e215]: Fouls
+            - generic [ref=e216]: "12"
+        - generic [ref=e220]:
+          - generic [ref=e221]:
+            - generic [ref=e222]:
+              - generic [ref=e223]: Shot Map
+              - generic [ref=e224]:
+                - generic [ref=e225]: Mexico
+                - generic [ref=e227]: South Africa
+            - img [ref=e229]
+            - paragraph [ref=e290]: Dot size ∝ shot xG · filled = goal. Mexico attacks right, South Africa left.
+          - generic [ref=e291]:
+            - generic [ref=e292]:
+              - generic [ref=e293]: Passing Network
+              - generic [ref=e294]:
+                - button "Mexico" [ref=e295] [cursor=pointer]
+                - button "South Africa" [ref=e296] [cursor=pointer]
+            - img [ref=e297]:
+              - generic [ref=e317]: Rangel
+              - generic [ref=e320]: Sanchez
+              - generic [ref=e323]: Montes
+              - generic [ref=e326]: Alvarez
+              - generic [ref=e329]: Vasquez
+              - generic [ref=e332]: Lira
+              - generic [ref=e335]: Romo
+              - generic [ref=e338]: Fidalgo
+              - generic [ref=e341]: Jimenez
+              - generic [ref=e344]: Vega
+              - generic [ref=e347]: Gimenez
+            - paragraph [ref=e348]: Node size ∝ involvement · line thickness ∝ passes between players.
+          - generic [ref=e349]:
+            - generic [ref=e350]: Heat Map · Mexico
+            - img [ref=e351]
+          - generic [ref=e384]:
+            - generic [ref=e385]: Heat Map · South Africa
+            - img [ref=e386]
+      - generic [ref=e419]:
+        - generic [ref=e420]:
+          - generic [ref=e422]:
+            - generic [ref=e423]: 5-model ensemble
+            - heading "PREDICTION ENGINE" [level=2] [ref=e424]
+          - generic [ref=e425]:
+            - generic [ref=e426]:
+              - img [ref=e427]
+              - generic:
+                - generic: 71%
+                - generic: CONFIDENCE
+            - generic [ref=e430]:
+              - generic [ref=e431]:
+                - generic [ref=e432]: Mexico
+                - generic [ref=e433]: 83.4%
+              - generic [ref=e434]:
+                - generic [ref=e435]: Draw
+                - generic [ref=e436]: 9.3%
+              - generic [ref=e437]:
+                - generic [ref=e438]: South Africa
+                - generic [ref=e439]: 7.3%
+              - generic [ref=e440]:
+                - text: xG 2.07 – 0.62
+                - generic [ref=e441]: 📈 Market
+          - generic [ref=e442]:
+            - generic [ref=e443]: Most likely scorelines
+            - generic [ref=e444]:
+              - generic [ref=e445]: 2-0
+              - generic [ref=e448]: 14.5%
+            - generic [ref=e449]:
+              - generic [ref=e450]: 1-0
+              - generic [ref=e453]: 13.4%
+            - generic [ref=e454]:
+              - generic [ref=e455]: 3-0
+              - generic [ref=e458]: 10.0%
+        - generic [ref=e459]:
+          - generic [ref=e461]:
+            - generic [ref=e462]: 6,000-run Monte-Carlo
+            - heading "CAI MATCH SIMULATION" [level=2] [ref=e463]
+          - generic [ref=e464]:
+            - generic [ref=e465]:
+              - generic [ref=e466]: Projected result
+              - generic [ref=e467]: Mexico2-0
+              - generic [ref=e468]: probability 76.3% · confidence 71
+            - generic [ref=e469]:
+              - generic [ref=e470]: Regulation (90′)
+              - generic [ref=e472]:
+                - generic [ref=e473]: Mexico 76%
+                - generic [ref=e474]: draw 16%
+                - generic [ref=e475]: 8% South Africa
+            - generic [ref=e480]:
+              - generic [ref=e481]: Current form · group stage
+              - generic [ref=e482]:
+                - generic [ref=e483]:
+                  - generic [ref=e484]:
+                    - generic [ref=e485]: Mexico
+                    - generic [ref=e486]: +15.8 Elo
+                  - generic [ref=e487]: 3W-0D-0L · 6-0 GF/GA
+                  - generic [ref=e488]: W 2-0 v South Africa
+                  - generic [ref=e489]: W 1-0 v South Korea
+                  - generic [ref=e490]: W 3-0 v Czech Republic
+                - generic [ref=e491]:
+                  - generic [ref=e492]:
+                    - generic [ref=e493]: South Africa
+                    - generic [ref=e494]: +16.9 Elo
+                  - generic [ref=e495]: 1W-1D-1L · 2-3 GF/GA
+                  - generic [ref=e496]: L 0-2 v Mexico
+                  - generic [ref=e497]: D 1-1 v Czech Republic
+                  - generic [ref=e498]: W 1-0 v South Korea
+            - generic [ref=e499]:
+              - generic [ref=e500]: Most likely scorelines
+              - generic [ref=e501]:
+                - generic [ref=e502]:
+                  - text: 2-0
+                  - generic [ref=e503]: 15.3%
+                - generic [ref=e504]:
+                  - text: 1-0
+                  - generic [ref=e505]: 12.5%
+                - generic [ref=e506]:
+                  - text: 3-0
+                  - generic [ref=e507]: 11.5%
+                - generic [ref=e508]:
+                  - text: 2-1
+                  - generic [ref=e509]: 7.9%
+            - generic [ref=e510]:
+              - generic [ref=e511]: Players to decide it
+              - generic [ref=e512]:
+                - generic [ref=e513]:
+                  - generic [ref=e514]: Mexico
+                  - generic [ref=e515]: ⚽ Erik Lira
+                  - generic [ref=e516]: 🎯 Raúl Jiménez
+                - generic [ref=e517]:
+                  - generic [ref=e518]: South Africa
+                  - generic [ref=e519]: ⚽ Ime Okon
+                  - generic [ref=e520]: 🎯 Mbekezeli Mbokazi
+            - generic [ref=e521]:
+              - generic [ref=e522]: Projected flow
+              - list [ref=e523]:
+                - listitem [ref=e524]:
+                  - generic [ref=e525]: 48′
+                  - generic [ref=e526]: ⚽ Erik Lira strikes for Mexico
+                - listitem [ref=e527]:
+                  - generic [ref=e528]: 62′
+                  - generic [ref=e529]: ⚽ Erik Lira strikes for Mexico
+                - listitem [ref=e530]:
+                  - generic [ref=e531]: 64′
+                  - generic [ref=e532]: Attacking substitutions as both benches go for it
+            - generic [ref=e533]:
+              - generic [ref=e534]: Risk factors
+              - list [ref=e535]:
+                - listitem [ref=e536]:
+                  - generic [ref=e537]: ⚠
+                  - generic [ref=e538]: No standout risk factors — a clean form-vs-form tie.
+            - generic [ref=e539]:
+              - generic [ref=e540]: How the model weighs it
+              - generic [ref=e541]:
+                - generic [ref=e542]:
+                  - text: statistical elo
+                  - generic [ref=e543]: 40%
+                - generic [ref=e544]:
+                  - text: player form
+                  - generic [ref=e545]: 25%
+                - generic [ref=e546]:
+                  - text: tactical matchup
+                  - generic [ref=e547]: 15%
+                - generic [ref=e548]:
+                  - text: weather location
+                  - generic [ref=e549]: 10%
+                - generic [ref=e550]:
+                  - text: psychology penalty
+                  - generic [ref=e551]: 10%
+              - list [ref=e552]:
+                - listitem [ref=e553]:
+                  - generic [ref=e554]: ›
+                  - generic [ref=e555]: Mexico carries the sharper attack (2.06 vs 0.50 xG/match).
+                - listitem [ref=e556]:
+                  - generic [ref=e557]: ›
+                  - generic [ref=e558]: Mexico grades higher on form & big-match composure (34% vs 22%).
+                - listitem [ref=e559]:
+                  - generic [ref=e560]: ›
+                  - generic [ref=e561]: "Edge from the spot: Mexico convert ~77% vs South Africa ~71% — decisive if it goes to pens."
+              - paragraph [ref=e562]: Mexico are favoured to take all three points (76%).
+              - paragraph [ref=e563]: "What could change it: An early goal swings momentum; an injury to Mexico's key creator, or South Africa stealing a set-piece, flips it."
+            - generic [ref=e564]: 6,000 Monte-Carlo runs · 90′ regulation
+      - generic [ref=e565]:
+        - generic [ref=e567]:
+          - generic [ref=e568]: Top impact ratings
+          - heading "KEY PLAYERS TO WATCH" [level=2] [ref=e569]
+        - generic [ref=e570]:
+          - generic [ref=e571]:
+            - generic [ref=e572]:
+              - generic [ref=e573]:
+                - img "Mexico" [ref=e574]
+                - text: Mexico
+              - generic [ref=e575]:
+                - text: Squad avail
+                - generic [ref=e576]: 100%
+            - generic [ref=e577]:
+              - generic [ref=e578]:
+                - generic [ref=e579]:
+                  - generic [ref=e580]:
+                    - generic [ref=e581]: "78"
+                    - generic [ref=e582]: MF
+                  - img "Luis Romo" [ref=e585]
+                - generic [ref=e586]: Luis Romo
+                - generic [ref=e587]: CD Guadalajara
+                - generic [ref=e588]:
+                  - generic [ref=e589]: 1G
+                  - generic [ref=e590]: 0A
+                  - generic [ref=e591]: xG 0
+                  - generic [ref=e592]: ✓ FIT
+              - generic [ref=e593]:
+                - generic [ref=e594]:
+                  - generic [ref=e595]:
+                    - generic [ref=e596]: "81"
+                    - generic [ref=e597]: FW
+                  - generic [ref=e599]: 👤
+                - generic [ref=e600]: Raul Jimenez
+                - generic [ref=e601]: Fulham
+                - generic [ref=e602]:
+                  - generic [ref=e603]: 0G
+                  - generic [ref=e604]: 0A
+                  - generic [ref=e605]: xG 0
+                  - generic [ref=e606]: ✓ FIT
+              - generic [ref=e607]:
+                - generic [ref=e608]:
+                  - generic [ref=e609]:
+                    - generic [ref=e610]: "80"
+                    - generic [ref=e611]: FW
+                  - generic [ref=e613]: 👤
+                - generic [ref=e614]: Alexis Vega
+                - generic [ref=e615]: Toluca
+                - generic [ref=e616]:
+                  - generic [ref=e617]: 0G
+                  - generic [ref=e618]: 0A
+                  - generic [ref=e619]: xG 0
+                  - generic [ref=e620]: ✓ FIT
+          - generic [ref=e621]:
+            - generic [ref=e622]:
+              - generic [ref=e623]:
+                - img "South Africa" [ref=e624]
+                - text: South Africa
+              - generic [ref=e625]:
+                - text: Squad avail
+                - generic [ref=e626]: 100%
+            - generic [ref=e627]:
+              - generic [ref=e628]:
+                - generic [ref=e629]:
+                  - generic [ref=e630]:
+                    - generic [ref=e631]: "80"
+                    - generic [ref=e632]: FW
+                  - img "Thapelo Maseko" [ref=e635]
+                - generic [ref=e636]: Thapelo Maseko
+                - generic [ref=e637]: AEL Limassol
+                - generic [ref=e638]:
+                  - generic [ref=e639]: 1G
+                  - generic [ref=e640]: 0A
+                  - generic [ref=e641]: xG 0
+                  - generic [ref=e642]: ✓ FIT
+              - generic [ref=e643]:
+                - generic [ref=e644]:
+                  - generic [ref=e645]:
+                    - generic [ref=e646]: "77"
+                    - generic [ref=e647]: MF
+                  - generic [ref=e649]: 👤
+                - generic [ref=e650]: Teboho Mokoena
+                - generic [ref=e651]: Mamelodi Sundowns
+                - generic [ref=e652]:
+                  - generic [ref=e653]: 1G
+                  - generic [ref=e654]: 0A
+                  - generic [ref=e655]: xG 0
+                  - generic [ref=e656]: ✓ FIT
+              - generic [ref=e657]:
+                - generic [ref=e658]:
+                  - generic [ref=e659]:
+                    - generic [ref=e660]: "80"
+                    - generic [ref=e661]: FW
+                  - generic [ref=e663]: 👤
+                - generic [ref=e664]: Evidence Makgopa
+                - generic [ref=e665]: Orlando Pirates
+                - generic [ref=e666]:
+                  - generic [ref=e667]: 0G
+                  - generic [ref=e668]: 0A
+                  - generic [ref=e669]: xG 0
+                  - generic [ref=e670]: ✓ FIT
+      - generic [ref=e671]:
+        - generic [ref=e672]:
+          - generic [ref=e674]:
+            - generic [ref=e675]: Environmental & logistical factors
+            - heading "MATCH CONDITIONS" [level=2] [ref=e676]
+          - generic [ref=e677]:
+            - generic [ref=e678]:
+              - generic [ref=e679]: Weather
+              - generic [ref=e680]: demanding conditions — high altitude (2240 m)
+            - generic [ref=e681]:
+              - generic [ref=e682]: Temperature
+              - generic [ref=e683]: 23°C · 55% RH
+            - generic [ref=e684]:
+              - generic [ref=e685]: Altitude
+              - generic [ref=e686]: 2240 m
+            - generic [ref=e687]:
+              - generic [ref=e688]: Weather severity
+              - generic [ref=e690]: 37%
+            - generic [ref=e691]:
+              - generic [ref=e692]: Rest days
+              - generic [ref=e693]: Mexico 4d · South Africa 4d
+            - generic [ref=e694]:
+              - generic [ref=e695]: Travel to venue
+              - generic [ref=e696]: Mexico 0 km · South Africa 0 km
+        - generic [ref=e697]:
+          - generic [ref=e699]:
+            - generic [ref=e700]: Individual member outputs
+            - heading "MODEL ENSEMBLE" [level=2] [ref=e701]
+          - generic [ref=e702]:
+            - generic [ref=e703]: Home
+            - generic [ref=e704]: Draw
+            - generic [ref=e705]: Away
+          - generic [ref=e706]:
+            - generic [ref=e707]:
+              - generic [ref=e708]: dc
+              - generic [ref=e715]: 71%
+              - generic [ref=e716]: 20%
+              - generic [ref=e717]: 9%
+            - generic [ref=e718]:
+              - generic [ref=e719]: poisson
+              - generic [ref=e726]: 59%
+              - generic [ref=e727]: 17%
+              - generic [ref=e728]: 23%
+            - generic [ref=e729]:
+              - generic [ref=e730]: elo
+              - generic [ref=e737]: 82%
+              - generic [ref=e738]: 6%
+              - generic [ref=e739]: 11%
+            - generic [ref=e740]:
+              - generic [ref=e741]: market
+              - generic [ref=e748]: 79%
+              - generic [ref=e749]: 7%
+              - generic [ref=e750]: 13%
+            - generic [ref=e751]:
+              - generic [ref=e752]: xgb
+              - generic [ref=e759]: 77%
+              - generic [ref=e760]: 16%
+              - generic [ref=e761]: 7%
+            - generic [ref=e762]:
+              - generic [ref=e763]: nn
+              - generic [ref=e768]: 0%
+              - generic [ref=e769]: 0%
+              - generic [ref=e770]: 100%
+          - paragraph [ref=e771]: Mexico holds the attacking edge; the lower-xG side must rely on defensive organisation and transitions.
+  - contentinfo [ref=e76]:
+    - generic [ref=e78]:
+      - generic [ref=e79]:
+        - generic [ref=e80]: WC26 · CAI Prediction Platform
+        - button "Powered by the CAI model how it works" [ref=e81] [cursor=pointer]:
+          - generic [ref=e82]: Powered by the CAI model
+          - generic [ref=e83]: how it works
+      - generic [ref=e84]: Not affiliated with FIFA. Not betting advice. Tournament predictions for entertainment.
+  - alert [ref=e85]

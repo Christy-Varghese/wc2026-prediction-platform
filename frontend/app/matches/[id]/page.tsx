@@ -202,28 +202,58 @@ export default function MatchCenter({ params }: { params: { id: string } }) {
       {/* ════════════ KEY PLAYERS (3 to note, with images) ════════════ */}
       <KeyPlayersToNote home={home} away={away} keyPlayers={key_players} flags={flags} />
 
-      {/* injury / suspension reports */}
-      {[home, away].some((t) => injuries[t]?.length > 0) && (
-        <div className="grid gap-4 md:grid-cols-2">
-          {[home, away].map((t) => (
-            injuries[t]?.length > 0 && (
-              <div key={t} className="rounded-xl border border-gold/20 bg-gold/[0.03] p-3 text-xs">
-                <div className="mb-2 flex items-center gap-2 font-display text-[11px] uppercase tracking-widest text-gold">
-                  <Flag url={tc[t]?.flag_url} name={t} size={16} /> {t} · ⚠ injury / suspension
-                </div>
-                {injuries[t].map((inj: any) => (
-                  <div key={inj.name} className="flex justify-between gap-2 border-b border-white/5 py-0.5 last:border-0">
-                    <span className="font-semibold">{inj.name}{" "}
-                      <span className={inj.fitness === "out" ? "text-danger" : "text-gold"}>({inj.fitness})</span>
+      {/* ════════════ INJURIES & SUSPENSIONS (full width) ════════════ */}
+      <section className="card-broadcast">
+        <SectionHeader title="INJURIES & SUSPENSIONS" sub="availability hits CAI factors in" />
+        <div className="grid gap-x-8 gap-y-3 md:grid-cols-2">
+          {[home, away].map((t) => {
+            const list = injuries[t] ?? [];
+            return (
+              <div key={t}>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="flex items-center gap-2 font-display text-sm font-semibold text-stadium">
+                    <Flag url={tc[t]?.flag_url} name={t} size={20} /> {t}
+                  </span>
+                  {availability?.[t] != null && (
+                    <span className="text-[11px] text-muted">
+                      avail{" "}
+                      <b className={availability[t] >= 0.95 ? "text-success"
+                        : availability[t] >= 0.85 ? "text-gold" : "text-danger"}>
+                        {Math.round(availability[t] * 100)}%
+                      </b>
                     </span>
-                    <span className="text-muted">{inj.news}{inj.return_date ? ` · ~${inj.return_date}` : ""}</span>
-                  </div>
-                ))}
+                  )}
+                </div>
+                {list.length === 0 ? (
+                  <p className="rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2 text-[12px] text-muted">
+                    ✅ Full squad available — no reported injuries or suspensions.
+                  </p>
+                ) : (
+                  <ul className="divide-y divide-white/5 rounded-lg border border-white/5 bg-white/[0.02]">
+                    {list.map((inj: any) => (
+                      <li key={inj.name} className="flex items-center justify-between gap-3 px-3 py-2 text-xs">
+                        <span className="flex items-center gap-2">
+                          <span className={inj.fitness === "out" ? "text-danger" : "text-gold"}>
+                            {inj.fitness === "out" ? "⛔" : "⚠"}
+                          </span>
+                          <span className="font-semibold text-stadium">{inj.name}</span>
+                          <span className={`rounded px-1.5 text-[10px] ${
+                            inj.fitness === "out" ? "bg-danger/15 text-danger" : "bg-gold/15 text-gold"}`}>
+                            {inj.fitness}
+                          </span>
+                        </span>
+                        <span className="text-right text-muted">
+                          {inj.news}{inj.return_date ? ` · ~${inj.return_date}` : ""}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-            )
-          ))}
+            );
+          })}
         </div>
-      )}
+      </section>
 
       {/* ════════════ CONDITIONS + MODEL ENSEMBLE ════════════ */}
       <div className="grid gap-6 md:grid-cols-2">
