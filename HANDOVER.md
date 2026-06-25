@@ -184,7 +184,48 @@ played games) and clustered too low for blowouts. Fixed:
 - **Re-tune later** from `backtest.scoreline_calibration()` once real WC2026
   knockout games land (KO_GOAL_SCALE, host edge, fatigue coefficient).
 
+## 12. CAI prediction model — form-led retune + knockout layout (Jun 25)
+CAI (ChrisAI) is now an explicit **form-leads** methodology, not just the old
+ensemble blend. Thesis: how a team is playing *now* (this year's games + the
+group stage, key moments, fitness, momentum, squad/manager/GK) leads the static
+pre-WC Elo/DC prior — "there's no going back". Implemented by reweighting the
+existing engine (one engine, no parallel model):
+- **`ensemble.CONDITION_COEF` 1.75 → 2.45** and `predict()` now applies the
+  squad-condition shift with **`include_momentum=True`** — current momentum is in
+  the pick, not just the Elo patch.
+- **`player_condition.match_condition_adjustment`:** player-form term
+  `0.55 → 0.70 * cond_delta`; momentum term `+0.35 * mom_delta` now active in the
+  applied shift.
+- **`match_flow`:** `FORM_COEF 0.55 → 0.85`, `COND_TILT 0.9 → 1.15` so the
+  knockout goal rates lean on current form.
+- **Tuning guard:** momentum at 0.35 (not 0.55) — the sweep showed 0.55 flipped one
+  played-game pick. **Group-stage success rate held at 39/54 (72%)** under the
+  form-led config (baseline was also 39/54); it did not regress. Re-check via the
+  one-off loop in `app/news.py`'s accuracy block (re-predicts every played match).
+- **CAI 3-scenario knockout projection** (`match_flow._scenarios`): every knockout
+  tie now reports **Base / Upside / Downside** with per-scenario xG + result type
+  (regulation / pens). Plus **pain points** (`match_flow._pain_points`): each
+  side's exploitable weaknesses (keeper, fitness, cold form, penalty fragility,
+  blunt attack). Both ride inside the node's `flow` object.
+- **Website:** knockout section redesigned — round-sectioned overview
+  (`/knockout`, R32→Final) replacing the horizontal bracket; each tie links to a
+  dedicated **`/knockout/[id]`** page (new route) showing both teams' road here
+  (group games + real scorers + key moments via `knockout_engine.team_journey()`,
+  exposed as the payload's top-level `journeys` map), the **CAI 3 scenarios**,
+  **pain points**, why-the-winner bars, and the projected game flow. News ticker
+  rebranded: "🤖 CAI: current form + momentum led · 3-scenario knockout xG" and
+  "🎯 CAI outcome accuracy: 39/54".
+- **Re-tune from real KO data:** revisit the form/momentum coefficients +
+  `KO_GOAL_SCALE` once knockout games land (first KO Jun 28) via
+  `backtest.scoreline_calibration()`.
+
 ## Known issues / watch-outs
+- **`match_flow` regression — FIXED Jun 25.** After §11's unify work, the
+  `from knockout_resolve import shootout` collided with a local boolean-mask named
+  `shootout` in `_simulate`, so `match_flow` raised on every knockout tie and the
+  bracket silently used the no-flow fallback (all nodes had `flow=None`). Aliased
+  the import to `run_shootout`; all 32 nodes carry real game-flow again. If flow
+  ever goes empty across the board, suspect a name shadow there first.
 - **Custom alias auto-follows deploys — FIXED Jun 24.** Permanent fix applied:
   `npx vercel domains add chris-fifaworldcup26-prediction.vercel.app` from repo
   ROOT registered the domain on the project. Verified: a fresh `npx vercel --prod`

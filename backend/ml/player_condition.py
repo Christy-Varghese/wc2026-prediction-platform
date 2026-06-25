@@ -742,16 +742,18 @@ class TeamConditionEngine:
         gk_delta    = hc["gk_quality"] - ac["gk_quality"]
 
         # Combined logit shift (tuned so ±0.2 = ±5% probability swing).
-        # Squad form, team combination and manager record are PRIORITISED here;
-        # location stats are handled (and down-weighted) in the ensemble.
+        # CAI (form-leads): current form / fitness and tournament momentum are the
+        # heaviest terms — how a side is playing NOW leads the manager/GK priors
+        # and (in the ensemble) the pre-WC Elo/DC base. Location stats stay
+        # down-weighted in the ensemble.
         logit_shift = (
-            0.55 * cond_delta            +   # player form / fitness / availability
+            0.70 * cond_delta            +   # player form / fitness / availability
             0.30 * att_def_adv * 0.15    +   # team combination (attack vs defence)
             0.20 * mgr_delta             +   # manager track record
             GK_COEF * gk_delta               # goalkeeper quality / form
         )
         if include_momentum:
-            logit_shift += 0.35 * mom_delta
+            logit_shift += 0.35 * mom_delta  # CAI: current momentum actively in the pick
         return {
             "logit_shift":   round(float(logit_shift), 4),
             "home_cond":     hc["condition_score"],

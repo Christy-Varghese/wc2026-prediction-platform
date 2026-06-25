@@ -119,9 +119,9 @@ def build(max_results: int = 6) -> dict:
                 n += 1
                 hits += int(pw == _actual_winner(m))
         if n:
-            items.append(f"🎯 Model outcome accuracy: {hits}/{n} ({round(hits / n * 100)}%)")
+            items.append(f"🎯 CAI outcome accuracy: {hits}/{n} ({round(hits / n * 100)}%)")
     except Exception:  # noqa: BLE001
         pass
 
-    items.append("🤖 CAI Ensemble: Dixon-Coles + Elo + XGBoost + Market")
+    items.append("🤖 CAI: current form + momentum led · 3-scenario knockout xG")
     return {"items": items, "n_played": len(played)}

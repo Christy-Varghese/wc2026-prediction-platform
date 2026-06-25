@@ -46,15 +46,16 @@ import config
 from knockout_resolve import ET_RATE_FACTOR, shootout as run_shootout
 
 # Strength of the squad-condition tilt on the regulation goal rates (mirrors
-# ensemble.CONDITION_COEF in spirit; kept gentle so the DC rates still lead).
-COND_TILT = 0.9
+# ensemble.CONDITION_COEF in spirit). CAI (form-leads): raised so current squad
+# form/fitness/momentum drives the knockout goal rates, not just the DC base.
+COND_TILT = 1.15
 
 # Strength of the in-tournament FORM tilt. The Dixon-Coles goal rates are fit on
 # pre-tournament history, so without this the knockout sim would ignore how each
 # side actually played MD1/MD2. We re-rate the goal rates by the Elo movement the
 # group games produced (tournament_form.WC2026_PLAYED): a side that won big is
 # boosted, one that was beaten is dimmed. ~40 Elo of net swing ≈ a 5% tilt.
-FORM_COEF = 0.55
+FORM_COEF = 0.85  # CAI (form-leads): in-tournament form weighs heavier than the pre-WC base
 
 N_SIMS = 6000
 
@@ -372,6 +373,99 @@ def _risk_factors(prof: dict, sim: dict, conf: int | None,
     return risks[:5] or ["No standout risk factors — a clean form-vs-form tie."]
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# CAI extras: 3-scenario projection (Base / Upside / Downside) + pain points
+# ─────────────────────────────────────────────────────────────────────────────
+def _scenarios(prof: dict, sim: dict, winner: str | None,
+               knockout: bool) -> list[dict]:
+    """CAI runs the tie three ways and reports the goal-flow of each:
+
+      • Base     — the most likely flow (consensus xG / modal score).
+      • Upside   — the favourite's current form holds: they click and pull clear.
+      • Downside — the tie goes flat / the underdog frustrates it (often level →
+                   extra time / penalties in a knockout).
+
+    Derived from the same Monte-Carlo distribution (top_scores + expected goals),
+    re-weighted toward each narrative — CAI prioritises the live form picture, so
+    Upside leans on the in-form side and Downside on the upset/level path.
+    """
+    h, a = prof["home"], prof["away"]
+    egh, ega = sim["exp_goals_home"], sim["exp_goals_away"]
+    fav_home = sim["p_home_win"] >= sim["p_away_win"]
+    fav = h["team"] if fav_home else a["team"]
+    dog = a["team"] if fav_home else h["team"]
+
+    def margin(s: dict) -> int:
+        x, y = (int(v) for v in s["score"].split("-"))
+        return (x - y) if fav_home else (y - x)
+
+    tops = sim["top_scores"] or [{"score": f"{sim['modal_score'][0]}-{sim['modal_score'][1]}",
+                                  "prob": 1.0}]
+    base = tops[0]
+    upside = max(tops, key=margin)
+    downside = min(tops, key=margin)
+
+    def fmt_xg(fh: float, fa: float) -> dict:
+        return {"home": round(max(0.1, fh), 1), "away": round(max(0.1, fa), 1)}
+
+    # xG re-weighting per narrative.
+    up_xg = fmt_xg(egh * (1.25 if fav_home else 0.8),
+                   ega * (1.25 if not fav_home else 0.8))
+    dn_xg = fmt_xg((egh + ega) / 2 * 0.92, (egh + ega) / 2 * 0.92)
+
+    def result_type(score: str) -> str:
+        x, y = (int(v) for v in score.split("-"))
+        if x == y:
+            return "penalties" if knockout else "draw"
+        return "regulation"
+
+    return [
+        {"key": "base", "label": "Base case",
+         "score": base["score"], "xg": fmt_xg(egh, ega),
+         "likelihood": round(base.get("prob", 0.0), 3),
+         "result": result_type(base["score"]),
+         "note": (f"The most likely flow — CAI's consensus across form, tactics "
+                  f"and momentum.")},
+        {"key": "upside", "label": f"Upside · {fav} click",
+         "score": upside["score"], "xg": up_xg,
+         "likelihood": round(upside.get("prob", 0.0), 3),
+         "result": result_type(upside["score"]),
+         "note": (f"{fav}'s current form holds and they convert their chances — "
+                  f"the tie opens up and they pull clear.")},
+        {"key": "downside", "label": f"Downside · {dog} frustrates",
+         "score": downside["score"], "xg": dn_xg,
+         "likelihood": round(downside.get("prob", 0.0), 3),
+         "result": result_type(downside["score"]),
+         "note": (f"A flat, low-margin night — {dog} sit in and the tie tightens"
+                  + (", live to swing on extra time or penalties."
+                     if knockout else "."))},
+    ]
+
+
+def _pain_points(prof: dict, sim: dict, knockout: bool) -> dict:
+    """Per-side vulnerabilities that could swing the result — CAI's 'pain points':
+    the concrete weaknesses (keeper, fitness, cold form, set-piece/penalty
+    fragility) that upsets tend to exploit."""
+    def side(s: dict, opp: dict) -> list[str]:
+        out: list[str] = []
+        if s["gk_quality"] < 0.58:
+            out.append("Goalkeeping is a soft spot under sustained pressure.")
+        if s["fatigue_factor"] < 0.92:
+            out.append("Squad freshness is thinning — absences/fatigue bite late.")
+        rec = s.get("form", {})
+        if s["form_delta"] <= -5 and rec.get("played"):
+            out.append(f"Cold run into the tie ({rec.get('record','')}, "
+                       f"{s['form_delta']:+.0f} Elo) — momentum is against them.")
+        if knockout and s["pen_conversion"] < opp["pen_conversion"] - 0.03 \
+                and sim["p_shootout"] >= 0.2:
+            out.append("Weaker from the spot — exposed if it reaches penalties.")
+        if s["attack_rating"] < opp["attack_rating"] - 0.2:
+            out.append("Blunter in the final third — fewer clear chances created.")
+        return out[:3] or ["No glaring weakness — a balanced side on current form."]
+    h, a = prof["home"], prof["away"]
+    return {h["team"]: side(h, a), a["team"]: side(a, h)}
+
+
 def _explainability(prof: dict, sim: dict, base: dict, favored: str,
                     knockout: bool = True) -> dict:
     reasons: list[str] = []
@@ -505,6 +599,10 @@ def simulate_tie(engine, home: str, away: str, base: dict | None = None,
             "form_shift": prof.get("form_shift", 0.0),
         },
         "most_likely_scores": sim["top_scores"],
+        # CAI: three-way scenario projection (Base / Upside / Downside) + the
+        # per-side pain points an upset would exploit.
+        "scenarios": _scenarios(prof, sim, winner, knockout),
+        "pain_points": _pain_points(prof, sim, knockout),
         "match_flow": events,
         "turning_points": turning_points,
         "key_players": _key_players(prof),

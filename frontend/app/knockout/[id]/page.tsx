@@ -78,6 +78,42 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
           </div>
         </section>
 
+        {/* CAI three-way scenario projection */}
+        {m.flow?.scenarios?.length > 0 && (
+          <section>
+            <div className="mb-1 flex items-center gap-2">
+              <h2 className="font-display text-lg font-bold">CAI runs it three ways</h2>
+              <span className="chip text-[10px]">form-led · xG</span>
+            </div>
+            <p className="mb-3 text-[12px] text-muted">
+              CAI weights this year's matches, the group stage and live momentum over pre-tournament data,
+              then projects the goal flow under three outcomes.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {m.flow.scenarios.map((s: any) => <ScenarioCard key={s.key} s={s} />)}
+            </div>
+          </section>
+        )}
+
+        {/* pain points */}
+        {m.flow?.pain_points && (
+          <section className="card p-5">
+            <h2 className="mb-3 font-display text-lg font-bold">Pain points — where it could swing</h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              {[m.home_team, m.away_team].map((t: string) => (
+                <div key={t}>
+                  <h3 className="mb-1.5 font-display text-sm font-bold text-gold">{t}</h3>
+                  <ul className="space-y-1 text-[13px] leading-snug text-stadium">
+                    {(m.flow.pain_points[t] ?? []).map((p: string, k: number) => (
+                      <li key={k} className="flex gap-2"><span className="text-live">⚠</span><span>{p}</span></li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* why the projected winner advances */}
         <section className="card p-5">
           <h2 className="mb-3 font-display text-lg font-bold">Why {m.predicted_winner} advances</h2>
@@ -186,6 +222,27 @@ function JourneyGame({ g }: { g: any }) {
         </div>
       )}
     </li>
+  );
+}
+
+function ScenarioCard({ s }: { s: any }) {
+  const accent = s.key === "upside" ? "border-stadium/40" : s.key === "downside" ? "border-live/40" : "border-gold/40";
+  const tag = s.result === "penalties" ? "→ pens" : s.result === "draw" ? "draw" : "in 90'";
+  return (
+    <div className={`card border ${accent} p-3`}>
+      <div className="mb-1 flex items-center justify-between">
+        <span className="font-display text-[12px] font-bold">{s.label}</span>
+        {s.likelihood != null && <span className="text-[10px] text-muted">{Math.round(s.likelihood * 100)}%</span>}
+      </div>
+      <div className="flex items-baseline gap-2">
+        <span className="font-display text-2xl font-bold text-gold tabular-nums">{s.score}</span>
+        <span className="text-[10px] uppercase tracking-widest text-muted">{tag}</span>
+      </div>
+      <div className="mt-0.5 text-[11px] text-muted">
+        xG {s.xg?.home}–{s.xg?.away}
+      </div>
+      <p className="mt-1.5 text-[12px] leading-snug text-stadium">{s.note}</p>
+    </div>
   );
 }
 

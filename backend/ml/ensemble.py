@@ -254,10 +254,14 @@ TRAVEL_COEF = 0.08
 WEATHER_COEF = 0.035
 # Squad-condition leveller: form/fitness/availability/combination + manager of
 # the actual squads (player_condition.py). Applied as a logit shift on the win
-# probs and PRIORITISED over location stats. Momentum is deliberately excluded
-# from this shift (the Elo member is already patched with live WC2026 results —
-# see tournament_form.py — so it would double-count).
-CONDITION_COEF = 1.75
+# probs and PRIORITISED over location stats.
+#
+# CAI (form-leads) — raised from 1.75 so the current-form / squad / momentum
+# signal LEADS the pre-WC Elo/DC priors rather than just nudging them. CAI's
+# thesis: how a team is actually playing *now* (this year's matches + the group
+# stage, key moments, fitness, momentum) beats a static historical rating —
+# "there's no going back". The priors remain a supporting base, not the driver.
+CONDITION_COEF = 2.45
 
 
 @dataclass
@@ -433,12 +437,16 @@ class Ensemble:
         blended = self._availability_adjust(blended, ctx.avail_diff)
         blended = self._conditions_adjust(blended, ctx)
 
-        # Squad-condition shift (player form/fitness/availability). Momentum is
-        # excluded here — the Elo member already carries the live WC2026 results.
+        # Squad-condition + momentum shift (player form/fitness/availability +
+        # current tournament momentum). CAI (form-leads) INCLUDES momentum here so
+        # the team's live trajectory actively drives the pick — the Elo member
+        # also carries WC2026 results, so this intentionally re-emphasises current
+        # form over the static pre-WC prior (CAI's core thesis), not double-counts
+        # by accident.
         cond_info = None
         if self.cond is not None:
             cond_info = self.cond.match_condition_adjustment(
-                home, away, include_momentum=False)
+                home, away, include_momentum=True)
             blended = self._condition_shift(blended, cond_info["logit_shift"])
 
         ph, pd_, pa = (float(x) for x in blended)
