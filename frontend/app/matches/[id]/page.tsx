@@ -3,12 +3,14 @@ import useSWR from "swr";
 import { motion } from "framer-motion";
 import { api, pct, pct0 } from "@/lib/api";
 import {
-  Flag, ProbBar, ProbRing, Countdown, MomentumBar, Meter, PlayerCard,
-  LiveBadge, AIInsightCard, SectionHeader, StatRow, LowConfidenceTag, isLowConfidence,
-  PredictionBadge,
+  Flag, ProbBar, Countdown, LiveBadge, SectionHeader, StatRow,
+  LowConfidenceTag, isLowConfidence, PredictionBadge,
 } from "@/components/ui";
 import { MatchAnalytics } from "@/components/match-analytics";
 import { MatchFlowReport } from "@/components/match-flow";
+import {
+  CaiScenarios, CaiPainPoints, CaiCompareBar, KeyPlayersToNote, CaiVerdict,
+} from "@/components/cai-blocks";
 
 const fetcher = (p: string) => api(p);
 
@@ -27,6 +29,10 @@ export default function MatchCenter({ params }: { params: { id: string } }) {
   const tc = team_comparison || {};
   const wx = conditions?.weather;
   const xg = p.expected_goals;
+  const actualWinner = m.played
+    ? (m.home_score > m.away_score ? home : m.away_score > m.home_score ? away : "Draw")
+    : undefined;
+  const flags = { [home]: tc[home]?.flag_url, [away]: tc[away]?.flag_url };
 
   return (
     <div className="space-y-8">
@@ -108,123 +114,116 @@ export default function MatchCenter({ params }: { params: { id: string } }) {
       {/* ════════════ POST-MATCH ANALYTICS (played only) ════════════ */}
       {m.played && <MatchAnalytics matchId={m.id} />}
 
-      {/* ════════════ PREDICTION ENGINE + AI ANALYSIS ════════════ */}
-      <div className="grid gap-6 lg:grid-cols-[2fr_3fr]">
-        {/* prediction */}
-        <motion.section
-          initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}
-          className="card-broadcast">
-          <SectionHeader title="PREDICTION ENGINE" sub="5-model ensemble" />
-          <div className="flex items-center justify-around py-2">
-            <ProbRing value={p.confidence / 100} label="CONFIDENCE" color="#FFD700" size={108} />
-            <div className="space-y-2">
-              <ProbRow color="text-success" label={home} value={pct(p.p_home)} />
-              <ProbRow color="text-muted" label="Draw" value={pct(p.p_draw)} />
-              <ProbRow color="text-cyan" label={away} value={pct(p.p_away)} />
-              <div className="pt-1 text-[11px] text-muted">
-                xG {xg.home} – {xg.away}
-                {p.market_used && <span className="chip ml-2 text-[10px]">📈 Market</span>}
-                {isLowConfidence({ confidence: p.confidence, played: m.played }) &&
-                  <span className="ml-2"><LowConfidenceTag confidence={p.confidence} /></span>}
-              </div>
-            </div>
-          </div>
+      {/* ════════════ CAI PREDICTION ════════════ */}
+      <section className="space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="font-display text-lg font-bold">CAI prediction</h2>
+          <span className="chip text-[10px]">form-led model</span>
+          {m.played && <span className="text-[11px] text-muted">· what CAI called pre-match</span>}
+        </div>
 
-          {/* top scores */}
-          <div className="mt-5">
-            <div className="mb-3 text-[11px] uppercase tracking-widest text-muted">Most likely scorelines</div>
-            {p.top_scores.map((s: any, i: number) => (
-              <div key={s.score} className="flex items-center gap-3 py-1.5">
-                <span className="w-14 font-display font-bold text-stadium">{s.score}</span>
+        <CaiVerdict predictedWinner={p.predicted_winner} home={home} away={away}
+          played={m.played} actualWinner={actualWinner} />
+
+        <div className="card p-4">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+            <span className="font-bold text-success">{home} {pct0(p.p_home)}</span>
+            <span className="text-muted">Draw {pct0(p.p_draw)}</span>
+            <span className="font-bold text-cyan">{away} {pct0(p.p_away)}</span>
+            <span className="text-[12px] text-muted">xG {xg.home}–{xg.away}</span>
+            <span className="ml-auto text-[12px] text-gold">{p.confidence} conf</span>
+            {isLowConfidence({ confidence: p.confidence, played: m.played }) &&
+              <LowConfidenceTag confidence={p.confidence} />}
+          </div>
+          <div className="mt-3"><ProbBar home={p.p_home} draw={p.p_draw} away={p.p_away} height={8} /></div>
+          <div className="mt-4">
+            <div className="mb-2 text-[11px] uppercase tracking-widest text-muted">Most likely scorelines</div>
+            {p.top_scores.map((s: any) => (
+              <div key={s.score} className="flex items-center gap-3 py-1">
+                <span className="w-12 font-display font-bold text-stadium">{s.score}</span>
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/5">
-                  <motion.div className="h-2 rounded-full bg-gradient-to-r from-gold to-gold/40"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(s.prob / p.top_scores[0].prob) * 100}%` }}
-                    transition={{ duration: 0.7, delay: i * 0.1 }} />
+                  <div className="h-2 rounded-full bg-gradient-to-r from-gold to-gold/40"
+                    style={{ width: `${(s.prob / p.top_scores[0].prob) * 100}%` }} />
                 </div>
                 <span className="w-12 text-right text-xs tabnum text-muted">{pct(s.prob)}</span>
               </div>
             ))}
           </div>
-        </motion.section>
-
-        {/* Pre-match analysis — match-flow simulation (same engine as the
-            knockout bracket: 90' -> ET -> shootout; group games allow a draw) */}
-        <motion.section
-          initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-          className="card-broadcast">
-          <SectionHeader title="CAI MATCH SIMULATION"
-            sub={data.flow ? `${data.flow.n_sims?.toLocaleString()}-run Monte-Carlo` : "Ensemble narrative"} />
-          {data.flow
-            ? <MatchFlowReport flow={data.flow} />
-            : (
-              <>
-                <div className="rounded-xl border border-cyan/10 bg-cyan/[0.03] p-4">
-                  <p className="text-[15px] leading-relaxed text-stadium/90">{p.explanation}</p>
-                </div>
-                <div className="mt-5">
-                  <div className="mb-2 text-[11px] uppercase tracking-widest text-muted">xG Momentum</div>
-                  <MomentumBar home={home} away={away} homeVal={xg.home} awayVal={xg.away} />
-                </div>
-                <div className="mt-5 grid grid-cols-2 gap-x-8">
-                  <Meter label={`${home} attack`} value={(xg.home / ((xg.home + xg.away) || 1)) * 100} color="#00E676" />
-                  <Meter label={`${away} attack`} value={(xg.away / ((xg.home + xg.away) || 1)) * 100} color="#00D4FF" />
-                  <Meter label={`${home} strength`} value={tc[home]?.strength_index ?? 50} color="#FFD700" />
-                  <Meter label={`${away} strength`} value={tc[away]?.strength_index ?? 50} color="#FFD700" />
-                </div>
-              </>
-            )}
-        </motion.section>
-      </div>
-
-      {/* ════════════ KEY PLAYERS ════════════ */}
-      <section>
-        <SectionHeader title="KEY PLAYERS TO WATCH" sub="Top impact ratings" />
-        <div className="grid gap-8 md:grid-cols-2">
-          {[home, away].map((t) => (
-            <div key={t}>
-              <div className="mb-3 flex items-center justify-between">
-                <span className="flex items-center gap-2 font-display font-semibold text-stadium">
-                  <Flag url={tc[t]?.flag_url} name={t} size={24} /> {t}
-                </span>
-                {availability?.[t] != null && (
-                  <span className="text-xs text-muted">
-                    Squad avail{" "}
-                    <b className={
-                      availability[t] >= 0.95 ? "text-success"
-                        : availability[t] >= 0.85 ? "text-gold" : "text-danger"
-                    }>
-                      {Math.round(availability[t] * 100)}%
-                    </b>
-                  </span>
-                )}
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {(key_players[t]?.attacking || []).slice(0, 3).map((pl: any) => (
-                  <PlayerCard key={pl.name} p={pl} flag={tc[t]?.flag_url} />
-                ))}
-              </div>
-              {injuries[t]?.length > 0 && (
-                <div className="mt-3 rounded-xl border border-gold/20 bg-gold/[0.03] p-3 text-xs">
-                  <div className="mb-2 font-display text-[11px] uppercase tracking-widest text-gold">
-                    ⚠ Injury / Suspension Report
-                  </div>
-                  {injuries[t].map((inj: any) => (
-                    <div key={inj.name} className="flex justify-between gap-2 py-0.5 border-b border-white/5 last:border-0">
-                      <span className="font-semibold">{inj.name}{" "}
-                        <span className={inj.fitness === "out" ? "text-danger" : "text-gold"}>
-                          ({inj.fitness})
-                        </span>
-                      </span>
-                      <span className="text-muted">{inj.news}{inj.return_date ? ` · ~${inj.return_date}` : ""}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
         </div>
       </section>
+
+      {/* CAI 3-scenario projection */}
+      <CaiScenarios scenarios={data.flow?.scenarios} />
+
+      {/* pain points */}
+      <CaiPainPoints home={home} away={away} painPoints={data.flow?.pain_points} />
+
+      {/* why the favoured side comes out on top */}
+      {p.condition && (
+        <section className="card p-5">
+          <h2 className="mb-3 font-display text-lg font-bold">
+            {p.predicted_winner === "Draw"
+              ? "Why CAI sees it level"
+              : `Why ${p.predicted_winner} ${m.played ? "was favoured" : "is favoured"}`}
+          </h2>
+          <div className="space-y-2">
+            <CaiCompareBar label="Player condition" h={p.condition.home_cond} a={p.condition.away_cond} />
+            <CaiCompareBar label="Manager track record" h={p.condition.home_manager_wr} a={p.condition.away_manager_wr} />
+            {p.condition.home_gk_quality != null &&
+              <CaiCompareBar label="Goalkeeper" h={p.condition.home_gk_quality} a={p.condition.away_gk_quality} />}
+            <div className="flex justify-between pt-1 text-[12px] text-muted">
+              <span>Expected goals</span>
+              <span className="font-semibold text-stadium">{xg.home} – {xg.away}</span>
+            </div>
+          </div>
+          {p.win_reasons?.length > 0 && (
+            <ul className="mt-4 space-y-1.5 text-[13px] leading-snug text-stadium">
+              {p.win_reasons.map((rs: string, k: number) => (
+                <li key={k} className="flex gap-2"><span className="text-gold">›</span><span>{rs}</span></li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {/* best-condition simulation + predicted key moments */}
+      {data.flow && (
+        <section className="card p-5">
+          <h2 className="mb-3 font-display text-lg font-bold">
+            How CAI sees it play out
+            <span className="ml-2 text-[11px] font-normal text-muted">
+              {data.flow.n_sims?.toLocaleString()}-run simulation
+            </span>
+          </h2>
+          <MatchFlowReport flow={data.flow} />
+        </section>
+      )}
+
+      {/* ════════════ KEY PLAYERS (3 to note, with images) ════════════ */}
+      <KeyPlayersToNote home={home} away={away} keyPlayers={key_players} flags={flags} />
+
+      {/* injury / suspension reports */}
+      {[home, away].some((t) => injuries[t]?.length > 0) && (
+        <div className="grid gap-4 md:grid-cols-2">
+          {[home, away].map((t) => (
+            injuries[t]?.length > 0 && (
+              <div key={t} className="rounded-xl border border-gold/20 bg-gold/[0.03] p-3 text-xs">
+                <div className="mb-2 flex items-center gap-2 font-display text-[11px] uppercase tracking-widest text-gold">
+                  <Flag url={tc[t]?.flag_url} name={t} size={16} /> {t} · ⚠ injury / suspension
+                </div>
+                {injuries[t].map((inj: any) => (
+                  <div key={inj.name} className="flex justify-between gap-2 border-b border-white/5 py-0.5 last:border-0">
+                    <span className="font-semibold">{inj.name}{" "}
+                      <span className={inj.fitness === "out" ? "text-danger" : "text-gold"}>({inj.fitness})</span>
+                    </span>
+                    <span className="text-muted">{inj.news}{inj.return_date ? ` · ~${inj.return_date}` : ""}</span>
+                  </div>
+                ))}
+              </div>
+            )
+          ))}
+        </div>
+      )}
 
       {/* ════════════ CONDITIONS + MODEL ENSEMBLE ════════════ */}
       <div className="grid gap-6 md:grid-cols-2">
@@ -253,7 +252,7 @@ export default function MatchCenter({ params }: { params: { id: string } }) {
         )}
 
         <section className="card-broadcast">
-          <SectionHeader title="MODEL ENSEMBLE" sub="Individual member outputs" />
+          <SectionHeader title="CAI SIGNAL MIX" sub="how the inputs voted (form-led)" />
           <div className="mb-3 flex justify-end gap-4 text-[10px] uppercase tracking-widest text-muted">
             <span className="text-success">Home</span>
             <span>Draw</span>
@@ -278,31 +277,6 @@ export default function MatchCenter({ params }: { params: { id: string } }) {
         </section>
       </div>
 
-      {/* ════════════ LIVE WIDGETS PLACEHOLDER (pre-match only) ════════════ */}
-      {/* Completed matches show the news-sourced post-match analysis inside
-          <MatchAnalytics> above instead of these "activate at kickoff" stubs. */}
-      {!m.played && (
-        <section className="card-broadcast border-dashed border-white/10">
-          <SectionHeader title="BROADCAST WIDGETS" sub="Activate at kickoff" />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {[
-              { icon: "🎯", label: "Shot Map" },
-              { icon: "🔗", label: "Passing Network" },
-              { icon: "🔥", label: "Heat Map" },
-              { icon: "📈", label: "Live Momentum" },
-            ].map((w) => (
-              <div key={w.label}
-                className="grid h-24 place-items-center rounded-xl border border-dashed border-white/10 bg-white/[0.02] text-center text-xs text-muted">
-                <span>
-                  <div className="text-2xl mb-1">{w.icon}</div>
-                  {w.label}<br />
-                  <span className="text-gold/60 text-[10px]">at kickoff</span>
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }
@@ -327,15 +301,6 @@ function ScoreTeam({ name, flag, prob, isLeading }:
 }
 
 /* ── Probability row ── */
-function ProbRow({ color, label, value }: { color: string; label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-6">
-      <span className={`${color} font-display text-sm`}>{label}</span>
-      <span className="font-bold tabnum text-stadium">{value}</span>
-    </div>
-  );
-}
-
 /* ── Skeleton ── */
 function MatchSkeleton() {
   return (
