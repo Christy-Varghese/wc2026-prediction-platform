@@ -42,7 +42,8 @@ from typing import Any
 import numpy as np
 
 import config
-from knockout_resolve import ET_RATE_FACTOR, shootout
+# Aliased: `shootout` is also used as a local boolean-mask name in _simulate.
+from knockout_resolve import ET_RATE_FACTOR, shootout as run_shootout
 
 # Strength of the squad-condition tilt on the regulation goal rates (mirrors
 # ensemble.CONDITION_COEF in spirit; kept gentle so the DC rates still lead).
@@ -260,7 +261,7 @@ def _simulate(prof: dict, rng: np.random.Generator,
     so_home = np.zeros(n, dtype=bool)
     sidx = np.where(shootout)[0]
     for i in sidx:
-        so_home[i] = shootout(h["pen_conversion"], a["pen_conversion"], rng)
+        so_home[i] = run_shootout(h["pen_conversion"], a["pen_conversion"], rng)
 
     win_home = home_90 | et_home | (shootout & so_home)
     n_pens = int(shootout.sum())

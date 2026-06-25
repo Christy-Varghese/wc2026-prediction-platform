@@ -60,6 +60,48 @@ def _survival_odds() -> dict[str, dict[str, float]]:
             for r in ml_engine.sim_table()}
 
 
+def team_journey(team: str) -> list[dict]:
+    """The team's WC2026 group-stage path so far: each prior match with score,
+    result, real scorers and the curated 'key moment' (turning point / headline).
+
+    Reuses the played-results ledger (tournament_form.WC2026_PLAYED), the ESPN
+    scorer cache (match_analytics._real_scorers) and the curated news
+    (post_match_report), so the knockout detail page can show 'games played +
+    key moments' without a second data source.
+    """
+    from . import ml_engine  # ensures ml/ is on sys.path  # noqa: F401
+    import tournament_form as tf
+    from . import match_analytics as ma
+
+    out: list[dict] = []
+    for home, away, hs, as_, neutral in tf.WC2026_PLAYED:
+        if team == home:
+            opp, gf, ga = away, hs, as_
+        elif team == away:
+            opp, gf, ga = home, as_, hs
+        else:
+            continue
+        result = "W" if gf > ga else ("D" if gf == ga else "L")
+        scorers = ma._real_scorers(home, away) or {"home": [], "away": []}
+        try:
+            report = ma.post_match_report(home, away, hs, as_, scorers)
+        except Exception:  # noqa: BLE001 - news is best-effort
+            report = {}
+        # Orient scorers to (this team, opponent).
+        team_scorers = scorers["home"] if team == home else scorers["away"]
+        opp_scorers = scorers["away"] if team == home else scorers["home"]
+        out.append({
+            "opponent": opp, "opp_flag": _flag(opp),
+            "score": f"{gf}-{ga}", "gf": gf, "ga": ga, "result": result,
+            "neutral": neutral,
+            "team_scorers": team_scorers, "opp_scorers": opp_scorers,
+            "headline": report.get("headline"),
+            "turning_point": report.get("turning_point"),
+            "star_player": report.get("star_player"),
+        })
+    return out
+
+
 def _node_survival(survival: dict, node_type: str,
                    home: str, away: str) -> dict:
     """Per-side reach/advance probabilities for one bracket tie, from the sim.
@@ -371,8 +413,15 @@ def resolve_bracket() -> dict:
     for m in enriched:
         rounds.setdefault(m["round"], []).append(m)
 
+    # Per-team group-stage journey (games played + key moments) for the detail
+    # page — built once per team that appears anywhere in the resolved bracket.
+    bracket_teams = sorted({t for m in enriched for t in
+                            (m.get("home_team"), m.get("away_team")) if t})
+    journeys = {t: team_journey(t) for t in bracket_teams}
+
     return {
         "projected": True,
+        "journeys": journeys,
         "modal_path_note": (
             "Most likely bracket — one illustrative path, not a certainty. "
             "Each tie carries per-team survival % from the Monte-Carlo; upsets "
