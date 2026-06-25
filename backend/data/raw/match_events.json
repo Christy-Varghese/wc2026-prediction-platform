@@ -1444,5 +1444,162 @@
    ]
   },
   "source": "ESPN"
+ },
+ "Switzerland|Canada": {
+  "home": "Switzerland",
+  "away": "Canada",
+  "date": "20260624",
+  "score": [
+   2,
+   1
+  ],
+  "scorers": {
+   "home": [
+    {
+     "player": "Rubén Vargas",
+     "minute": 46,
+     "type": "goal"
+    },
+    {
+     "player": "Johan Manzambi",
+     "minute": 57,
+     "type": "goal"
+    }
+   ],
+   "away": [
+    {
+     "player": "Promise David",
+     "minute": 76,
+     "type": "goal"
+    }
+   ]
+  },
+  "source": "ESPN"
+ },
+ "Bosnia and Herzegovina|Qatar": {
+  "home": "Bosnia and Herzegovina",
+  "away": "Qatar",
+  "date": "20260624",
+  "score": [
+   3,
+   1
+  ],
+  "scorers": {
+   "home": [
+    {
+     "player": "Kerim Alajbegović",
+     "minute": 18,
+     "type": "goal"
+    },
+    {
+     "player": "Sultan Al-Brake",
+     "minute": 34,
+     "type": "own goal"
+    },
+    {
+     "player": "Ermin Mahmić",
+     "minute": 80,
+     "type": "goal"
+    }
+   ],
+   "away": [
+    {
+     "player": "Hassan Al-Haydos",
+     "minute": 42,
+     "type": "goal"
+    }
+   ]
+  },
+  "source": "ESPN"
+ },
+ "Scotland|Brazil": {
+  "home": "Scotland",
+  "away": "Brazil",
+  "date": "20260624",
+  "score": [
+   0,
+   3
+  ],
+  "scorers": {
+   "home": [],
+   "away": [
+    {
+     "player": "Vinícius Júnior",
+     "minute": 7,
+     "type": "goal"
+    },
+    {
+     "player": "Vinícius Júnior",
+     "minute": 45,
+     "type": "goal"
+    },
+    {
+     "player": "Matheus Cunha",
+     "minute": 60,
+     "type": "goal"
+    }
+   ]
+  },
+  "source": "ESPN"
+ },
+ "Morocco|Haiti": {
+  "home": "Morocco",
+  "away": "Haiti",
+  "date": "20260624",
+  "score": [
+   4,
+   2
+  ],
+  "scorers": {
+   "home": [
+    {
+     "player": "Achraf Hakimi",
+     "minute": 39,
+     "type": "goal"
+    },
+    {
+     "player": "Ismael Saibari",
+     "minute": 45,
+     "type": "goal"
+    },
+    {
+     "player": "Soufiane Rahimi",
+     "minute": 78,
+     "type": "goal"
+    },
+    {
+     "player": "Gessime Yassine",
+     "minute": 89,
+     "type": "goal"
+    }
+   ],
+   "away": [
+    {
+     "player": "Yassine Bounou",
+     "minute": 10,
+     "type": "own goal"
+    },
+    {
+     "player": "Wilson Isidor",
+     "minute": 43,
+     "type": "goal"
+    }
+   ]
+  },
+  "source": "ESPN"
+ },
+ "South Africa|South Korea": {
+  "home": "South Africa",
+  "away": "South Korea",
+  "date": "20260624",
+  "score": [
+   0,
+   0
+  ],
+  "scorers": {
+   "home": [],
+   "away": []
+  },
+  "source": "FIFA"
  }
 }

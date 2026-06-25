@@ -175,5 +175,71 @@
    "ESPN",
    "VAVEL"
   ]
+ },
+ "Switzerland|Canada": {
+  "headline": "Switzerland edge hosts Canada to seal top spot",
+  "summary": "Rubén Vargas struck right after the break and Johan Manzambi added a second on 57' as Switzerland came from a goalless first half to beat Canada 2-1 in Vancouver. Promise David's late header set up a nervy finish but the Swiss held on.",
+  "star_player": "Johan Manzambi",
+  "star_reason": "His 57th-minute goal proved the decisive blow in a tight Group B decider.",
+  "turning_point": "Vargas breaking the deadlock seconds into the second half.",
+  "what_lacked": "Canada left it too late to respond and could not force an equaliser on home soil.",
+  "sources": [
+   "FIFA",
+   "ESPN",
+   "FOX Sports"
+  ]
+ },
+ "Bosnia and Herzegovina|Qatar": {
+  "headline": "Teenager Alajbegović inspires Bosnia rout of Qatar",
+  "summary": "18-year-old Kerim Alajbegović fired Bosnia ahead with a stunning long-range strike before a Sultan Al-Brake own goal doubled the lead. Hassan Al-Haydos pulled one back for Qatar but Ermin Mahmić's late goal sealed a 3-1 win that boosts Bosnia's knockout hopes and eliminates Qatar.",
+  "star_player": "Kerim Alajbegović",
+  "star_reason": "His thunderous opener set Bosnia on their way in a standout teenage display.",
+  "turning_point": "Alajbegović's 18th-minute screamer from 20 yards.",
+  "what_lacked": "Qatar's defending under pressure unravelled and they exit the tournament.",
+  "sources": [
+   "FIFA",
+   "ESPN",
+   "France 24"
+  ]
+ },
+ "Scotland|Brazil": {
+  "headline": "Vinícius double sends Brazil top of Group C",
+  "summary": "Vinícius Júnior was unplayable, striking inside seven minutes after a McKenna error and heading home just before the break. Matheus Cunha completed a 3-0 win that confirmed Brazil as Group C winners, dominating with 4.46 xG to Scotland's 1.13.",
+  "star_player": "Vinícius Júnior",
+  "star_reason": "A devastating two-goal display tore Scotland apart.",
+  "turning_point": "Vinícius' 7th-minute opener that set the tone.",
+  "what_lacked": "Scotland's early mistakes gifted Brazil control and they never recovered.",
+  "sources": [
+   "FIFA",
+   "ESPN",
+   "Al Jazeera"
+  ]
+ },
+ "Morocco|Haiti": {
+  "headline": "Morocco survive Haiti scare in six-goal thriller",
+  "summary": "An early Bounou own goal gave Haiti a shock lead but Morocco roared back through Achraf Hakimi and Ismael Saibari before half-time. Wilson Isidor kept Haiti in it, yet Soufiane Rahimi and Gessime Yassine sealed a chaotic 4-2 win that took Morocco second in Group C.",
+  "star_player": "Achraf Hakimi",
+  "star_reason": "His equaliser swung momentum back to Morocco in a frantic first half.",
+  "turning_point": "Saibari's stoppage-time goal to make it 2-1 before the break.",
+  "what_lacked": "Morocco's defending was loose throughout; Haiti bow out after a brave show.",
+  "sources": [
+   "FIFA",
+   "ESPN",
+   "France 24",
+   "VAVEL"
+  ]
+ },
+ "South Africa|South Korea": {
+  "headline": "South Africa and South Korea play out goalless draw",
+  "summary": "A cagey Group A dead rubber in Monterrey ended 0-0, with neither South Africa nor South Korea able to find a breakthrough in a low-chance encounter.",
+  "star_player": "Both defences",
+  "star_reason": "Resolute back lines kept a tight game scoreless.",
+  "turning_point": "A first half short on clear-cut chances set the tone.",
+  "what_lacked": "Cutting edge in the final third from both sides.",
+  "sources": [
+   "FIFA",
+   "ESPN",
+   "FOX Sports"
+  ]
  }
 }
