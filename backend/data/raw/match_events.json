@@ -1601,5 +1601,35 @@
    "away": []
   },
   "source": "FIFA"
+ },
+ "Czech Republic|Mexico": {
+  "home": "Czech Republic",
+  "away": "Mexico",
+  "date": "20260624",
+  "score": [
+   0,
+   3
+  ],
+  "scorers": {
+   "home": [],
+   "away": [
+    {
+     "player": "Mateo Chávez",
+     "minute": 55,
+     "type": "goal"
+    },
+    {
+     "player": "Julián Quiñones",
+     "minute": 61,
+     "type": "goal"
+    },
+    {
+     "player": "Álvaro Fidalgo",
+     "minute": 90,
+     "type": "goal"
+    }
+   ]
+  },
+  "source": "ESPN"
  }
 }
