@@ -28,8 +28,8 @@ const NEWS_FALLBACK: string[] = [
   "🇪🇬 Egypt 3-1 New Zealand — Salah on target",
   "👟 Golden Boot: Messi 5 · Haaland & Mbappé 4",
   "📊 CAI projects 🇦🇷 Argentina champions (32.6%)",
-  "🎯 Model outcome accuracy: 31/44 (70%)",
-  "🤖 CAI Ensemble: Dixon-Coles + Elo + XGBoost + Market",
+  "🎯 CAI outcome accuracy: 39/54 (72%)",
+  "🤖 CAI: current form + momentum led · 3-scenario knockout xG",
 ];
 
 export function Nav() {

@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Sora, Inter } from "next/font/google";
 import { Nav } from "@/components/nav";
 import { RouteTransition } from "@/components/route-transition";
+import { CaiInfo } from "@/components/cai-info";
 
 const display = Sora({
   subsets: ["latin"],
@@ -68,9 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <span className="cyan-text">WC26</span>
                   <span className="text-muted"> · CAI Prediction Platform</span>
                 </div>
-                <p className="mt-1 text-[11px] text-muted/60">
-                  Elo · Poisson · Dixon-Coles · XGBoost · Market Odds Ensemble + Monte Carlo Simulation
-                </p>
+                <CaiInfo />
               </div>
               <div className="text-[11px] text-muted/50">
                 Not affiliated with FIFA. Not betting advice. Tournament predictions for entertainment.
