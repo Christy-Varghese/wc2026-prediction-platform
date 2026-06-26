@@ -1,4 +1,5 @@
 """Matches: list (filterable) + full detail with prediction."""
+from __future__ import annotations
 from fastapi import APIRouter, HTTPException, Query
 
 from .. import fixtures, match_analytics, services

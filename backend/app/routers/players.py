@@ -1,4 +1,5 @@
 """Players: single player profile lookup."""
+from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from .. import fixtures

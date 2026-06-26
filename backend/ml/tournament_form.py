@@ -106,6 +106,13 @@ WC2026_PLAYED: list[tuple[str, str, int, int, bool]] = [
     ("Morocco",         "Haiti",                   4, 2, True),
     ("South Africa",    "South Korea",             1, 0, True),
     ("Czech Republic",  "Mexico",                  0, 3, False),
+    # ── Matchday 3 (Jun 25) ──
+    ("Ecuador",         "Germany",                 2, 1, True),
+    ("Curaçao",         "Ivory Coast",             0, 2, True),
+    ("Japan",           "Sweden",                  1, 1, True),
+    ("Tunisia",         "Netherlands",             1, 3, True),
+    ("Turkey",          "United States",           3, 2, True),
+    ("Paraguay",        "Australia",               0, 0, True),
 ]
 
 

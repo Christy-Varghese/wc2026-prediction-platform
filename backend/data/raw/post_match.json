@@ -1,258 +1,337 @@
 {
- "United States|Australia": {
-  "headline": "USMNT cruise past Australia in Seattle",
-  "summary": "An early Cameron Burgess own goal settled the hosts before Alex Freeman doubled the lead before half-time. The United States controlled the contest and saw out a comfortable 2-0 win to open their account.",
-  "star_player": "Alex Freeman",
-  "star_reason": "Capped a lively display with the decisive second goal on the stroke of half-time.",
-  "turning_point": "Burgess's 11th-minute own goal handed the USMNT an early grip on the game.",
-  "what_lacked": "Australia created little of note and never tested the US back line.",
-  "sources": [
-   "ESPN"
-  ]
- },
- "Scotland|Morocco": {
-  "headline": "Saibari's record-quick strike sinks Scotland",
-  "summary": "Ismael Saibari scored after just 72 seconds — the fastest goal of the tournament — and Morocco defended resolutely to hold on for a 1-0 win. Scotland pushed but were denied, with a McTominay penalty appeal waved away.",
-  "star_player": "Ismael Saibari",
-  "star_reason": "His 2nd-minute strike was the only goal and set the tone for Morocco's disciplined display.",
-  "turning_point": "Brahim Diaz's lofted ball released Saibari inside two minutes.",
-  "what_lacked": "Scotland lacked a cutting edge in the final third and missed their chance to qualify.",
-  "sources": [
-   "ESPN",
-   "Al Jazeera",
-   "101 Great Goals"
-  ]
- },
- "Brazil|Haiti": {
-  "headline": "Cunha double powers Brazil past Haiti",
-  "summary": "Matheus Cunha struck twice in the first half and Vinicius Junior added a third on the stroke of half-time as Brazil eliminated Haiti with a convincing 3-0 win in Philadelphia. Neymar was rested.",
-  "star_player": "Matheus Cunha",
-  "star_reason": "Two first-half goals (23', 36') broke the game open and reawakened Selecao hopes.",
-  "turning_point": "Cunha's quickfire brace put Brazil in command before the interval.",
-  "what_lacked": "Haiti were organised but offered almost no attacking threat against a rotated Brazil.",
-  "sources": [
-   "ESPN",
-   "NBC Sports",
-   "Outlook India"
-  ]
- },
- "Paraguay|Turkey": {
-  "headline": "Galarza's early bolt stuns Turkey",
-  "summary": "Matias Galarza scored inside 65 seconds and Paraguay held on — even after Miguel Almiron's first-half red card left them a man down — to beat Turkey 1-0 and eliminate the Turks. Galarza's effort squeezed through Merih Demiral and beat Ugurcan Cakir.",
-  "star_player": "Matias Galarza",
-  "star_reason": "His sub-2-minute winner was the difference and set a tournament goal record.",
-  "turning_point": "Almiron's straight red after a VAR review forced Paraguay to defend for over an hour.",
-  "what_lacked": "Turkey dominated the ball but could not break down ten-man Paraguay.",
-  "sources": [
-   "ESPN",
-   "FIFA",
-   "The Statesman"
-  ]
- },
- "Netherlands|Sweden": {
-  "headline": "Dutch firepower overwhelms Sweden",
-  "summary": "Brian Brobbey and Cody Gakpo each scored twice and Crysencio Summerville added a late fifth as the Netherlands raced to a 5-1 win and top of Group F. Anthony Elanga grabbed a consolation for Sweden.",
-  "star_player": "Cody Gakpo",
-  "star_reason": "Two goals in seven second-half minutes (47', 54') put the result beyond doubt.",
-  "turning_point": "Brobbey's 5th-minute opener set an early tone Sweden could never recover from.",
-  "what_lacked": "Sweden had no answer to the Dutch transition and were overrun in midfield.",
-  "sources": [
-   "ESPN",
-   "Sky Sports"
-  ]
- },
- "Germany|Ivory Coast": {
-  "headline": "Undav off the bench rescues Germany",
-  "summary": "Franck Kessie put Ivory Coast ahead at the break, but substitute Deniz Undav levelled in the 68th minute and snatched a 94th-minute winner to send Germany into the Round of 32 with a dramatic 2-1 comeback.",
-  "star_player": "Deniz Undav",
-  "star_reason": "A match-changing brace off the bench, including the stoppage-time winner.",
-  "turning_point": "Nagelsmann's substitutions (Undav, Amiri, Nmecha) flipped a flat first-half display.",
-  "what_lacked": "Ivory Coast led at half-time but couldn't manage the game and conceded twice late.",
-  "sources": [
-   "ESPN",
-   "Sky Sports",
-   "CBS Sports"
-  ]
- },
- "Ecuador|Curaçao": {
-  "headline": "Room's heroics earn Curacao a historic point",
-  "summary": "Goalkeeper Eloy Room made 15 saves as Curacao held Ecuador to a 0-0 draw for their first-ever World Cup point. Ecuador's 15 shots on target without scoring was the most in a World Cup match since 1966.",
-  "star_player": "Eloy Room",
-  "star_reason": "Fifteen saves — a one-man wall that denied a dominant Ecuador all night.",
-  "turning_point": "Enner Valencia's two gilt-edged misses summed up Ecuador's frustration.",
-  "what_lacked": "Ecuador dominated possession and chances but lacked a finishing touch.",
-  "sources": [
-   "ESPN",
-   "FIFA"
-  ]
- },
- "Tunisia|Japan": {
-  "headline": "Ueda double sends Japan top, eliminates Tunisia",
-  "summary": "Daichi Kamada scored Japan's fastest-ever World Cup goal in the 4th minute and Ayase Ueda struck twice, with Junya Ito also on target, as Japan thrashed Tunisia 4-0 — the first AFC side to score four in a World Cup game. Tunisia were eliminated.",
-  "star_player": "Ayase Ueda",
-  "star_reason": "A first-half strike and a late header capped a clinical Japan performance.",
-  "turning_point": "Kamada's 4th-minute opener set Japan on their way inside five minutes.",
-  "what_lacked": "Tunisia were second best across the pitch and never threatened a route back.",
-  "sources": [
-   "ESPN",
-   "FIFA",
-   "Bleacher Report"
-  ]
- },
- "Spain|Saudi Arabia": {
-  "headline": "Yamal and Oyarzabal run riot as Spain cruise past Saudi Arabia",
-  "summary": "Lamine Yamal opened inside 10 minutes and Mikel Oyarzabal struck twice in a three-minute spell to put Spain out of sight before half-time. A Hassan Al-Tambakti own goal early in the second half completed a comfortable 4-0 win that sends Spain top of Group H.",
-  "star_player": "Mikel Oyarzabal",
-  "star_reason": "A clinical 21st- and 24th-minute brace turned an early lead into a rout.",
-  "turning_point": "Oyarzabal's quickfire double midway through the first half killed the contest.",
-  "what_lacked": "Saudi Arabia offered little going forward and were undone by Spain’s movement between the lines.",
-  "sources": [
-   "ESPN",
-   "FIFA"
-  ]
- },
- "Belgium|Iran": {
-  "headline": "Ten-man Belgium held by stubborn Iran in goalless stalemate",
-  "summary": "Belgium were frustrated by a disciplined Iran and saw their afternoon unravel when they were reduced to ten men early in the second half. Iran defended deep and dug in for a 0-0 draw that leaves Group G wide open ahead of New Zealand vs Egypt.",
-  "star_player": "Iran defence",
-  "star_reason": "A compact, organised back line shut out one of the tournament favourites.",
-  "turning_point": "Belgium's second-half red card forced them onto the back foot.",
-  "what_lacked": "Belgium lacked a cutting edge in the final third and paid for the dismissal.",
-  "sources": [
-   "ESPN",
-   "Yahoo Sports"
-  ]
- },
- "Uruguay|Cape Verde": {
-  "headline": "Cape Verde stun Uruguay with late leveller in 2-2 thriller",
-  "summary": "Kevin Pina’s 21st-minute free-kick put Cape Verde ahead before Uruguay roared back through Maximiliano Araújo and an Agustín Canobbio strike in first-half stoppage time. Helio Varela’s 61st-minute equaliser earned the Blue Sharks a shock 2-2 draw with La Celeste.",
-  "star_player": "Helio Varela",
-  "star_reason": "His second-half equaliser snatched a historic point for Cape Verde.",
-  "turning_point": "Varela's 61st-minute strike cancelled out Uruguay's late first-half turnaround.",
-  "what_lacked": "Uruguay switched off defensively after the break and could not see out a winning position.",
-  "sources": [
-   "FIFA",
-   "ESPN",
-   "Outlook India"
-  ]
- },
- "Colombia|DR Congo": {
-  "headline": "Muñoz header sends Colombia into the knockouts",
-  "summary": "Daniel Muñoz's 76th-minute strike settled a tense Group K clash in Guadalajara, giving Colombia a 1-0 win over DR Congo and sealing their place in the last 32 with a game to spare.",
-  "star_player": "Daniel Muñoz",
-  "star_reason": "The wing-back's late goal broke a stubborn Congolese resistance and booked Colombia's knockout berth.",
-  "turning_point": "Muñoz's 76th-minute finish after Colombia had been frustrated for over an hour.",
-  "what_lacked": "DR Congo defended well but offered too little going forward and are now on the brink of elimination.",
-  "sources": [
-   "FIFA",
-   "ESPN",
-   "FOX Sports"
-  ]
- },
- "England|Ghana": {
-  "headline": "Ghana frustrate England in goalless stalemate",
-  "summary": "England extended their unbeaten start but were held to a 0-0 draw by a disciplined Ghana side in Boston. Nico O'Reilly and Harry Kane spurned late chances as the Black Stars earned a battling point.",
-  "star_player": "Ghana defence",
-  "star_reason": "A resolute rearguard kept England's attack at bay for the full 90 minutes.",
-  "turning_point": "Kane's late missed opening that would have spared England's blushes.",
-  "what_lacked": "England lacked a cutting edge in the final third and could not break a packed Ghanaian block.",
-  "sources": [
-   "FIFA",
-   "ESPN",
-   "Al Jazeera",
-   "CBS Sports"
-  ]
- },
- "Panama|Croatia": {
-  "headline": "Budimir strike downs Panama as Croatia revive hopes",
-  "summary": "Ante Budimir's 54th-minute goal gave Croatia a crucial 1-0 win over Panama in Toronto. A second straight 1-0 defeat eliminates Panama, while the Vatreni keep their knockout ambitions alive.",
-  "star_player": "Ante Budimir",
-  "star_reason": "His second-half finish delivered the win Croatia desperately needed.",
-  "turning_point": "Budimir's 54th-minute strike in a cagey, low-chance affair.",
-  "what_lacked": "Panama again failed to score and pay the price, exiting the tournament after two 1-0 losses.",
-  "sources": [
-   "FIFA",
-   "ESPN",
-   "VAVEL"
-  ]
- },
- "Switzerland|Canada": {
-  "headline": "Switzerland edge hosts Canada to seal top spot",
-  "summary": "Rubén Vargas struck right after the break and Johan Manzambi added a second on 57' as Switzerland came from a goalless first half to beat Canada 2-1 in Vancouver. Promise David's late header set up a nervy finish but the Swiss held on.",
-  "star_player": "Johan Manzambi",
-  "star_reason": "His 57th-minute goal proved the decisive blow in a tight Group B decider.",
-  "turning_point": "Vargas breaking the deadlock seconds into the second half.",
-  "what_lacked": "Canada left it too late to respond and could not force an equaliser on home soil.",
-  "sources": [
-   "FIFA",
-   "ESPN",
-   "FOX Sports"
-  ]
- },
- "Bosnia and Herzegovina|Qatar": {
-  "headline": "Teenager Alajbegović inspires Bosnia rout of Qatar",
-  "summary": "18-year-old Kerim Alajbegović fired Bosnia ahead with a stunning long-range strike before a Sultan Al-Brake own goal doubled the lead. Hassan Al-Haydos pulled one back for Qatar but Ermin Mahmić's late goal sealed a 3-1 win that boosts Bosnia's knockout hopes and eliminates Qatar.",
-  "star_player": "Kerim Alajbegović",
-  "star_reason": "His thunderous opener set Bosnia on their way in a standout teenage display.",
-  "turning_point": "Alajbegović's 18th-minute screamer from 20 yards.",
-  "what_lacked": "Qatar's defending under pressure unravelled and they exit the tournament.",
-  "sources": [
-   "FIFA",
-   "ESPN",
-   "France 24"
-  ]
- },
- "Scotland|Brazil": {
-  "headline": "Vinícius double sends Brazil top of Group C",
-  "summary": "Vinícius Júnior was unplayable, striking inside seven minutes after a McKenna error and heading home just before the break. Matheus Cunha completed a 3-0 win that confirmed Brazil as Group C winners, dominating with 4.46 xG to Scotland's 1.13.",
-  "star_player": "Vinícius Júnior",
-  "star_reason": "A devastating two-goal display tore Scotland apart.",
-  "turning_point": "Vinícius' 7th-minute opener that set the tone.",
-  "what_lacked": "Scotland's early mistakes gifted Brazil control and they never recovered.",
-  "sources": [
-   "FIFA",
-   "ESPN",
-   "Al Jazeera"
-  ]
- },
- "Morocco|Haiti": {
-  "headline": "Morocco survive Haiti scare in six-goal thriller",
-  "summary": "An early Bounou own goal gave Haiti a shock lead but Morocco roared back through Achraf Hakimi and Ismael Saibari before half-time. Wilson Isidor kept Haiti in it, yet Soufiane Rahimi and Gessime Yassine sealed a chaotic 4-2 win that took Morocco second in Group C.",
-  "star_player": "Achraf Hakimi",
-  "star_reason": "His equaliser swung momentum back to Morocco in a frantic first half.",
-  "turning_point": "Saibari's stoppage-time goal to make it 2-1 before the break.",
-  "what_lacked": "Morocco's defending was loose throughout; Haiti bow out after a brave show.",
-  "sources": [
-   "FIFA",
-   "ESPN",
-   "France 24",
-   "VAVEL"
-  ]
- },
- "South Africa|South Korea": {
-  "headline": "Maseko sends South Africa into knockouts for the first time",
-  "summary": "Thapelo Maseko's 63rd-minute strike, set up by Tshepang Moremi, gave South Africa a 1-0 win over South Korea and booked Bafana Bafana's place in the World Cup knockout stage for the first time in their history.",
-  "star_player": "Thapelo Maseko",
-  "star_reason": "His clinical second-half finish settled a tense Group A decider.",
-  "turning_point": "Maseko beating Kim Seung-gyu with a low strike into the bottom corner on 63'.",
-  "what_lacked": "South Korea, who dropped captain Son Heung-min, lacked a cutting edge and exit the tournament.",
-  "sources": [
-   "FIFA",
-   "ESPN",
-   "Outlook India"
-  ]
- },
- "Czech Republic|Mexico": {
-  "headline": "Mexico cruise past Czechia to win Group A",
-  "summary": "Mateo Chávez broke the deadlock after the hour before Julián Quiñones and a stoppage-time Álvaro Fidalgo strike completed a 3-0 win over Czechia in Mexico City, confirming El Tri as Group A winners.",
-  "star_player": "Mateo Chávez",
-  "star_reason": "His 55th-minute opener unlocked a stubborn Czech defence.",
-  "turning_point": "Chávez's goal that finally broke through after a goalless first half.",
-  "what_lacked": "Czechia offered little going forward and exit the World Cup.",
-  "sources": [
-   "FIFA",
-   "ESPN",
-   "FOX Sports"
-  ]
- }
+  "United States|Australia": {
+    "headline": "USMNT cruise past Australia in Seattle",
+    "summary": "An early Cameron Burgess own goal settled the hosts before Alex Freeman doubled the lead before half-time. The United States controlled the contest and saw out a comfortable 2-0 win to open their account.",
+    "star_player": "Alex Freeman",
+    "star_reason": "Capped a lively display with the decisive second goal on the stroke of half-time.",
+    "turning_point": "Burgess's 11th-minute own goal handed the USMNT an early grip on the game.",
+    "what_lacked": "Australia created little of note and never tested the US back line.",
+    "sources": [
+      "ESPN"
+    ]
+  },
+  "Scotland|Morocco": {
+    "headline": "Saibari's record-quick strike sinks Scotland",
+    "summary": "Ismael Saibari scored after just 72 seconds — the fastest goal of the tournament — and Morocco defended resolutely to hold on for a 1-0 win. Scotland pushed but were denied, with a McTominay penalty appeal waved away.",
+    "star_player": "Ismael Saibari",
+    "star_reason": "His 2nd-minute strike was the only goal and set the tone for Morocco's disciplined display.",
+    "turning_point": "Brahim Diaz's lofted ball released Saibari inside two minutes.",
+    "what_lacked": "Scotland lacked a cutting edge in the final third and missed their chance to qualify.",
+    "sources": [
+      "ESPN",
+      "Al Jazeera",
+      "101 Great Goals"
+    ]
+  },
+  "Brazil|Haiti": {
+    "headline": "Cunha double powers Brazil past Haiti",
+    "summary": "Matheus Cunha struck twice in the first half and Vinicius Junior added a third on the stroke of half-time as Brazil eliminated Haiti with a convincing 3-0 win in Philadelphia. Neymar was rested.",
+    "star_player": "Matheus Cunha",
+    "star_reason": "Two first-half goals (23', 36') broke the game open and reawakened Selecao hopes.",
+    "turning_point": "Cunha's quickfire brace put Brazil in command before the interval.",
+    "what_lacked": "Haiti were organised but offered almost no attacking threat against a rotated Brazil.",
+    "sources": [
+      "ESPN",
+      "NBC Sports",
+      "Outlook India"
+    ]
+  },
+  "Paraguay|Turkey": {
+    "headline": "Galarza's early bolt stuns Turkey",
+    "summary": "Matias Galarza scored inside 65 seconds and Paraguay held on — even after Miguel Almiron's first-half red card left them a man down — to beat Turkey 1-0 and eliminate the Turks. Galarza's effort squeezed through Merih Demiral and beat Ugurcan Cakir.",
+    "star_player": "Matias Galarza",
+    "star_reason": "His sub-2-minute winner was the difference and set a tournament goal record.",
+    "turning_point": "Almiron's straight red after a VAR review forced Paraguay to defend for over an hour.",
+    "what_lacked": "Turkey dominated the ball but could not break down ten-man Paraguay.",
+    "sources": [
+      "ESPN",
+      "FIFA",
+      "The Statesman"
+    ]
+  },
+  "Netherlands|Sweden": {
+    "headline": "Dutch firepower overwhelms Sweden",
+    "summary": "Brian Brobbey and Cody Gakpo each scored twice and Crysencio Summerville added a late fifth as the Netherlands raced to a 5-1 win and top of Group F. Anthony Elanga grabbed a consolation for Sweden.",
+    "star_player": "Cody Gakpo",
+    "star_reason": "Two goals in seven second-half minutes (47', 54') put the result beyond doubt.",
+    "turning_point": "Brobbey's 5th-minute opener set an early tone Sweden could never recover from.",
+    "what_lacked": "Sweden had no answer to the Dutch transition and were overrun in midfield.",
+    "sources": [
+      "ESPN",
+      "Sky Sports"
+    ]
+  },
+  "Germany|Ivory Coast": {
+    "headline": "Undav off the bench rescues Germany",
+    "summary": "Franck Kessie put Ivory Coast ahead at the break, but substitute Deniz Undav levelled in the 68th minute and snatched a 94th-minute winner to send Germany into the Round of 32 with a dramatic 2-1 comeback.",
+    "star_player": "Deniz Undav",
+    "star_reason": "A match-changing brace off the bench, including the stoppage-time winner.",
+    "turning_point": "Nagelsmann's substitutions (Undav, Amiri, Nmecha) flipped a flat first-half display.",
+    "what_lacked": "Ivory Coast led at half-time but couldn't manage the game and conceded twice late.",
+    "sources": [
+      "ESPN",
+      "Sky Sports",
+      "CBS Sports"
+    ]
+  },
+  "Ecuador|Curaçao": {
+    "headline": "Room's heroics earn Curacao a historic point",
+    "summary": "Goalkeeper Eloy Room made 15 saves as Curacao held Ecuador to a 0-0 draw for their first-ever World Cup point. Ecuador's 15 shots on target without scoring was the most in a World Cup match since 1966.",
+    "star_player": "Eloy Room",
+    "star_reason": "Fifteen saves — a one-man wall that denied a dominant Ecuador all night.",
+    "turning_point": "Enner Valencia's two gilt-edged misses summed up Ecuador's frustration.",
+    "what_lacked": "Ecuador dominated possession and chances but lacked a finishing touch.",
+    "sources": [
+      "ESPN",
+      "FIFA"
+    ]
+  },
+  "Tunisia|Japan": {
+    "headline": "Ueda double sends Japan top, eliminates Tunisia",
+    "summary": "Daichi Kamada scored Japan's fastest-ever World Cup goal in the 4th minute and Ayase Ueda struck twice, with Junya Ito also on target, as Japan thrashed Tunisia 4-0 — the first AFC side to score four in a World Cup game. Tunisia were eliminated.",
+    "star_player": "Ayase Ueda",
+    "star_reason": "A first-half strike and a late header capped a clinical Japan performance.",
+    "turning_point": "Kamada's 4th-minute opener set Japan on their way inside five minutes.",
+    "what_lacked": "Tunisia were second best across the pitch and never threatened a route back.",
+    "sources": [
+      "ESPN",
+      "FIFA",
+      "Bleacher Report"
+    ]
+  },
+  "Spain|Saudi Arabia": {
+    "headline": "Yamal and Oyarzabal run riot as Spain cruise past Saudi Arabia",
+    "summary": "Lamine Yamal opened inside 10 minutes and Mikel Oyarzabal struck twice in a three-minute spell to put Spain out of sight before half-time. A Hassan Al-Tambakti own goal early in the second half completed a comfortable 4-0 win that sends Spain top of Group H.",
+    "star_player": "Mikel Oyarzabal",
+    "star_reason": "A clinical 21st- and 24th-minute brace turned an early lead into a rout.",
+    "turning_point": "Oyarzabal's quickfire double midway through the first half killed the contest.",
+    "what_lacked": "Saudi Arabia offered little going forward and were undone by Spain’s movement between the lines.",
+    "sources": [
+      "ESPN",
+      "FIFA"
+    ]
+  },
+  "Belgium|Iran": {
+    "headline": "Ten-man Belgium held by stubborn Iran in goalless stalemate",
+    "summary": "Belgium were frustrated by a disciplined Iran and saw their afternoon unravel when they were reduced to ten men early in the second half. Iran defended deep and dug in for a 0-0 draw that leaves Group G wide open ahead of New Zealand vs Egypt.",
+    "star_player": "Iran defence",
+    "star_reason": "A compact, organised back line shut out one of the tournament favourites.",
+    "turning_point": "Belgium's second-half red card forced them onto the back foot.",
+    "what_lacked": "Belgium lacked a cutting edge in the final third and paid for the dismissal.",
+    "sources": [
+      "ESPN",
+      "Yahoo Sports"
+    ]
+  },
+  "Uruguay|Cape Verde": {
+    "headline": "Cape Verde stun Uruguay with late leveller in 2-2 thriller",
+    "summary": "Kevin Pina’s 21st-minute free-kick put Cape Verde ahead before Uruguay roared back through Maximiliano Araújo and an Agustín Canobbio strike in first-half stoppage time. Helio Varela’s 61st-minute equaliser earned the Blue Sharks a shock 2-2 draw with La Celeste.",
+    "star_player": "Helio Varela",
+    "star_reason": "His second-half equaliser snatched a historic point for Cape Verde.",
+    "turning_point": "Varela's 61st-minute strike cancelled out Uruguay's late first-half turnaround.",
+    "what_lacked": "Uruguay switched off defensively after the break and could not see out a winning position.",
+    "sources": [
+      "FIFA",
+      "ESPN",
+      "Outlook India"
+    ]
+  },
+  "Colombia|DR Congo": {
+    "headline": "Muñoz header sends Colombia into the knockouts",
+    "summary": "Daniel Muñoz's 76th-minute strike settled a tense Group K clash in Guadalajara, giving Colombia a 1-0 win over DR Congo and sealing their place in the last 32 with a game to spare.",
+    "star_player": "Daniel Muñoz",
+    "star_reason": "The wing-back's late goal broke a stubborn Congolese resistance and booked Colombia's knockout berth.",
+    "turning_point": "Muñoz's 76th-minute finish after Colombia had been frustrated for over an hour.",
+    "what_lacked": "DR Congo defended well but offered too little going forward and are now on the brink of elimination.",
+    "sources": [
+      "FIFA",
+      "ESPN",
+      "FOX Sports"
+    ]
+  },
+  "England|Ghana": {
+    "headline": "Ghana frustrate England in goalless stalemate",
+    "summary": "England extended their unbeaten start but were held to a 0-0 draw by a disciplined Ghana side in Boston. Nico O'Reilly and Harry Kane spurned late chances as the Black Stars earned a battling point.",
+    "star_player": "Ghana defence",
+    "star_reason": "A resolute rearguard kept England's attack at bay for the full 90 minutes.",
+    "turning_point": "Kane's late missed opening that would have spared England's blushes.",
+    "what_lacked": "England lacked a cutting edge in the final third and could not break a packed Ghanaian block.",
+    "sources": [
+      "FIFA",
+      "ESPN",
+      "Al Jazeera",
+      "CBS Sports"
+    ]
+  },
+  "Panama|Croatia": {
+    "headline": "Budimir strike downs Panama as Croatia revive hopes",
+    "summary": "Ante Budimir's 54th-minute goal gave Croatia a crucial 1-0 win over Panama in Toronto. A second straight 1-0 defeat eliminates Panama, while the Vatreni keep their knockout ambitions alive.",
+    "star_player": "Ante Budimir",
+    "star_reason": "His second-half finish delivered the win Croatia desperately needed.",
+    "turning_point": "Budimir's 54th-minute strike in a cagey, low-chance affair.",
+    "what_lacked": "Panama again failed to score and pay the price, exiting the tournament after two 1-0 losses.",
+    "sources": [
+      "FIFA",
+      "ESPN",
+      "VAVEL"
+    ]
+  },
+  "Switzerland|Canada": {
+    "headline": "Switzerland edge hosts Canada to seal top spot",
+    "summary": "Rubén Vargas struck right after the break and Johan Manzambi added a second on 57' as Switzerland came from a goalless first half to beat Canada 2-1 in Vancouver. Promise David's late header set up a nervy finish but the Swiss held on.",
+    "star_player": "Johan Manzambi",
+    "star_reason": "His 57th-minute goal proved the decisive blow in a tight Group B decider.",
+    "turning_point": "Vargas breaking the deadlock seconds into the second half.",
+    "what_lacked": "Canada left it too late to respond and could not force an equaliser on home soil.",
+    "sources": [
+      "FIFA",
+      "ESPN",
+      "FOX Sports"
+    ]
+  },
+  "Bosnia and Herzegovina|Qatar": {
+    "headline": "Teenager Alajbegović inspires Bosnia rout of Qatar",
+    "summary": "18-year-old Kerim Alajbegović fired Bosnia ahead with a stunning long-range strike before a Sultan Al-Brake own goal doubled the lead. Hassan Al-Haydos pulled one back for Qatar but Ermin Mahmić's late goal sealed a 3-1 win that boosts Bosnia's knockout hopes and eliminates Qatar.",
+    "star_player": "Kerim Alajbegović",
+    "star_reason": "His thunderous opener set Bosnia on their way in a standout teenage display.",
+    "turning_point": "Alajbegović's 18th-minute screamer from 20 yards.",
+    "what_lacked": "Qatar's defending under pressure unravelled and they exit the tournament.",
+    "sources": [
+      "FIFA",
+      "ESPN",
+      "France 24"
+    ]
+  },
+  "Scotland|Brazil": {
+    "headline": "Vinícius double sends Brazil top of Group C",
+    "summary": "Vinícius Júnior was unplayable, striking inside seven minutes after a McKenna error and heading home just before the break. Matheus Cunha completed a 3-0 win that confirmed Brazil as Group C winners, dominating with 4.46 xG to Scotland's 1.13.",
+    "star_player": "Vinícius Júnior",
+    "star_reason": "A devastating two-goal display tore Scotland apart.",
+    "turning_point": "Vinícius' 7th-minute opener that set the tone.",
+    "what_lacked": "Scotland's early mistakes gifted Brazil control and they never recovered.",
+    "sources": [
+      "FIFA",
+      "ESPN",
+      "Al Jazeera"
+    ]
+  },
+  "Morocco|Haiti": {
+    "headline": "Morocco survive Haiti scare in six-goal thriller",
+    "summary": "An early Bounou own goal gave Haiti a shock lead but Morocco roared back through Achraf Hakimi and Ismael Saibari before half-time. Wilson Isidor kept Haiti in it, yet Soufiane Rahimi and Gessime Yassine sealed a chaotic 4-2 win that took Morocco second in Group C.",
+    "star_player": "Achraf Hakimi",
+    "star_reason": "His equaliser swung momentum back to Morocco in a frantic first half.",
+    "turning_point": "Saibari's stoppage-time goal to make it 2-1 before the break.",
+    "what_lacked": "Morocco's defending was loose throughout; Haiti bow out after a brave show.",
+    "sources": [
+      "FIFA",
+      "ESPN",
+      "France 24",
+      "VAVEL"
+    ]
+  },
+  "South Africa|South Korea": {
+    "headline": "Maseko sends South Africa into knockouts for the first time",
+    "summary": "Thapelo Maseko's 63rd-minute strike, set up by Tshepang Moremi, gave South Africa a 1-0 win over South Korea and booked Bafana Bafana's place in the World Cup knockout stage for the first time in their history.",
+    "star_player": "Thapelo Maseko",
+    "star_reason": "His clinical second-half finish settled a tense Group A decider.",
+    "turning_point": "Maseko beating Kim Seung-gyu with a low strike into the bottom corner on 63'.",
+    "what_lacked": "South Korea, who dropped captain Son Heung-min, lacked a cutting edge and exit the tournament.",
+    "sources": [
+      "FIFA",
+      "ESPN",
+      "Outlook India"
+    ]
+  },
+  "Czech Republic|Mexico": {
+    "headline": "Mexico cruise past Czechia to win Group A",
+    "summary": "Mateo Chávez broke the deadlock after the hour before Julián Quiñones and a stoppage-time Álvaro Fidalgo strike completed a 3-0 win over Czechia in Mexico City, confirming El Tri as Group A winners.",
+    "star_player": "Mateo Chávez",
+    "star_reason": "His 55th-minute opener unlocked a stubborn Czech defence.",
+    "turning_point": "Chávez's goal that finally broke through after a goalless first half.",
+    "what_lacked": "Czechia offered little going forward and exit the World Cup.",
+    "sources": [
+      "FIFA",
+      "ESPN",
+      "FOX Sports"
+    ]
+  },
+  "Ecuador|Germany": {
+    "headline": "Plata's late winner sends Ecuador through as Germany bow out on top",
+    "summary": "Ecuador produced a stunning fightback to beat Germany 2-1 at MetLife Stadium and advance as one of the best third-placed sides. Leroy Sané's early opener was cancelled by Nilson Angulo nine minutes in, before Gonzalo Plata stabbed home the winner with 13 minutes left. Germany, already qualified as Group E winners, finished top despite the loss.",
+    "star_player": "Gonzalo Plata",
+    "star_reason": "His 77th-minute close-range finish completed Ecuador's comeback and secured their historic knockout berth.",
+    "turning_point": "Angulo's rapid equaliser on 9 minutes settled Ecuador's nerves and swung the momentum away from Germany.",
+    "what_lacked": "Germany lacked urgency with qualification already secured, allowing Ecuador to exploit space in behind.",
+    "sources": [
+      "ESPN",
+      "Sky Sports",
+      "FIFA"
+    ]
+  },
+  "Curaçao|Ivory Coast": {
+    "headline": "Pépé brace powers Ivory Coast into knockouts for first time",
+    "summary": "Nicolas Pépé scored twice as Ivory Coast defeated Curaçao 2-0 in Philadelphia to qualify for the World Cup knockout stages for the first time. The former Arsenal forward capitalised on a defensive error to open the scoring after just seven minutes, then coolly added a second to book Les Éléphants' historic place in the last 32.",
+    "star_player": "Nicolas Pépé",
+    "star_reason": "A two-goal masterclass — clinical finish at 7' and a composed second — made Ivory Coast's first knockout qualification a reality.",
+    "turning_point": "Pépé's opener in the 7th minute, punishing a Curaçao backline mistake from a Yan Diomandé cross.",
+    "what_lacked": "Curaçao offered little threat going forward and were unable to recover after conceding so early.",
+    "sources": [
+      "ESPN",
+      "Sky Sports",
+      "TSN"
+    ]
+  },
+  "Japan|Sweden": {
+    "headline": "Elanga rescues Sweden as both sides advance from Group F",
+    "summary": "Japan and Sweden played out a 1-1 draw at AT&T Stadium, with both teams advancing to the knockout stage. Daizen Maeda's composed finish from a Ritsu Doan through-ball gave Japan the lead in the 56th minute, but Anthony Elanga's left-footed cross-shot six minutes later earned Sweden a point and second place in Group F.",
+    "star_player": "Anthony Elanga",
+    "star_reason": "His 62nd-minute equaliser — his second goal of the tournament — rescued Sweden's second-place finish and denied Japan a group win.",
+    "turning_point": "Maeda's opener threatened to push Sweden into a tighter bracket path, but Elanga's immediate response restored parity.",
+    "what_lacked": "Japan failed to protect their lead after the break and could not hold off Sweden's pressing response.",
+    "sources": [
+      "ESPN",
+      "FIFA",
+      "Outlook India"
+    ]
+  },
+  "Tunisia|Netherlands": {
+    "headline": "Brobbey and two own goals seal Group F top spot for Netherlands",
+    "summary": "The Netherlands topped Group F with a comfortable 3-1 win over Tunisia in Kansas City. Ellys Skhiri's own goal on 3 minutes and Brian Brobbey's strike four minutes later gave the Dutch a flying start. Tunisia briefly halved the deficit through Hazem Mastouri (54'), but Anis Slimane's own goal in the 62nd minute ended resistance.",
+    "star_player": "Brian Brobbey",
+    "star_reason": "His third goal of the tournament gave Netherlands daylight after two minutes and underlined their dominance throughout the group stage.",
+    "turning_point": "Brobbey's second-minute goal compounded the opening own goal, leaving Tunisia needing a miracle they never produced.",
+    "what_lacked": "Tunisia's defensive shape crumbled from the first whistle and their consolation came too late to matter.",
+    "sources": [
+      "ESPN",
+      "VAVEL",
+      "FIFA"
+    ]
+  },
+  "Turkey|United States": {
+    "headline": "Ayhan's 98th-minute winner hands Turkey comeback victory over US",
+    "summary": "Kaan Ayhan stabbed home in the 98th minute as Turkey stunned the United States 3-2 in Los Angeles, despite the USMNT already winning Group D. Auston Trusty's third-minute header put the US ahead, but Arda Güler equalised and Orkun Kökcü put Turkey in front. Sebastian Berhalter levelled at 2-2 after the break, before Ayhan's dramatic late winner denied a US squad of rotated players a clean sheet.",
+    "star_player": "Arda Güler",
+    "star_reason": "Calmly levelled after the US opener and orchestrated Turkey's midfield throughout, setting the platform for the comeback.",
+    "turning_point": "Kökcü's 31st-minute goal gave Turkey a lead they briefly surrendered, but Ayhan's stoppage-time strike was the defining moment.",
+    "what_lacked": "The US fielded heavily rotated players with qualification secure, and were unable to clear their lines in the final seconds.",
+    "sources": [
+      "NPR",
+      "NBC Sports",
+      "ESPN",
+      "ABC News"
+    ]
+  },
+  "Paraguay|Australia": {
+    "headline": "Goalless draw enough for Paraguay and Australia to both advance",
+    "summary": "A cautious, goalless draw in San Francisco saw both Paraguay and Australia advance to the knockout round. With the US having already topped Group D, both sides needed only to avoid heavy defeat. The game was largely without incident — Jordan Bos had Australia's best chance in the 90th minute — and Diego Gómez's second yellow card of the group stage rules him out of the round of 32.",
+    "star_player": "Mathías Villasanti",
+    "star_reason": "The Paraguay midfielder was composed under pressure and helped marshal a disciplined defensive effort throughout.",
+    "turning_point": "The scoreless first half set the cautious tone; neither side was willing to risk conceding in a game that suited both.",
+    "what_lacked": "Both teams lacked attacking ambition, content with a draw that guaranteed safe passage to the knockouts.",
+    "sources": [
+      "Yahoo Sports",
+      "ESPN",
+      "FIFA"
+    ]
+  }
 }

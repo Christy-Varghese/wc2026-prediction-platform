@@ -1,4 +1,5 @@
 """Teams: list + profile (squad, form, group + knockout progression)."""
+from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from .. import fixtures, ml_engine

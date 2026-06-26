@@ -1,4 +1,5 @@
 """Tournament simulator: standings, bracket odds, champion probabilities."""
+from __future__ import annotations
 from fastapi import APIRouter, Query
 
 from .. import fixtures, knockout_engine, ml_engine

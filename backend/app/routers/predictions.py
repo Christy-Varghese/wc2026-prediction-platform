@@ -1,4 +1,5 @@
 """Predictions, home dashboard, and insights (dark horses / upset alerts)."""
+from __future__ import annotations
 from fastapi import APIRouter
 
 from .. import fixtures, knockout_engine, ml_engine, services

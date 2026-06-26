@@ -3,6 +3,7 @@
 Pulls the model-side payload from `ml/awards.py` and decorates each player row
 with a flag + headshot URL (which live in `fixtures`).
 """
+from __future__ import annotations
 from fastapi import APIRouter
 
 from .. import fixtures, ml_engine  # noqa: F401  (ml_engine adds ml/ to sys.path)
