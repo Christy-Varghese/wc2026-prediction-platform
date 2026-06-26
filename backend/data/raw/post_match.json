@@ -333,5 +333,29 @@
       "ESPN",
       "FIFA"
     ]
+  },
+  "Norway|France": {
+    "headline": "Dembele hat-trick fires France to perfect group stage",
+    "summary": "Ousmane Dembele terrorised the Norwegian defence all afternoon, completing the second-fastest hat-trick in World Cup history by the 32nd minute. Thelo Aasgaard's consolation sandwiched between the second and third Dembele goals briefly gave the Norwegians hope, but Desire Doue swept in a fourth in stoppage time to seal France's third straight group win.",
+    "star_player": "Ousmane Dembele",
+    "star_reason": "Hat-trick in 32 minutes — only Erich Probst (Austria, 1954) has been faster at a World Cup.",
+    "turning_point": "Dembele's 7th-minute opener put France in control from the off and Norway never recovered.",
+    "what_lacked": "Norway had the better xG (1.69 to France's 1.31) but finishing was poor and a missed spot-kick proved costly.",
+    "sources": [
+      "ESPN",
+      "FIFA"
+    ]
+  },
+  "Senegal|Iraq": {
+    "headline": "Senegal demolish 10-man Iraq to reach Round of 32",
+    "summary": "Habib Diarra struck inside four minutes to settle Senegal's nerves, and a VAR-upgraded red card for Iraq's Rebin Sulaka reduced the contest to a formality. Ismaila Sarr doubled the lead after the break before Pape Gueye's clinical brace and Iliman Ndiaye's long-range finish completed a 5-0 rout that sent the Lions of Teranga into the knockout rounds.",
+    "star_player": "Pape Gueye",
+    "star_reason": "Two goals and a commanding midfield display drove the second-half blitz that put the tie beyond doubt.",
+    "turning_point": "Sulaka's red card on the stroke of half-time effectively ended Iraq as a contest.",
+    "what_lacked": "Iraq were already stretched before the red card and offered almost nothing going forward throughout.",
+    "sources": [
+      "ESPN",
+      "FIFA"
+    ]
   }
 }

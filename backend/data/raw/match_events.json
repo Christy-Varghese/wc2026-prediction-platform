@@ -1810,5 +1810,86 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260625"
+  },
+  "Norway|France": {
+    "home": "Norway",
+    "away": "France",
+    "score": [
+      1,
+      4
+    ],
+    "scorers": {
+      "home": [
+        {
+          "player": "Thelo Aasgaard",
+          "minute": 21,
+          "type": "goal"
+        }
+      ],
+      "away": [
+        {
+          "player": "Ousmane Dembélé",
+          "minute": 7,
+          "type": "goal"
+        },
+        {
+          "player": "Ousmane Dembélé",
+          "minute": 20,
+          "type": "goal"
+        },
+        {
+          "player": "Ousmane Dembélé",
+          "minute": 32,
+          "type": "goal"
+        },
+        {
+          "player": "Désiré Doué",
+          "minute": 94,
+          "type": "goal"
+        }
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260626"
+  },
+  "Senegal|Iraq": {
+    "home": "Senegal",
+    "away": "Iraq",
+    "score": [
+      5,
+      0
+    ],
+    "scorers": {
+      "home": [
+        {
+          "player": "Habib Diarra",
+          "minute": 4,
+          "type": "goal"
+        },
+        {
+          "player": "Ismaïla Sarr",
+          "minute": 56,
+          "type": "goal"
+        },
+        {
+          "player": "Pape Gueye",
+          "minute": 59,
+          "type": "goal"
+        },
+        {
+          "player": "Pape Gueye",
+          "minute": 71,
+          "type": "goal"
+        },
+        {
+          "player": "Iliman Ndiaye",
+          "minute": 82,
+          "type": "goal"
+        }
+      ],
+      "away": []
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260626"
   }
 }
