@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
 import { api, pct0 } from "@/lib/api";
-import { Flag, ProbBar, LiveBadge, SectionHeader, LowConfidenceTag, isLowConfidence, PredictionBadge, predictionHit } from "@/components/ui";
+import { Flag, ProbBar, LiveBadge, SectionHeader, LowConfidenceTag, isLowConfidence, PredictionBadge, predictionHit, predictionGoldHit } from "@/components/ui";
 
 const fetcher = (p: string) => api(p);
 const GROUPS = "ABCDEFGHIJKL".split("");
@@ -196,8 +196,15 @@ function CardsView({ data, router }: { data: any[]; router: any }) {
 
 /* ── Broadcast match card (inline, not using MatchCard to keep self-contained) ── */
 function BroadcastMatchCard({ m, onClick }: { m: any; onClick: () => void }) {
+  const goldHit = m.played && predictionGoldHit(m);
+  const hit = m.played ? predictionHit(m) : null;
+  const borderCls = goldHit
+    ? "border-[#FFD700]/60 shadow-[0_0_14px_rgba(255,215,0,0.12)]"
+    : hit === true
+      ? "border-success/50 shadow-[0_0_14px_rgba(0,230,118,0.10)]"
+      : "";
   return (
-    <button onClick={onClick} className="card-broadcast match-card-hover w-full text-left group">
+    <button onClick={onClick} className={`card-broadcast match-card-hover w-full text-left group ${borderCls}`}>
       {/* top meta */}
       <div className="mb-3 flex items-center justify-between text-[11px] text-muted">
         <span className="chip-cyan">GRP {m.group} · {m.matchday}</span>

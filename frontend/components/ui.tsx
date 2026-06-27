@@ -69,6 +69,15 @@ export function predictionHit(m: any): boolean | null {
   return m.predicted_winner === actual;
 }
 
+export function predictionGoldHit(m: any): boolean {
+  if (!m?.played || m.home_score == null || m.away_score == null || !m.top_score?.score)
+    return false;
+  if (m.top_score.score === `${m.home_score}-${m.away_score}`) return true;
+  const parts = (m.top_score.score as string).split("-").map(Number);
+  if (parts.length !== 2 || parts.some(isNaN)) return false;
+  return parts[0] - parts[1] === m.home_score - m.away_score;
+}
+
 export function PredictionBadge({ m, className = "" }: { m: any; className?: string }) {
   const hit = predictionHit(m);
   if (hit === null) return null;
@@ -290,10 +299,18 @@ export function MatchCard({ m }: { m: any }) {
     cardRef.current.style.setProperty("--my", `${my}%`);
   };
 
+  const goldHit = played && predictionGoldHit(m);
+  const hit = played ? predictionHit(m) : null;
+  const borderCls = goldHit
+    ? "border-[#FFD700]/60 shadow-[0_0_14px_rgba(255,215,0,0.12)]"
+    : hit === true
+      ? "border-success/50 shadow-[0_0_14px_rgba(0,230,118,0.10)]"
+      : "border-line";
+
   return (
     <Link ref={cardRef} href={`/matches/${m.id}`}
       onMouseMove={handleMouseMove}
-      className="match-card-hover block rounded-2xl border border-line bg-ink-2/80 backdrop-blur p-4 shadow-card">
+      className={`match-card-hover block rounded-2xl border bg-ink-2/80 backdrop-blur p-4 shadow-card ${borderCls}`}>
 
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
