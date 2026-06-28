@@ -27,11 +27,10 @@ export default function MatchesPage() {
   const [team, setTeam] = useState("");
   const [upcoming, setUpcoming] = useState(false);
   const [view, setView] = useState<"cards" | "table">("cards");
+  const [groupsOpen, setGroupsOpen] = useState(false);
 
-  // Fetch the full fixture list once, then filter CLIENT-SIDE. (Server-side
-  // query params can't be pre-rendered into the static snapshot demo, so the
-  // search/filters must run on the client to work with or without a live API.)
   const { data: allData, error } = useSWR(`/api/matches?`, fetcher);
+  const { data: knockoutData } = useSWR(`/api/knockout`, fetcher);
 
   const data = useMemo(() => {
     if (!allData) return allData;
@@ -62,11 +61,18 @@ export default function MatchesPage() {
              exact, exactPct: Math.round((exact / n) * 100) };
   }, [allData]);
 
+  const r32Matches = useMemo(() => {
+    if (!knockoutData?.matches) return [];
+    return (knockoutData.matches as any[])
+      .filter((m) => m.round === "Round of 32" && m.resolved)
+      .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  }, [knockoutData]);
+
   return (
     <div className="space-y-6">
 
       {/* ── Page header ── */}
-      <SectionHeader title="FIXTURES" sub={`FIFA World Cup 2026 · Canada · Mexico · USA`}
+      <SectionHeader title="FIXTURES" sub="FIFA World Cup 2026 · Canada · Mexico · USA"
         action={
           <div className="flex items-center gap-2">
             <button onClick={() => setView("cards")}
@@ -76,84 +82,129 @@ export default function MatchesPage() {
           </div>
         } />
 
-      {/* ── Overall model accuracy ── */}
-      {accuracy && (
-        <div className="card-broadcast flex flex-wrap items-center gap-x-8 gap-y-3 py-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🎯</span>
-            <span className="font-display text-xs uppercase tracking-widest text-muted">Model accuracy</span>
+      {/* ── Round of 32 ── */}
+      {r32Matches.length > 0 && (
+        <section>
+          <div className="mb-4 flex items-center gap-3">
+            <span className="chip-gold text-[11px] uppercase tracking-widest">Knockout Stage</span>
+            <h3 className="font-display text-base font-bold uppercase tracking-tight text-stadium">Round of 32</h3>
+            <span className="text-[11px] text-muted">Jun 28 – Jul 3</span>
+            <div className="h-px flex-1 bg-white/5" />
           </div>
-          <div>
-            <div className="font-display text-2xl font-bold tabnum text-success">{accuracy.wdlPct}%</div>
-            <div className="text-[10px] uppercase tracking-wider text-muted">
-              Outcome · <span className="text-stadium">{accuracy.wdl}/{accuracy.n}</span> correct
-            </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <AnimatePresence>
+              {r32Matches.map((m: any, i: number) => (
+                <motion.div key={m.id}
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03 }}>
+                  <R32MatchCard m={m} onClick={() => router.push(`/knockout/${m.id}`)} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
-          <div>
-            <div className="font-display text-2xl font-bold tabnum text-gold">{accuracy.exactPct}%</div>
-            <div className="text-[10px] uppercase tracking-wider text-muted">
-              Exact score · <span className="text-stadium">{accuracy.exact}/{accuracy.n}</span>
-            </div>
-          </div>
-          <span className="ml-auto text-[11px] text-muted">across {accuracy.n} played matches</span>
-        </div>
+        </section>
       )}
 
-      {/* ── Filter bar ── */}
-      <div className="card-broadcast flex flex-wrap items-center gap-3 py-4">
-        <div className="flex flex-wrap gap-2">
-          <button onClick={() => setGroup("")}
-            className={`chip cursor-pointer text-xs transition hover:border-cyan/50 ${!group ? "chip-cyan" : ""}`}>
-            All Groups
-          </button>
-          {GROUPS.map((g) => (
-            <button key={g} onClick={() => setGroup(group === g ? "" : g)}
-              className={`chip cursor-pointer text-xs transition hover:border-cyan/50 ${group === g ? "chip-cyan" : ""}`}>
-              Grp {g}
-            </button>
-          ))}
-        </div>
-        <div className="h-6 w-px bg-white/10 hidden sm:block" />
-        <div className="flex gap-2">
-          {MDS.map((d) => (
-            <button key={d} onClick={() => setMatchday(matchday === d ? "" : d)}
-              className={`chip cursor-pointer text-xs transition hover:border-gold/50 ${matchday === d ? "chip-gold" : ""}`}>
-              {d}
-            </button>
-          ))}
-        </div>
-        <input value={team} onChange={(e) => setTeam(e.target.value)}
-          placeholder="Search team…"
-          className="min-w-[140px] flex-1 rounded-lg border border-white/10 bg-ink-3 px-3 py-1.5 text-sm placeholder:text-muted focus:border-cyan/40 focus:outline-none focus:ring-1 focus:ring-cyan/20" />
-        <button onClick={() => setUpcoming((v) => !v)}
-          className={`btn-sm ${upcoming ? "btn-gold" : ""}`}>
-          {upcoming ? "⏭ Upcoming" : "All dates"}
-        </button>
-        {data && (
-          <span className="ml-auto text-xs text-muted hidden md:block">
-            <b className="text-success">{played}</b> played · <b className="text-stadium">{total - played}</b> upcoming
+      {/* ── Group Stage (collapsible) ── */}
+      <section>
+        <button
+          onClick={() => setGroupsOpen(v => !v)}
+          className="card-broadcast w-full flex items-center justify-between py-3 px-5 hover:border-white/20 transition cursor-pointer">
+          <div className="flex items-center gap-3">
+            <span className="font-display text-sm font-bold uppercase tracking-wider text-stadium">
+              Group Stage Results
+            </span>
+            {accuracy && (
+              <span className="text-[11px] text-muted">
+                {accuracy.wdl}/{accuracy.n} correct · {accuracy.wdlPct}% accuracy
+              </span>
+            )}
+          </div>
+          <span className="text-muted text-xs font-semibold uppercase tracking-wider">
+            {groupsOpen ? "▲ Hide" : "▼ Show"}
           </span>
+        </button>
+
+        {groupsOpen && (
+          <div className="mt-4 space-y-4">
+            {/* Overall model accuracy */}
+            {accuracy && (
+              <div className="card-broadcast flex flex-wrap items-center gap-x-8 gap-y-3 py-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🎯</span>
+                  <span className="font-display text-xs uppercase tracking-widest text-muted">Model accuracy</span>
+                </div>
+                <div>
+                  <div className="font-display text-2xl font-bold tabnum text-success">{accuracy.wdlPct}%</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted">
+                    Outcome · <span className="text-stadium">{accuracy.wdl}/{accuracy.n}</span> correct
+                  </div>
+                </div>
+                <div>
+                  <div className="font-display text-2xl font-bold tabnum text-gold">{accuracy.exactPct}%</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted">
+                    Exact score · <span className="text-stadium">{accuracy.exact}/{accuracy.n}</span>
+                  </div>
+                </div>
+                <span className="ml-auto text-[11px] text-muted">across {accuracy.n} played matches</span>
+              </div>
+            )}
+
+            {/* Filter bar */}
+            <div className="card-broadcast flex flex-wrap items-center gap-3 py-4">
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => setGroup("")}
+                  className={`chip cursor-pointer text-xs transition hover:border-cyan/50 ${!group ? "chip-cyan" : ""}`}>
+                  All Groups
+                </button>
+                {GROUPS.map((g) => (
+                  <button key={g} onClick={() => setGroup(group === g ? "" : g)}
+                    className={`chip cursor-pointer text-xs transition hover:border-cyan/50 ${group === g ? "chip-cyan" : ""}`}>
+                    Grp {g}
+                  </button>
+                ))}
+              </div>
+              <div className="h-6 w-px bg-white/10 hidden sm:block" />
+              <div className="flex gap-2">
+                {MDS.map((d) => (
+                  <button key={d} onClick={() => setMatchday(matchday === d ? "" : d)}
+                    className={`chip cursor-pointer text-xs transition hover:border-gold/50 ${matchday === d ? "chip-gold" : ""}`}>
+                    {d}
+                  </button>
+                ))}
+              </div>
+              <input value={team} onChange={(e) => setTeam(e.target.value)}
+                placeholder="Search team…"
+                className="min-w-[140px] flex-1 rounded-lg border border-white/10 bg-ink-3 px-3 py-1.5 text-sm placeholder:text-muted focus:border-cyan/40 focus:outline-none focus:ring-1 focus:ring-cyan/20" />
+              <button onClick={() => setUpcoming((v) => !v)}
+                className={`btn-sm ${upcoming ? "btn-gold" : ""}`}>
+                {upcoming ? "⏭ Upcoming" : "All dates"}
+              </button>
+              {data && (
+                <span className="ml-auto text-xs text-muted hidden md:block">
+                  <b className="text-success">{played}</b> played · <b className="text-stadium">{total - played}</b> upcoming
+                </span>
+              )}
+            </div>
+
+            {error && (
+              <div className="card-broadcast flex items-center gap-3 text-danger">
+                <span className="text-xl">⚡</span> Backend unreachable — start the API on :8000.
+              </div>
+            )}
+            {!data && !error && (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="h-44 animate-pulse rounded-2xl bg-ink-2" />
+                ))}
+              </div>
+            )}
+
+            {data && view === "cards" && <CardsView data={data} router={router} />}
+            {data && view === "table" && <TableView data={data} router={router} />}
+          </div>
         )}
-      </div>
-
-      {error && (
-        <div className="card-broadcast flex items-center gap-3 text-danger">
-          <span className="text-xl">⚡</span> Backend unreachable — start the API on :8000.
-        </div>
-      )}
-      {!data && !error && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-44 animate-pulse rounded-2xl bg-ink-2" />
-          ))}
-        </div>
-      )}
-
-      {/* ── CARDS VIEW ── */}
-      {data && view === "cards" && <CardsView data={data} router={router} />}
-
-      {/* ── TABLE VIEW ── */}
-      {data && view === "table" && <TableView data={data} router={router} />}
+      </section>
     </div>
   );
 }
@@ -191,6 +242,54 @@ function CardsView({ data, router }: { data: any[]; router: any }) {
         </section>
       ))}
     </div>
+  );
+}
+
+/* ── R32 knockout match card ── */
+function R32MatchCard({ m, onClick }: { m: any; onClick: () => void }) {
+  const p = m.prediction ?? {};
+  const date = new Date(m.kickoff).toLocaleDateString("en-US", {
+    month: "short", day: "numeric", timeZone: "America/New_York",
+  });
+  return (
+    <button onClick={onClick} className="card-broadcast match-card-hover w-full text-left group">
+      <div className="mb-3 flex items-center justify-between text-[11px]">
+        <span className="chip-gold text-[10px] uppercase tracking-wider">R32</span>
+        <span className="text-muted">{date} · {fmtTime(m.kickoff)}</span>
+      </div>
+
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <Flag url={m.home_flag} name={m.home_team} size={28} />
+          <span className="min-w-0 break-words font-display font-semibold text-stadium leading-tight text-sm">{m.home_team}</span>
+        </div>
+        <span className="font-display text-xs font-bold text-muted/50 shrink-0 px-2">VS</span>
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+          <span className="min-w-0 break-words text-right font-display font-semibold text-stadium leading-tight text-sm">{m.away_team}</span>
+          <Flag url={m.away_flag} name={m.away_team} size={28} />
+        </div>
+      </div>
+
+      <ProbBar home={p.p_home ?? 0} draw={p.p_draw ?? 0} away={p.p_away ?? 0} height={6} />
+      <div className="mt-2 flex justify-between text-[11px] tabnum">
+        <span className="text-success">{pct0(p.p_home)}</span>
+        <span className="text-muted">D {pct0(p.p_draw)}</span>
+        <span className="text-cyan">{pct0(p.p_away)}</span>
+      </div>
+
+      {m.predicted_score && (
+        <div className="mt-2 flex items-center justify-center gap-1.5 rounded-lg bg-white/5 py-1 text-[11px]">
+          <span className="uppercase tracking-wider text-muted">Predicted</span>
+          <span className="font-display font-bold text-gold">{m.predicted_score}</span>
+          {m.shootout && <span className="text-muted">· pens</span>}
+        </div>
+      )}
+
+      <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-muted">
+        <span>📍 {m.city}</span>
+        <span className="font-bold text-gold">{m.confidence} conf</span>
+      </div>
+    </button>
   );
 }
 

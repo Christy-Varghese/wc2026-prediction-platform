@@ -70,8 +70,8 @@ export function predictionHit(m: any): boolean | null {
 }
 
 export function predictionGoldHit(m: any): boolean {
-  if (!m?.played || m.home_score == null || m.away_score == null || !m.top_score?.score)
-    return false;
+  if (predictionHit(m) !== true) return false;  // outcome must be correct first
+  if (!m.top_score?.score) return false;
   if (m.top_score.score === `${m.home_score}-${m.away_score}`) return true;
   const parts = (m.top_score.score as string).split("-").map(Number);
   if (parts.length !== 2 || parts.some(isNaN)) return false;
