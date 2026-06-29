@@ -7,7 +7,9 @@
   "kickoff": "2026-06-28T15:00:00-04:00",
   "city": "Los Angeles",
   "home_label": "Runner-up Group A",
-  "away_label": "Runner-up Group B"
+  "away_label": "Runner-up Group B",
+  "home_score": 0,
+  "away_score": 1
  },
  {
   "id": 76,
@@ -17,7 +19,9 @@
   "kickoff": "2026-06-29T13:00:00-04:00",
   "city": "Houston",
   "home_label": "Winner Group C",
-  "away_label": "Runner-up Group F"
+  "away_label": "Runner-up Group F",
+  "home_score": 2,
+  "away_score": 1
  },
  {
   "id": 74,
