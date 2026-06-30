@@ -304,21 +304,14 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
           {/* teams */}
           <div className="mb-3 flex items-center justify-between gap-2">
             {/* home */}
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <div className="flex items-center gap-2">
-                <div className={homeElim ? "opacity-50 grayscale" : ""}>
-                  <Flag url={m.home_flag} name={m.home_team} size={28} />
-                </div>
-                <span className={`min-w-0 break-words font-display font-semibold leading-tight text-sm
-                  ${homeElim ? "text-danger/70 line-through" : homeAdv ? "text-gold" : "text-stadium"}`}>
-                  {m.home_team}
-                </span>
+            <div className="flex min-w-0 flex-1 items-center gap-2">
+              <div className={homeElim ? "grayscale opacity-40 shrink-0" : "shrink-0"}>
+                <Flag url={m.home_flag} name={m.home_team} size={28} />
               </div>
-              {homeElim && (
-                <span className="ml-9 inline-flex w-fit items-center rounded border border-danger/40 px-1.5 py-px text-[8px] font-bold text-danger">
-                  OUT
-                </span>
-              )}
+              <span className={`min-w-0 break-words font-display font-semibold leading-tight text-sm
+                ${homeElim ? "text-muted/40" : homeAdv ? "text-gold" : "text-stadium"}`}>
+                {m.home_team}
+              </span>
             </div>
             {/* score */}
             {played ? (
@@ -336,21 +329,14 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
               <span className="font-display text-xs font-bold text-muted/50 shrink-0 px-2">VS</span>
             )}
             {/* away */}
-            <div className="flex min-w-0 flex-1 flex-col items-end gap-0.5">
-              <div className="flex items-center gap-2">
-                <span className={`min-w-0 break-words text-right font-display font-semibold leading-tight text-sm
-                  ${awayElim ? "text-danger/70 line-through" : awayAdv ? "text-gold" : "text-stadium"}`}>
-                  {m.away_team}
-                </span>
-                <div className={awayElim ? "opacity-50 grayscale" : ""}>
-                  <Flag url={m.away_flag} name={m.away_team} size={28} />
-                </div>
+            <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+              <span className={`min-w-0 break-words text-right font-display font-semibold leading-tight text-sm
+                ${awayElim ? "text-muted/40" : awayAdv ? "text-gold" : "text-stadium"}`}>
+                {m.away_team}
+              </span>
+              <div className={awayElim ? "grayscale opacity-40 shrink-0" : "shrink-0"}>
+                <Flag url={m.away_flag} name={m.away_team} size={28} />
               </div>
-              {awayElim && (
-                <span className="mr-9 inline-flex w-fit items-center rounded border border-danger/40 px-1.5 py-px text-[8px] font-bold text-danger">
-                  OUT
-                </span>
-              )}
             </div>
           </div>
 
@@ -442,15 +428,6 @@ function CardsView({ data, router, eliminated }: { data: any[]; router: any; eli
   );
 }
 
-/* ── Small OUT badge for eliminated teams ── */
-function OutBadge() {
-  return (
-    <span className="inline-flex shrink-0 items-center rounded border border-danger/40 px-1 py-px text-[8px] font-bold text-danger leading-none">
-      OUT
-    </span>
-  );
-}
-
 /* ── Broadcast match card (group stage) ── */
 function BroadcastMatchCard({ m, onClick, eliminated }: {
   m: any; onClick: () => void; eliminated: Set<string>;
@@ -475,14 +452,13 @@ function BroadcastMatchCard({ m, onClick, eliminated }: {
 
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
-          <div className={homeElim ? "opacity-50 grayscale shrink-0" : "shrink-0"}>
+          <div className={homeElim ? "grayscale opacity-40 shrink-0" : "shrink-0"}>
             <Flag url={m.home_flag} name={m.home_team} size={28} />
           </div>
           <span className={`min-w-0 break-words leading-tight font-display font-semibold
-            ${homeElim ? "text-danger/70 line-through" : "text-stadium"}`}>
+            ${homeElim ? "text-muted/40" : "text-stadium"}`}>
             {m.home_team}
           </span>
-          {homeElim && <OutBadge />}
         </div>
         {m.played ? (
           <span className="font-display text-xl font-bold tabnum text-stadium shrink-0 px-2">
@@ -492,12 +468,11 @@ function BroadcastMatchCard({ m, onClick, eliminated }: {
           <span className="font-display text-xs font-bold text-muted/50 shrink-0 px-2">VS</span>
         )}
         <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
-          {awayElim && <OutBadge />}
           <span className={`min-w-0 break-words text-right leading-tight font-display font-semibold
-            ${awayElim ? "text-danger/70 line-through" : "text-stadium"}`}>
+            ${awayElim ? "text-muted/40" : "text-stadium"}`}>
             {m.away_team}
           </span>
-          <div className={awayElim ? "opacity-50 grayscale shrink-0" : "shrink-0"}>
+          <div className={awayElim ? "grayscale opacity-40 shrink-0" : "shrink-0"}>
             <Flag url={m.away_flag} name={m.away_team} size={28} />
           </div>
         </div>
@@ -561,8 +536,7 @@ function TableView({ data, router, eliminated }: { data: any[]; router: any; eli
               <tr key={m.id}
                 onClick={() => router.push(`/matches/${m.id}`)}
                 className={`cursor-pointer border-b border-white/5 transition hover:bg-cyan/5
-                  ${newDay ? "border-t border-t-white/10" : ""}
-                  ${(homeElim || awayElim) ? "bg-danger/3" : ""}`}>
+                  ${newDay ? "border-t border-t-white/10" : ""}`}>
                 <td className="whitespace-nowrap px-4 py-3 text-muted">
                   {newDay && <span className="font-display text-xs text-stadium">{d}</span>}
                 </td>
@@ -573,15 +547,13 @@ function TableView({ data, router, eliminated }: { data: any[]; router: any; eli
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-1.5 font-display font-semibold">
-                    <div className={homeElim ? "opacity-50 grayscale" : ""}>
+                    <div className={homeElim ? "grayscale opacity-40" : ""}>
                       <Flag url={m.home_flag} name={m.home_team} size={18} />
                     </div>
-                    <span className={homeElim ? "text-danger/70 line-through" : "text-stadium"}>{m.home_team}</span>
-                    {homeElim && <span className="text-[8px] font-bold text-danger border border-danger/30 rounded px-0.5">OUT</span>}
+                    <span className={homeElim ? "text-muted/40" : "text-stadium"}>{m.home_team}</span>
                     <span className="text-muted text-xs">v</span>
-                    {awayElim && <span className="text-[8px] font-bold text-danger border border-danger/30 rounded px-0.5">OUT</span>}
-                    <span className={awayElim ? "text-danger/70 line-through" : "text-stadium"}>{m.away_team}</span>
-                    <div className={awayElim ? "opacity-50 grayscale" : ""}>
+                    <span className={awayElim ? "text-muted/40" : "text-stadium"}>{m.away_team}</span>
+                    <div className={awayElim ? "grayscale opacity-40" : ""}>
                       <Flag url={m.away_flag} name={m.away_team} size={18} />
                     </div>
                   </div>
