@@ -49,8 +49,8 @@
   "away_label": "Runner-up Group C",
   "home_score": 1,
   "away_score": 1,
-  "pen_home": 1,
-  "pen_away": 0
+  "pen_home": 2,
+  "pen_away": 3
  },
  {
   "id": 78,
@@ -70,7 +70,8 @@
   "kickoff": "2026-06-30T17:00:00-04:00",
   "city": "New York/NJ",
   "home_label": "Winner Group I",
-  "away_label": "3rd Group C/D/F/G/H"
+  "away_label": "3rd Group C/D/F/G/H",
+  "actual_away": "Sweden"
  },
  {
   "id": 79,
@@ -80,7 +81,8 @@
   "kickoff": "2026-06-30T21:00:00-04:00",
   "city": "Mexico City",
   "home_label": "Winner Group A",
-  "away_label": "3rd Group C/E/F/H/I"
+  "away_label": "3rd Group C/E/F/H/I",
+  "actual_away": "Ecuador"
  },
  {
   "id": 80,
@@ -90,7 +92,8 @@
   "kickoff": "2026-07-01T12:00:00-04:00",
   "city": "Atlanta",
   "home_label": "Winner Group L",
-  "away_label": "3rd Group E/H/I/J/K"
+  "away_label": "3rd Group E/H/I/J/K",
+  "actual_away": "DR Congo"
  },
  {
   "id": 82,
@@ -100,7 +103,8 @@
   "kickoff": "2026-07-01T16:00:00-04:00",
   "city": "Seattle",
   "home_label": "Winner Group G",
-  "away_label": "3rd Group A/E/H/I/J"
+  "away_label": "3rd Group A/E/H/I/J",
+  "actual_away": "Senegal"
  },
  {
   "id": 81,
@@ -110,7 +114,8 @@
   "kickoff": "2026-07-01T20:00:00-04:00",
   "city": "San Francisco",
   "home_label": "Winner Group D",
-  "away_label": "3rd Group B/E/F/I/J"
+  "away_label": "3rd Group B/E/F/I/J",
+  "actual_away": "Bosnia and Herzegovina"
  },
  {
   "id": 84,
@@ -140,7 +145,8 @@
   "kickoff": "2026-07-02T23:00:00-04:00",
   "city": "Vancouver",
   "home_label": "Winner Group B",
-  "away_label": "3rd Group E/F/G/I/J"
+  "away_label": "3rd Group E/F/G/I/J",
+  "actual_away": "Algeria"
  },
  {
   "id": 88,
@@ -170,7 +176,8 @@
   "kickoff": "2026-07-03T21:30:00-04:00",
   "city": "Kansas City",
   "home_label": "Winner Group K",
-  "away_label": "3rd Group D/E/I/J/L"
+  "away_label": "3rd Group D/E/I/J/L",
+  "actual_away": "Ghana"
  },
  {
   "id": 90,
