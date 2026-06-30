@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 
 from config import PROC
-from features import FEATURE_COLS, build_training_frame
+from features import FEATURE_COLS, MODEL_FEATURE_COLS, build_training_frame
 
 MODEL_PATH = PROC / "xgb_model.ubj"   # XGBoost native binary format
 COLS_PATH  = PROC / "xgb_cols.json"
@@ -23,7 +23,10 @@ def train(df_elo: pd.DataFrame, since: str = "2006-01-01") -> Path:
 
     feats = build_training_frame(df_elo)
     feats = feats[feats.date >= since]
-    X = feats[FEATURE_COLS].to_numpy()
+    # Train on structural features only — avail_diff/squad_val_diff/market_home_edge
+    # are always 0 in the training corpus (no historical data for them), so the model
+    # cannot learn from them. They are applied post-blend as logit shifts instead.
+    X = feats[MODEL_FEATURE_COLS].to_numpy()
     y = feats["y"].to_numpy()
 
     # time-ordered split: last 15% as validation
@@ -37,7 +40,7 @@ def train(df_elo: pd.DataFrame, since: str = "2006-01-01") -> Path:
     clf.fit(X[:cut], y[:cut], eval_set=[(X[cut:], y[cut:])], verbose=False)
 
     clf.save_model(str(MODEL_PATH))
-    COLS_PATH.write_text(json.dumps(FEATURE_COLS))
+    COLS_PATH.write_text(json.dumps(MODEL_FEATURE_COLS))
     return MODEL_PATH
 
 
@@ -52,8 +55,15 @@ def load():
 
 
 def predict_proba(bundle, x: np.ndarray) -> np.ndarray:
-    """x: 1-D feature vector in FEATURE_COLS order -> [pH,pD,pA]."""
-    p = bundle["clf"].predict_proba(x.reshape(1, -1))[0]
+    """x: 1-D feature vector in FEATURE_COLS order -> [pH,pD,pA].
+
+    Slices x down to the cols the model was actually trained on, so old models
+    (trained on all 11 cols) and new models (trained on MODEL_FEATURE_COLS)
+    both work correctly from the same 11-feature input vector.
+    """
+    cols = bundle.get("cols", MODEL_FEATURE_COLS)
+    idxs = [FEATURE_COLS.index(c) for c in cols]
+    p = bundle["clf"].predict_proba(x[idxs].reshape(1, -1))[0]
     return p / p.sum()
 
 

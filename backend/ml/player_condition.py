@@ -708,6 +708,18 @@ class TeamConditionEngine:
         """Resolve player's display name from the normalized record."""
         return p.get("name", "Unknown")
 
+    def _db_coverage(self, team: str) -> float:
+        """Fraction of PLAYER_DB coverage for a team (0–1). 5+ players = 1.0.
+
+        Used to scale the player-data-derived shift: when one side has no
+        curated player data, the condition engine would compare a real squad
+        profile against a generic default, producing a biased shift toward
+        whichever team we happened to fill in. Coverage gating zeros that bias.
+        Manager and GK signals are NOT gated — they have full 48-team tables.
+        """
+        n = sum(1 for p in self.players.values() if p["team"] == team)
+        return min(1.0, n / 5.0)
+
     def match_condition_adjustment(
         self, home: str, away: str, include_momentum: bool = False
     ) -> dict[str, float]:
@@ -741,29 +753,37 @@ class TeamConditionEngine:
         # Goalkeeper quality delta (0-1): a stronger, fit keeper helps his side.
         gk_delta    = hc["gk_quality"] - ac["gk_quality"]
 
-        # Combined logit shift (tuned so ±0.2 = ±5% probability swing).
-        # CAI (form-leads): current form / fitness and tournament momentum are the
-        # heaviest terms — how a side is playing NOW leads the manager/GK priors
-        # and (in the ensemble) the pre-WC Elo/DC base. Location stats stay
-        # down-weighted in the ensemble.
+        # Player-data coverage gate: scale the squad-derived terms by the geometric
+        # mean of per-team data coverage. Manager/GK terms are always available
+        # (full 48-team tables) and are not gated.
+        # When either team has no PLAYER_DB entries, the squad/attack terms would
+        # compare a real profile against a generic default (0.65 score, 0.5 attack),
+        # biasing the shift toward whichever team has data. The gate eliminates this.
+        home_cov = self._db_coverage(home)
+        away_cov = self._db_coverage(away)
+        player_scale = (home_cov * away_cov) ** 0.5  # 0 if either team uncovered
+
         logit_shift = (
-            0.70 * cond_delta            +   # player form / fitness / availability
-            0.30 * att_def_adv * 0.15    +   # team combination (attack vs defence)
-            0.20 * mgr_delta             +   # manager track record
-            GK_COEF * gk_delta               # goalkeeper quality / form
+            0.70 * cond_delta * player_scale     +   # player form/fitness (gated)
+            0.30 * att_def_adv * 0.15 * player_scale +  # attack/defence (gated)
+            0.20 * mgr_delta                     +   # manager track record (always)
+            GK_COEF * gk_delta                       # GK quality (always)
         )
         if include_momentum:
-            logit_shift += 0.35 * mom_delta  # CAI: current momentum actively in the pick
+            logit_shift += 0.35 * mom_delta
         return {
-            "logit_shift":   round(float(logit_shift), 4),
-            "home_cond":     hc["condition_score"],
-            "away_cond":     ac["condition_score"],
-            "home_momentum": hc["momentum"],
-            "away_momentum": ac["momentum"],
-            "home_manager_wr": mgr_home,
-            "away_manager_wr": mgr_away,
-            "home_gk_quality": hc["gk_quality"],
-            "away_gk_quality": ac["gk_quality"],
+            "logit_shift":      round(float(logit_shift), 4),
+            "home_cond":        hc["condition_score"],
+            "away_cond":        ac["condition_score"],
+            "home_momentum":    hc["momentum"],
+            "away_momentum":    ac["momentum"],
+            "home_manager_wr":  mgr_home,
+            "away_manager_wr":  mgr_away,
+            "home_gk_quality":  hc["gk_quality"],
+            "away_gk_quality":  ac["gk_quality"],
+            "home_db_coverage": round(home_cov, 2),
+            "away_db_coverage": round(away_cov, 2),
+            "player_scale":     round(player_scale, 2),
         }
 
     # ── plain-language "why this team wins" reasons ─────────────────────

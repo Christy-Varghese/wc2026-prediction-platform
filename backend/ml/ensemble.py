@@ -262,12 +262,13 @@ WEATHER_COEF = 0.035
 # the actual squads (player_condition.py). Applied as a logit shift on the win
 # probs and PRIORITISED over location stats.
 #
-# CAI (form-leads) — raised from 1.75 so the current-form / squad / momentum
-# signal LEADS the pre-WC Elo/DC priors rather than just nudging them. CAI's
-# thesis: how a team is actually playing *now* (this year's matches + the group
-# stage, key moments, fitness, momentum) beats a static historical rating —
-# "there's no going back". The priors remain a supporting base, not the driver.
-CONDITION_COEF = 2.45
+# Tuned 2026-06-30 via tune_condition_coef.py on 75 completed WC2026 matches.
+# Accuracy is flat at 68% from 2.0–3.0 and dips at 0.6–1.6 (weak nudges add
+# noise without flipping predictions). 2.0 is the validated sweet spot: full
+# accuracy benefit, slightly more conservative than the original 2.45.
+# Coverage-gating in player_condition.py ensures this only fires when both
+# teams have real player data in PLAYER_DB.
+CONDITION_COEF = 2.0
 
 
 @dataclass
@@ -443,16 +444,14 @@ class Ensemble:
         blended = self._availability_adjust(blended, ctx.avail_diff)
         blended = self._conditions_adjust(blended, ctx)
 
-        # Squad-condition + momentum shift (player form/fitness/availability +
-        # current tournament momentum). CAI (form-leads) INCLUDES momentum here so
-        # the team's live trajectory actively drives the pick — the Elo member
-        # also carries WC2026 results, so this intentionally re-emphasises current
-        # form over the static pre-WC prior (CAI's core thesis), not double-counts
-        # by accident.
+        # Squad-condition shift (player form/fitness/availability/combination).
+        # include_momentum=False: the Elo member already carries WC2026 results
+        # via tournament_form.get_adjusted_elo(). Folding momentum in here again
+        # would double-count the same signal.
         cond_info = None
         if self.cond is not None:
             cond_info = self.cond.match_condition_adjustment(
-                home, away, include_momentum=True)
+                    home, away, include_momentum=False)
             blended = self._condition_shift(blended, cond_info["logit_shift"])
 
         ph, pd_, pa = (float(x) for x in blended)

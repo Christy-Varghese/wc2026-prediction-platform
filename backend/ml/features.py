@@ -86,6 +86,14 @@ FEATURE_COLS = [
     "avail_diff", "squad_val_diff", "market_home_edge",
 ]
 
+# Structural features only — these are populated in the training dataset.
+# TEAM_NEWS_FEATURES are always 0.0 in training (no historical availability/odds
+# data), so XGBoost and NN must NOT train on them — they learn to ignore zeroed
+# features but still receive live values at inference, creating a silent
+# train/inference skew. Those three signals are applied separately post-blend
+# (avail via AVAIL_COEF logit shift; market via the market ensemble member).
+MODEL_FEATURE_COLS = [c for c in FEATURE_COLS if c not in TEAM_NEWS_FEATURES]
+
 
 def build_training_frame(df: pd.DataFrame) -> pd.DataFrame:
     """df must have home/away Elo attached (results_elo) + result label.

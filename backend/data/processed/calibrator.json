@@ -1,32 +1,12 @@
 {
   "method": "temperature",
-  "temperature": 1.0,
+  "temperature": 0.8251,
   "metadata": {
-    "fitted_at": "2026-06-22T16:07:31.022170+00:00",
-    "n_samples": 192,
-    "val_year": 2022,
-    "members": [
-      "dc",
-      "elo",
-      "poisson",
-      "market"
-    ],
-    "synth_market_penalty": 0.25,
-    "val_before": {
-      "log_loss": 1.0211,
-      "rps": 0.2153,
-      "brier": 0.6071,
-      "ece": 0.1534,
-      "acc": 0.5469,
-      "n": 64
-    },
-    "val_after": {
-      "log_loss": 1.0221,
-      "rps": 0.2153,
-      "brier": 0.607,
-      "ece": 0.1496,
-      "acc": 0.5469,
-      "n": 64
-    }
+    "source": "wc2026_tournament_games",
+    "n_train": 52,
+    "n_val": 23,
+    "before_val_ll": 0.8225,
+    "after_val_ll": 0.7971,
+    "n_matches": 75
   }
 }

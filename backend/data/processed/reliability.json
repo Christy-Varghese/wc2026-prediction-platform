@@ -1,50 +1,49 @@
 {
-  "ece": 0.0502,
-  "brier": 0.574,
+  "ece": 0.1741,
+  "brier": 0.488,
   "confidence_bucket_stats": [
     {
       "bucket": "0.3-0.4",
-      "n": 25,
-      "avg_conf": 0.3777,
-      "hit_rate": 0.44,
-      "gap": -0.0623
+      "n": 8,
+      "avg_conf": 0.3795,
+      "hit_rate": 0.0,
+      "gap": 0.3795
     },
     {
       "bucket": "0.4-0.5",
-      "n": 57,
-      "avg_conf": 0.4595,
-      "hit_rate": 0.4737,
-      "gap": -0.0142
+      "n": 13,
+      "avg_conf": 0.4434,
+      "hit_rate": 0.3846,
+      "gap": 0.0588
     },
     {
       "bucket": "0.5-0.6",
-      "n": 47,
-      "avg_conf": 0.5524,
-      "hit_rate": 0.6383,
-      "gap": -0.0859
+      "n": 11,
+      "avg_conf": 0.5465,
+      "hit_rate": 0.7273,
+      "gap": -0.1808
     },
     {
       "bucket": "0.6-0.7",
-      "n": 41,
-      "avg_conf": 0.6481,
-      "hit_rate": 0.5854,
-      "gap": 0.0627
+      "n": 19,
+      "avg_conf": 0.6503,
+      "hit_rate": 0.6842,
+      "gap": -0.0339
     },
     {
       "bucket": "0.7-0.8",
-      "n": 19,
-      "avg_conf": 0.7448,
-      "hit_rate": 0.7368,
-      "gap": 0.008
+      "n": 16,
+      "avg_conf": 0.7573,
+      "hit_rate": 1.0,
+      "gap": -0.2427
     },
     {
       "bucket": "0.8-0.9",
-      "n": 3,
-      "avg_conf": 0.841,
-      "hit_rate": 0.6667,
-      "gap": 0.1743
+      "n": 8,
+      "avg_conf": 0.8431,
+      "hit_rate": 0.5,
+      "gap": 0.3431
     }
   ],
-  "fitted_at": "2026-06-22T16:07:31.022499+00:00",
-  "n_samples": 192
+  "n_samples": 75
 }
