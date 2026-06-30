@@ -100,6 +100,39 @@ export default function MatchesPage() {
              exact, exactPct: Math.round((exact / n) * 100) };
   }, [allData]);
 
+  /* KO accuracy: group resolved matches by round, check predicted_winner vs actual winner */
+  const koAccuracy = useMemo(() => {
+    const matches: any[] = knockoutData?.matches ?? [];
+    const resolved = matches.filter((m: any) => m.resolved && m.predicted_winner);
+    if (!resolved.length) return null;
+
+    const byRound: Record<string, { n: number; correct: number }> = {};
+    let totalN = 0, totalCorrect = 0;
+
+    for (const m of resolved) {
+      const hs = m.home_score as number;
+      const aws = m.away_score as number;
+      const ph: number | null = m.pen_home ?? null;
+      const pa: number | null = m.pen_away ?? null;
+      let actual: string | null = null;
+      if (hs > aws)                          actual = m.home_team;
+      else if (aws > hs)                     actual = m.away_team;
+      else if (ph != null && pa != null)     actual = ph > pa ? m.home_team : m.away_team;
+      if (!actual) continue;
+
+      const hit = m.predicted_winner === actual;
+      const round: string = m.round ?? "Knockout";
+      if (!byRound[round]) byRound[round] = { n: 0, correct: 0 };
+      byRound[round].n++;
+      if (hit) byRound[round].correct++;
+      totalN++;
+      if (hit) totalCorrect++;
+    }
+
+    return { byRound, totalN, totalCorrect,
+             totalPct: Math.round((totalCorrect / totalN) * 100) };
+  }, [knockoutData]);
+
   const knockoutRounds: any[] = useMemo(() => {
     if (!knockoutData?.rounds) return [];
     return knockoutData.rounds as any[];
@@ -188,24 +221,69 @@ export default function MatchesPage() {
           <div className="mt-4 space-y-4">
             {/* Overall model accuracy */}
             {accuracy && (
-              <div className="card-broadcast flex flex-wrap items-center gap-x-8 gap-y-3 py-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">🎯</span>
-                  <span className="font-display text-xs uppercase tracking-widest text-muted">Model accuracy</span>
-                </div>
-                <div>
-                  <div className="font-display text-2xl font-bold tabnum text-success">{accuracy.wdlPct}%</div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted">
-                    Outcome · <span className="text-stadium">{accuracy.wdl}/{accuracy.n}</span> correct
+              <div className="card-broadcast space-y-4 py-4">
+                {/* Header row */}
+                <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🎯</span>
+                    <span className="font-display text-xs uppercase tracking-widest text-muted">Model accuracy</span>
+                  </div>
+
+                  {/* Overall total */}
+                  {koAccuracy && (
+                    <div className="flex items-center gap-3 rounded-xl border border-cyan/20 bg-cyan/5 px-4 py-2">
+                      <div>
+                        <div className="font-display text-2xl font-bold tabnum text-cyan">
+                          {Math.round(((accuracy.wdl + koAccuracy.totalCorrect) / (accuracy.n + koAccuracy.totalN)) * 100)}%
+                        </div>
+                        <div className="text-[10px] uppercase tracking-wider text-muted">
+                          Overall · <span className="text-stadium">{accuracy.wdl + koAccuracy.totalCorrect}/{accuracy.n + koAccuracy.totalN}</span> correct
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Group stage WDL */}
+                  <div>
+                    <div className="font-display text-2xl font-bold tabnum text-success">{accuracy.wdlPct}%</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted">
+                      Outcome · <span className="text-stadium">{accuracy.wdl}/{accuracy.n}</span> correct
+                    </div>
+                  </div>
+
+                  {/* Exact score */}
+                  <div>
+                    <div className="font-display text-2xl font-bold tabnum text-gold">{accuracy.exactPct}%</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted">
+                      Exact score · <span className="text-stadium">{accuracy.exact}/{accuracy.n}</span>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="font-display text-2xl font-bold tabnum text-gold">{accuracy.exactPct}%</div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted">
-                    Exact score · <span className="text-stadium">{accuracy.exact}/{accuracy.n}</span>
+
+                {/* Per-round KO breakdown */}
+                {koAccuracy && Object.entries(koAccuracy.byRound).map(([round, stats]) => (
+                  <div key={round} className="flex items-center gap-3 border-t border-white/5 pt-3">
+                    <span className="chip-gold text-[9px] shrink-0">
+                      {round === "Round of 32" ? "R32" :
+                       round === "Round of 16" ? "R16" :
+                       round === "Quarter-finals" ? "QF" :
+                       round === "Semi-finals" ? "SF" :
+                       round === "Final" ? "Final" : round}
+                    </span>
+                    <span className="font-display text-sm font-bold tabnum text-stadium">
+                      {Math.round((stats.correct / stats.n) * 100)}%
+                    </span>
+                    <span className="text-[11px] text-muted">
+                      {stats.correct}/{stats.n} predicted correctly
+                    </span>
+                    <div className="ml-auto flex gap-1">
+                      {Array.from({ length: stats.n }).map((_, i) => (
+                        <span key={i} className={`h-2 w-2 rounded-full ${
+                          i < stats.correct ? "bg-success" : "bg-white/15"}`} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <span className="ml-auto text-[11px] text-muted">across {accuracy.n} played matches</span>
+                ))}
               </div>
             )}
 
