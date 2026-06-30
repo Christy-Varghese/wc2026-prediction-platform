@@ -370,11 +370,28 @@ def resolve_bracket() -> dict:
     # Process in bracket order so "Winner/Loser Match N" references resolve first.
     order = {"r32": 0, "r16": 1, "qf": 2, "sf": 3, "third": 4, "final": 5}
     for m in sorted(rows, key=lambda x: (order.get(x["type"], 9), x["id"])):
-        home = resolve_label(m["home_label"], m["id"])
-        away = resolve_label(m["away_label"], m["id"])
+        home = m.get("actual_home") or resolve_label(m["home_label"], m["id"])
+        away = m.get("actual_away") or resolve_label(m["away_label"], m["id"])
         row = dict(m)  # keep original labels + venue/city/kickoff
         if home and away:
             tie = _resolve_tie(home, away, rows_by_id, m["id"])
+            # Override predicted winner with actual result when match is played.
+            m_data = rows_by_id.get(m["id"], {})
+            hs, as_ = m_data.get("home_score"), m_data.get("away_score")
+            if hs is not None:
+                ph, pa = m_data.get("pen_home"), m_data.get("pen_away")
+                if hs != as_:
+                    actual_winner = home if hs > as_ else away
+                else:  # draw resolved by penalties
+                    actual_winner = home if (ph or 0) > (pa or 0) else away
+                actual_loser = away if actual_winner == home else home
+                tie["winner"] = actual_winner
+                tie["loser"] = actual_loser
+                tie["predicted_winner"] = actual_winner
+                if ph is not None:
+                    tie["shootout"] = True
+                    tie["pen_home"] = ph
+                    tie["pen_away"] = pa
             results[m["id"]] = tie
             row.update({
                 "home_team": home, "away_team": away,
@@ -385,7 +402,9 @@ def resolve_bracket() -> dict:
                 "predicted_winner": tie["predicted_winner"],
                 "win_probability": tie["win_probability"],
                 "predicted_score": tie["predicted_score"],
-                "shootout": tie["shootout"],
+                "shootout": tie.get("shootout", False),
+                "pen_home": tie.get("pen_home"),
+                "pen_away": tie.get("pen_away"),
                 "confidence": tie["confidence"],
                 "reasons": tie["reasons"],
                 "analysis": tie["analysis"],

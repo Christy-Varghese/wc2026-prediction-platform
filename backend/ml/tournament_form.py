@@ -130,6 +130,8 @@ WC2026_PLAYED: list[tuple[str, str, int, int, bool]] = [
     # ── Round of 32 (Jun 28-29) ──
     ("South Africa",    "Canada",                  0, 1, True),
     ("Brazil",          "Japan",                   2, 1, True),
+    ("Germany",         "Paraguay",                1, 1, True),  # Paraguay won 4-3 pens
+    ("Netherlands",     "Morocco",                 1, 1, True),  # Netherlands won 1-0 pens
 ]
 
 

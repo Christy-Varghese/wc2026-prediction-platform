@@ -1978,5 +1978,61 @@
   },
   "source": "FIFA/ESPN",
   "date": "20260629"
+ },
+ "Germany|Paraguay": {
+  "home": "Germany",
+  "away": "Paraguay",
+  "score": [
+   1,
+   1
+  ],
+  "pen_home": 3,
+  "pen_away": 4,
+  "scorers": {
+   "home": [
+    {
+     "player": "Kai Havertz",
+     "minute": 54,
+     "type": "goal"
+    }
+   ],
+   "away": [
+    {
+     "player": "Julio Enciso",
+     "minute": 42,
+     "type": "goal"
+    }
+   ]
+  },
+  "source": "FIFA/ESPN",
+  "date": "20260629"
+ },
+ "Netherlands|Morocco": {
+  "home": "Netherlands",
+  "away": "Morocco",
+  "score": [
+   1,
+   1
+  ],
+  "pen_home": 1,
+  "pen_away": 0,
+  "scorers": {
+   "home": [
+    {
+     "player": "Cody Gakpo",
+     "minute": 72,
+     "type": "goal"
+    }
+   ],
+   "away": [
+    {
+     "player": "Issa Diop",
+     "minute": 91,
+     "type": "goal"
+    }
+   ]
+  },
+  "source": "FIFA/ESPN",
+  "date": "20260629"
  }
 }

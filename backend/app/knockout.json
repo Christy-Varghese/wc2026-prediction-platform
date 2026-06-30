@@ -31,7 +31,12 @@
   "kickoff": "2026-06-29T16:30:00-04:00",
   "city": "Boston",
   "home_label": "Winner Group E",
-  "away_label": "3rd Group A/B/C/D/F"
+  "away_label": "3rd Group A/B/C/D/F",
+  "home_score": 1,
+  "away_score": 1,
+  "pen_home": 3,
+  "pen_away": 4,
+  "actual_away": "Paraguay"
  },
  {
   "id": 75,
@@ -41,7 +46,11 @@
   "kickoff": "2026-06-29T21:00:00-04:00",
   "city": "Monterrey",
   "home_label": "Winner Group F",
-  "away_label": "Runner-up Group C"
+  "away_label": "Runner-up Group C",
+  "home_score": 1,
+  "away_score": 1,
+  "pen_home": 1,
+  "pen_away": 0
  },
  {
   "id": 78,

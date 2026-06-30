@@ -491,6 +491,7 @@ def knockout() -> list[dict]:
     for r in rows:
         r["stage"] = "knockout"
         r["venue"] = CITY_VENUE.get(r["city"], r["city"])
+        r["played"] = r.get("home_score") is not None
     return rows
 
 
