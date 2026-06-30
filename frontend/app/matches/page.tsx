@@ -361,7 +361,7 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
   const homeWin = played && m.home_score > m.away_score;
   const awayWin = played && m.away_score > m.home_score;
   const homeDraw = played && m.home_score === m.away_score;
-  /* pen winner: home advances if awayWin by pens is false */
+  /* pen winner */
   const homeAdv = homeWin || (homeDraw && (m.pen_home ?? 0) > (m.pen_away ?? 0));
   const awayAdv = awayWin || (homeDraw && (m.pen_away ?? 0) > (m.pen_home ?? 0));
   const homeElim = played && eliminated.has(m.home_team);
@@ -369,8 +369,22 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
   const dateStr = m.kickoff ? fmtShort(m.kickoff) : "TBD";
   const timeStr = m.kickoff ? fmtTime(m.kickoff) : "";
 
+  /* prediction outcome outline */
+  let outlineCls = "";
+  if (played && m.predicted_winner) {
+    const actualScore = `${m.home_score}-${m.away_score}`;
+    const scoreHit = m.predicted_score === actualScore;
+    const actualWinner = homeAdv ? m.home_team : awayAdv ? m.away_team : null;
+    const winnerHit = actualWinner != null && actualWinner === m.predicted_winner;
+    if (scoreHit) {
+      outlineCls = "!border-gold/60 shadow-[0_0_18px_rgba(255,215,0,0.18)]";
+    } else if (winnerHit) {
+      outlineCls = "!border-success/50 shadow-[0_0_14px_rgba(0,230,118,0.10)]";
+    }
+  }
+
   const inner = (
-    <div className={`card-broadcast h-full text-left ${m.resolved ? "match-card-hover" : "opacity-60"}`}>
+    <div className={`card-broadcast h-full text-left ${m.resolved ? "match-card-hover" : "opacity-60"} ${outlineCls}`}>
       {/* header */}
       <div className="mb-3 flex items-center justify-between text-[11px]">
         <span className="chip-gold text-[10px] uppercase tracking-wider">{roundLabel}</span>
@@ -442,7 +456,30 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
 
           <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-muted">
             <span>📍 {m.city}</span>
-            {m.confidence && <span className="font-bold text-gold">{m.confidence} conf</span>}
+            <div className="flex items-center gap-2">
+              {played && m.predicted_winner && (() => {
+                const actualScore = `${m.home_score}-${m.away_score}`;
+                const scoreHit = m.predicted_score === actualScore;
+                const actualWinner = homeAdv ? m.home_team : awayAdv ? m.away_team : null;
+                const winnerHit = actualWinner != null && actualWinner === m.predicted_winner;
+                if (scoreHit) return (
+                  <span className="rounded border border-gold/40 bg-gold/10 px-1.5 py-0.5 text-[9px] font-bold text-gold uppercase tracking-wider">
+                    Score ✓
+                  </span>
+                );
+                if (winnerHit) return (
+                  <span className="rounded border border-success/35 bg-success/8 px-1.5 py-0.5 text-[9px] font-bold text-success uppercase tracking-wider">
+                    Winner ✓
+                  </span>
+                );
+                return (
+                  <span className="rounded border border-white/10 bg-white/3 px-1.5 py-0.5 text-[9px] font-bold text-muted/50 uppercase tracking-wider">
+                    Miss
+                  </span>
+                );
+              })()}
+              {m.confidence && <span className="font-bold text-gold">{m.confidence} conf</span>}
+            </div>
           </div>
         </>
       ) : (
