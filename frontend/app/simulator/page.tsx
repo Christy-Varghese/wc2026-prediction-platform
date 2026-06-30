@@ -69,17 +69,14 @@ export default function SimulatorPage() {
         sub="50 000 Monte Carlo tournaments · 12 groups · 32-team knockout"
       />
 
-      {/* ════ ELIMINATED BANNER ════ */}
+      {/* ════ KNOCKED-OUT NOTICE ════ */}
       {eliminated.size > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-danger/30 bg-danger/8 px-5 py-4">
+          className="rounded-2xl border border-white/8 bg-white/3 px-5 py-4">
           <div className="mb-3 flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-white">
-              ✕
-            </span>
-            <span className="font-display text-sm font-bold uppercase tracking-widest text-danger">
-              Eliminated · {eliminated.size} team{eliminated.size > 1 ? "s" : ""} out
+            <span className="font-display text-sm font-semibold text-muted">
+              {eliminated.size} team{eliminated.size > 1 ? "s" : ""} knocked out · shown below
             </span>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -87,20 +84,19 @@ export default function SimulatorPage() {
               const row = fullTable.find((r: any) => r.team === team);
               return (
                 <Link key={team} href={`/teams/${encodeURIComponent(team)}`}
-                  className="flex items-center gap-2 rounded-xl border border-danger/20 bg-danger/10
-                             px-3 py-2 transition hover:border-danger/40 hover:bg-danger/15">
-                  <Flag url={row?.flag_url} name={team} size={20} />
+                  className="flex items-center gap-2 rounded-xl border border-white/8 bg-white/3
+                             px-3 py-2 opacity-50 transition hover:opacity-80">
+                  <div className="grayscale">
+                    <Flag url={row?.flag_url} name={team} size={20} />
+                  </div>
                   <div>
-                    <div className="font-display text-[12px] font-bold text-danger line-through leading-tight">
+                    <div className="font-display text-[12px] font-bold text-muted/60 leading-tight">
                       {team}
                     </div>
-                    <div className="text-[9px] text-danger/60 uppercase tracking-wider">
+                    <div className="text-[9px] text-muted/40 uppercase tracking-wider">
                       Was {pct(row?.Champion ?? 0)} title odds
                     </div>
                   </div>
-                  <span className="ml-1 rounded border border-danger/30 px-1 py-0.5 text-[9px] font-bold text-danger/70">
-                    OUT
-                  </span>
                 </Link>
               );
             })}
@@ -117,8 +113,8 @@ export default function SimulatorPage() {
         </div>
         {eliminated.size > 0 && (
           <p className="mb-3 text-[11px] text-muted">
-            <span className="inline-block h-2.5 w-2.5 rounded-sm bg-danger/60 mr-1.5 align-middle" />
-            Red bars = eliminated · probabilities are pre-elimination model output
+            <span className="inline-block h-2.5 w-2.5 rounded-sm bg-white/20 mr-1.5 align-middle" />
+            Faded bars = knocked out · probabilities are pre-tournament model output
           </p>
         )}
         <div className="h-80">
@@ -133,10 +129,9 @@ export default function SimulatorPage() {
                     <text
                       x={props.x} y={props.y} dy={4}
                       textAnchor="end"
-                      fill={isOut ? "#FF4D4D" : "#C8D3E8"}
+                      fill={isOut ? "#4A5B80" : "#C8D3E8"}
                       fontSize={11}
-                      textDecoration={isOut ? "line-through" : "none"}
-                      opacity={isOut ? 0.7 : 1}
+                      opacity={isOut ? 0.45 : 1}
                     >
                       {props.payload.value}
                     </text>
@@ -147,7 +142,7 @@ export default function SimulatorPage() {
                 formatter={(v: number, _: any, props: any) => {
                   const isOut = eliminated.has(props.payload.team);
                   return [
-                    `${pct(v)}${isOut ? " (ELIMINATED)" : ""}`,
+                    `${pct(v)}${isOut ? " (knocked out)" : ""}`,
                     "Champion",
                   ];
                 }}
@@ -162,7 +157,7 @@ export default function SimulatorPage() {
               <Bar dataKey="Champion" radius={[0, 8, 8, 0]}>
                 {chartRows.map((r: any, i: number) => {
                   const isOut = eliminated.has(r.team);
-                  if (isOut) return <Cell key={i} fill="#FF4D4D" opacity={0.45} />;
+                  if (isOut) return <Cell key={i} fill="#2A3F6B" opacity={0.35} />;
                   const rank = chartRows.filter((x: any) => !eliminated.has(x.team)).indexOf(r);
                   return (
                     <Cell key={i}
@@ -203,12 +198,11 @@ export default function SimulatorPage() {
               <StageRow key={r.team} r={r} rank={i + 1} eliminated={false} />
             ))}
 
-            {/* Eliminated divider */}
+            {/* Knocked-out divider */}
             {eliminatedRows.length > 0 && (
-              <div className="flex items-center gap-3 border-t border-danger/20 bg-danger/5 px-3 py-2 mt-1">
-                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-danger text-[9px] font-bold text-white">✕</span>
-                <span className="font-display text-[10px] uppercase tracking-widest text-danger">
-                  Eliminated from WC 2026
+              <div className="flex items-center gap-3 border-t border-white/8 bg-white/2 px-3 py-2 mt-1">
+                <span className="font-display text-[10px] uppercase tracking-widest text-muted/50">
+                  Knocked out
                 </span>
               </div>
             )}
@@ -286,7 +280,7 @@ function StageRow({ r, rank, eliminated }: { r: any; rank: number; eliminated: b
       className={`
         ${STAGE_GRID} border-b px-2 py-2 transition
         ${eliminated
-          ? "border-danger/20 bg-danger/5 hover:bg-danger/10"
+          ? "border-white/5 opacity-40 hover:opacity-70"
           : rank === 1
             ? "border-line/30 border-l-2 border-l-gold hover:bg-white/3"
             : rank === 2
@@ -297,29 +291,26 @@ function StageRow({ r, rank, eliminated }: { r: any; rank: number; eliminated: b
 
       {/* rank */}
       <span className={`text-[11px] font-bold tabnum ${
-        eliminated ? "text-danger/50" : rank <= 3 ? "text-gold" : "text-muted/50"}`}>
+        eliminated ? "text-muted/30" : rank <= 3 ? "text-gold" : "text-muted/50"}`}>
         {rank}
       </span>
 
       {/* team */}
       <span className="flex min-w-0 items-center gap-1.5">
-        <Flag url={r.flag_url} name={r.team} size={16} />
+        <div className={eliminated ? "grayscale" : ""}>
+          <Flag url={r.flag_url} name={r.team} size={16} />
+        </div>
         <span className={`min-w-0 break-words font-display text-sm font-semibold leading-tight
-          ${eliminated ? "text-danger/70 line-through" : ""}`}>
+          ${eliminated ? "text-muted/50" : ""}`}>
           {r.team}
         </span>
-        {eliminated && (
-          <span className="shrink-0 rounded border border-danger/40 px-1 py-px text-[8px] font-bold text-danger/80">
-            OUT
-          </span>
-        )}
       </span>
 
       {/* stage probabilities */}
       {(["R32", "QF", "SF", "Final", "Champion"] as const).map((stage, si) => (
         <span key={stage}
           className={`text-right tabnum text-xs
-            ${eliminated ? "text-danger/40 line-through" : ""}
+            ${eliminated ? "text-muted/25" : ""}
             ${!eliminated && stage === "Champion" && rank === 1 ? "font-bold text-gold" : ""}
             ${!eliminated && stage === "Champion" && rank <= 3 && rank > 1 ? "text-cyan" : ""}
             ${!eliminated && stage !== "Champion" ? "text-muted" : ""}
@@ -349,32 +340,30 @@ function GroupCard({ group, teams, eliminated }: {
         {teams.map((t: any, i: number) => {
           const isOut = eliminated.has(t.team);
           return (
-            <div key={t.team}>
+            <div key={t.team} className={isOut ? "opacity-35" : ""}>
               <div className="mb-1 flex items-center justify-between">
                 <span className={`flex items-center gap-1.5 text-sm font-semibold
-                  ${isOut ? "text-danger/60" : i < 2 ? "text-stadium" : "text-muted"}`}>
+                  ${isOut ? "text-muted/50" : i < 2 ? "text-stadium" : "text-muted"}`}>
                   <span className={`text-xs w-4 ${
-                    isOut ? "text-danger/50" : i < 2 ? "text-teal" : "text-muted/50"}`}>
+                    isOut ? "text-muted/30" : i < 2 ? "text-teal" : "text-muted/50"}`}>
                     {i + 1}.
                   </span>
-                  <span className={isOut ? "line-through" : ""}>{t.team}</span>
-                  {isOut
-                    ? <span className="chip text-[8px] border-danger/30 text-danger/70">OUT</span>
-                    : i < 2 && <span className="chip-gold text-[9px]">ADV</span>}
+                  {t.team}
+                  {!isOut && i < 2 && <span className="chip-gold text-[9px]">ADV</span>}
                 </span>
-                <span className={`tabnum text-xs font-bold ${isOut ? "text-danger/50" : "text-cyan"}`}>
-                  {isOut ? "ELIM" : pct(t.advance_prob)}
+                <span className={`tabnum text-xs font-bold ${isOut ? "text-muted/30" : "text-cyan"}`}>
+                  {isOut ? "—" : pct(t.advance_prob)}
                 </span>
               </div>
               <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
                 <motion.div
                   className={`h-1.5 rounded-full ${
-                    isOut ? "bg-danger/40"
+                    isOut ? "bg-white/10"
                     : i === 0 ? "bg-gold"
                     : i === 1 ? "bg-cyan"
                     : "bg-white/20"}`}
                   initial={{ width: 0 }}
-                  animate={{ width: isOut ? "100%" : `${(t.advance_prob / maxProb) * 100}%` }}
+                  animate={{ width: `${(t.advance_prob / maxProb) * 100}%` }}
                   transition={{ duration: 0.7, delay: 0.3 + i * 0.05 }} />
               </div>
             </div>
