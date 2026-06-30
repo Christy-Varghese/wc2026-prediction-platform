@@ -10,12 +10,19 @@ const fetcher = (p: string) => api(p);
 
 const GROUPS = "ABCDEFGHIJKL".split("");
 
-function useEliminatedTeams() {
+function useKnockoutSets() {
   const { data: ko } = useSWR("/api/knockout", fetcher, { revalidateOnFocus: false });
-  return useMemo<Set<string>>(() => {
-    const out = new Set<string>();
-    if (!ko?.matches) return out;
+  return useMemo<{ r32Teams: Set<string>; eliminated: Set<string> }>(() => {
+    const r32Teams = new Set<string>();
+    const eliminated = new Set<string>();
+    if (!ko?.matches) return { r32Teams, eliminated };
     for (const m of ko.matches as any[]) {
+      // Collect all teams that made the R32
+      if (m.round === "Round of 32") {
+        if (m.home_team) r32Teams.add(m.home_team);
+        if (m.away_team) r32Teams.add(m.away_team);
+      }
+      // Collect teams knocked out in R32 or later
       const hs = m.home_score;
       const aws = m.away_score;
       if (hs == null || aws == null) continue;
@@ -24,20 +31,20 @@ function useEliminatedTeams() {
       if (!home || !away) continue;
       const ph: number | null = m.pen_home ?? null;
       const pa: number | null = m.pen_away ?? null;
-      if (hs > aws)                               out.add(away);
-      else if (aws > hs)                          out.add(home);
+      if (hs > aws)                               eliminated.add(away);
+      else if (aws > hs)                          eliminated.add(home);
       else if (ph != null && pa != null) {
-        if (ph > pa)                              out.add(away);
-        else                                      out.add(home);
+        if (ph > pa)                              eliminated.add(away);
+        else                                      eliminated.add(home);
       }
     }
-    return out;
+    return { r32Teams, eliminated };
   }, [ko]);
 }
 
 export default function TeamsPage() {
   const { data, error } = useSWR("/api/teams", fetcher);
-  const eliminated = useEliminatedTeams();
+  const { r32Teams, eliminated } = useKnockoutSets();
   const [group, setGroup] = useState("");
   const [search, setSearch] = useState("");
   const [showElim, setShowElim] = useState(true);
@@ -49,12 +56,18 @@ export default function TeamsPage() {
   );
   if (!data) return <TeamsSkeleton />;
 
-  const sorted = [...data].sort((a: any, b: any) => {
-    const aOut = eliminated.has(a.name) ? 1 : 0;
-    const bOut = eliminated.has(b.name) ? 1 : 0;
-    if (aOut !== bOut) return aOut - bOut;
-    return a.fifa_rank - b.fifa_rank;
-  });
+  // Only show teams that made it to the knockout stage (R32+)
+  // If r32Teams hasn't loaded yet, show all teams as fallback
+  const inKnockout = (t: any) => r32Teams.size === 0 || r32Teams.has(t.name);
+
+  const sorted = [...data]
+    .filter(inKnockout)
+    .sort((a: any, b: any) => {
+      const aOut = eliminated.has(a.name) ? 1 : 0;
+      const bOut = eliminated.has(b.name) ? 1 : 0;
+      if (aOut !== bOut) return aOut - bOut;
+      return a.fifa_rank - b.fifa_rank;
+    });
 
   const filtered = sorted.filter((t: any) =>
     (!group || t.group === group) &&
@@ -64,6 +77,7 @@ export default function TeamsPage() {
 
   const activeFiltered = filtered.filter((t: any) => !eliminated.has(t.name));
   const elimFiltered   = filtered.filter((t: any) =>  eliminated.has(t.name));
+  const groupStageOut  = r32Teams.size > 0 ? (data.length - r32Teams.size) : 0;
 
   const getTier = (elo: number) =>
     elo >= 2000 ? { label: "Elite",      color: "text-gold" } :
@@ -75,7 +89,7 @@ export default function TeamsPage() {
     <div className="space-y-6">
       <SectionHeader
         title="NATIONS"
-        sub={`${activeFiltered.length} active · ${eliminated.size} eliminated · FIFA World Cup 2026`}
+        sub={`${activeFiltered.length} still competing · ${eliminated.size} knocked out · ${groupStageOut} eliminated in group stage · FIFA World Cup 2026`}
       />
 
       {/* eliminated banner */}
