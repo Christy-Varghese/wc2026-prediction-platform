@@ -1,6 +1,6 @@
 "use client";
 import useSWR from "swr";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { api, pct, pct0 } from "@/lib/api";
@@ -37,10 +37,14 @@ function useEliminatedTeams() {
   }, [ko]);
 }
 
+type SortStage = "R32" | "QF" | "SF" | "Final" | "Champion";
+const SORT_STAGES: SortStage[] = ["R32", "QF", "SF", "Final", "Champion"];
+
 export default function SimulatorPage() {
   const { data, error } = useSWR("/api/simulate?top=24", fetcher);
   const { data: groups }  = useSWR("/api/simulate/groups", fetcher);
   const eliminated = useEliminatedTeams();
+  const [sortBy, setSortBy] = useState<SortStage>("Champion");
 
   if (error) return (
     <div className="card-broadcast flex items-center gap-3 text-danger">
@@ -52,8 +56,9 @@ export default function SimulatorPage() {
   const chart     = data.champion_odds.slice(0, 12);
   const fullTable = data.champion_odds;
 
-  /* Split table into active vs eliminated */
-  const activeRows    = fullTable.filter((r: any) => !eliminated.has(r.team));
+  /* Split table into active vs eliminated, then sort by selected stage */
+  const sortFn = (a: any, b: any) => (b[sortBy] ?? 0) - (a[sortBy] ?? 0);
+  const activeRows    = fullTable.filter((r: any) => !eliminated.has(r.team)).sort(sortFn);
   const eliminatedRows = fullTable.filter((r: any) =>  eliminated.has(r.team));
 
   /* Chart: put eliminated teams at the bottom in red */
@@ -178,7 +183,31 @@ export default function SimulatorPage() {
       <motion.section
         initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
         className="card-broadcast overflow-hidden">
-        <SectionHeader title="STAGE-BY-STAGE ODDS" sub={`${activeRows.length} active · ${eliminatedRows.length} eliminated`} />
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
+          <SectionHeader title="STAGE-BY-STAGE ODDS" sub={`${activeRows.length} active · ${eliminatedRows.length} eliminated`} />
+          {/* Sort filter pills */}
+          <div className="flex items-center gap-1 flex-wrap">
+            <span className="text-[10px] text-muted/50 uppercase tracking-widest mr-1">Sort by</span>
+            {SORT_STAGES.map((stage) => (
+              <button
+                key={stage}
+                onClick={() => setSortBy(stage)}
+                className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition
+                  ${sortBy === stage
+                    ? stage === "Champion"
+                      ? "bg-gold/20 text-gold border border-gold/40"
+                      : stage === "SF" || stage === "Final"
+                        ? "bg-cyan/15 text-cyan border border-cyan/30"
+                        : "bg-white/10 text-white border border-white/20"
+                    : "text-muted/50 border border-white/8 hover:text-muted hover:border-white/20"
+                  }`}
+              >
+                {stage === "Champion" ? "🏆" : stage}
+                {sortBy === stage && <span className="ml-0.5 opacity-70">↓</span>}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="overflow-x-auto">
           <div className="min-w-[440px]">
@@ -186,16 +215,24 @@ export default function SimulatorPage() {
             <div className={`${STAGE_GRID} border-b border-white/10 px-2 py-3 text-[11px] uppercase tracking-widest text-muted`}>
               <span>#</span>
               <span>Team</span>
-              <span className="text-right">R32</span>
-              <span className="text-right">QF</span>
-              <span className="text-right">SF</span>
-              <span className="text-right">Final</span>
-              <span className="pr-1 text-right">🏆</span>
+              {SORT_STAGES.map((stage) => (
+                <button
+                  key={stage}
+                  onClick={() => setSortBy(stage)}
+                  className={`text-right transition w-full
+                    ${sortBy === stage
+                      ? stage === "Champion" ? "text-gold font-bold" : "text-cyan font-bold"
+                      : "text-muted/60 hover:text-muted"
+                    }`}
+                >
+                  {stage === "Champion" ? "🏆" : stage}
+                </button>
+              ))}
             </div>
 
             {/* Active teams */}
             {activeRows.map((r: any, i: number) => (
-              <StageRow key={r.team} r={r} rank={i + 1} eliminated={false} />
+              <StageRow key={r.team} r={r} rank={i + 1} eliminated={false} sortBy={sortBy} />
             ))}
 
             {/* Knocked-out divider */}
@@ -209,7 +246,7 @@ export default function SimulatorPage() {
 
             {/* Eliminated teams */}
             {eliminatedRows.map((r: any, i: number) => (
-              <StageRow key={r.team} r={r} rank={activeRows.length + i + 1} eliminated={true} />
+              <StageRow key={r.team} r={r} rank={activeRows.length + i + 1} eliminated={true} sortBy={sortBy} />
             ))}
           </div>
         </div>
@@ -274,7 +311,9 @@ const STAGE_GRID =
   "grid grid-cols-[26px_minmax(0,1fr)_repeat(5,46px)] items-center gap-1";
 
 /* ── Stage row ── */
-function StageRow({ r, rank, eliminated }: { r: any; rank: number; eliminated: boolean }) {
+function StageRow({ r, rank, eliminated, sortBy }: {
+  r: any; rank: number; eliminated: boolean; sortBy: SortStage;
+}) {
   return (
     <Link href={`/teams/${encodeURIComponent(r.team)}`}
       className={`
@@ -307,18 +346,21 @@ function StageRow({ r, rank, eliminated }: { r: any; rank: number; eliminated: b
       </span>
 
       {/* stage probabilities */}
-      {(["R32", "QF", "SF", "Final", "Champion"] as const).map((stage, si) => (
-        <span key={stage}
-          className={`text-right tabnum text-xs
-            ${eliminated ? "text-muted/25" : ""}
-            ${!eliminated && stage === "Champion" && rank === 1 ? "font-bold text-gold" : ""}
-            ${!eliminated && stage === "Champion" && rank <= 3 && rank > 1 ? "text-cyan" : ""}
-            ${!eliminated && stage !== "Champion" ? "text-muted" : ""}
-            ${si === 4 ? "pr-1" : ""}
-          `}>
-          {eliminated ? "—" : pct(r[stage])}
-        </span>
-      ))}
+      {(["R32", "QF", "SF", "Final", "Champion"] as const).map((stage, si) => {
+        const isSort = stage === sortBy;
+        return (
+          <span key={stage}
+            className={`text-right tabnum text-xs
+              ${eliminated ? "text-muted/25" : ""}
+              ${!eliminated && isSort && stage === "Champion" ? "font-bold text-gold" : ""}
+              ${!eliminated && isSort && stage !== "Champion" ? "font-bold text-cyan" : ""}
+              ${!eliminated && !isSort ? "text-muted/60" : ""}
+              ${si === 4 ? "pr-1" : ""}
+            `}>
+            {eliminated ? "—" : pct(r[stage])}
+          </span>
+        );
+      })}
     </Link>
   );
 }
