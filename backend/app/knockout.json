@@ -336,7 +336,15 @@
   "city": "Vancouver",
   "home_label": "Winner Group B",
   "away_label": "3rd Group E/F/G/I/J",
-  "actual_away": "Algeria"
+  "actual_home": "Switzerland",
+  "actual_away": "Algeria",
+  "home_score": 2,
+  "away_score": 0,
+  "actual_events": [
+   {"minute": 10, "team": "Switzerland", "type": "goal", "scorer": "Breel Embolo", "assist": "Johan Manzambi", "text": "Manzambi drives forward on a brilliant individual run and squares to Embolo, who finishes calmly into the bottom corner. Switzerland lead!"},
+   {"minute": 46, "team": "Switzerland", "type": "goal", "scorer": "Dan Ndoye", "assist": null, "text": "Within 48 seconds of the restart, Algeria fail to clear their lines and Ndoye pounces to double Switzerland's lead. Game effectively over."}
+  ],
+  "actual_stats": {"home_xg": 2.18, "away_xg": 0.31, "result_note": "Switzerland's first World Cup knockout win in 88 years. Dominant from the start, they advance to the R16 for a fourth successive World Cup."}
  },
  {
   "id": 88,

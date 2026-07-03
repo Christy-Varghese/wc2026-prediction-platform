@@ -2158,5 +2158,19 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260702"
+  },
+  "Switzerland|Algeria": {
+    "home": "Switzerland",
+    "away": "Algeria",
+    "score": [2, 0],
+    "scorers": {
+      "home": [
+        {"player": "Breel Embolo", "minute": 10, "type": "goal"},
+        {"player": "Dan Ndoye", "minute": 46, "type": "goal"}
+      ],
+      "away": []
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260702"
   }
 }
