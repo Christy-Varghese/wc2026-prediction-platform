@@ -354,7 +354,21 @@
   "kickoff": "2026-07-03T14:00:00-04:00",
   "city": "Dallas",
   "home_label": "Runner-up Group D",
-  "away_label": "Runner-up Group G"
+  "away_label": "Runner-up Group G",
+  "actual_home": "Australia",
+  "actual_away": "Egypt",
+  "home_score": 1,
+  "away_score": 1,
+  "pen_home": 2,
+  "pen_away": 4,
+  "actual_events": [
+   {"minute": 13, "team": "Egypt", "type": "goal", "scorer": "Emam Ashour", "assist": "Karim Hafez", "text": "Hafez whips in a free-kick routine delivery and Ashour rises highest to head Egypt in front. 1-0!"},
+   {"minute": 55, "team": "Australia", "type": "goal", "scorer": "Mohamed Hany (OG)", "assist": null, "text": "Hany tries to head a high ball clear inside his own box but only steers it into his own net. Australia level it up — 1-1. Hany becomes the first player in World Cup history with two own goals in the same tournament."},
+   {"minute": 90, "team": null, "type": "phase", "text": "Full time 1-1. Onto extra time."},
+   {"minute": 120, "team": null, "type": "phase", "text": "Extra time ends 1-1. Penalty shootout."},
+   {"minute": 121, "team": null, "type": "shootout", "text": "Penalty shootout — Egypt win 4-2. Mathew Ryan, on as a shootout substitute for Australia, fails to save a single kick. Mohamed Salah's cheeky Panenka seals it — Egypt's first-ever World Cup knockout win!"}
+  ],
+  "actual_stats": {"result_note": "Egypt survive a five-goal shootout after Emam Ashour's header was cancelled out by a Mohamed Hany own goal. First-ever World Cup knockout win for the Pharaohs — they advance to the Round of 16."}
  },
  {
   "id": 86,

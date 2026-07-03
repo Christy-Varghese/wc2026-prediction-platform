@@ -2172,5 +2172,22 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260702"
+  },
+  "Australia|Egypt": {
+    "home": "Australia",
+    "away": "Egypt",
+    "score": [1, 1],
+    "pen_home": 2,
+    "pen_away": 4,
+    "scorers": {
+      "home": [
+        {"player": "Mohamed Hany", "minute": 55, "type": "own goal"}
+      ],
+      "away": [
+        {"player": "Emam Ashour", "minute": 13, "type": "goal"}
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260703"
   }
 }
