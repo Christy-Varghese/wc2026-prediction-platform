@@ -77,8 +77,13 @@ export function Nav() {
             </div>
           </Link>
 
-          {/* Desktop links */}
-          <div className="no-scrollbar hidden flex-1 items-center gap-0.5 overflow-x-auto md:flex">
+          {/* Desktop links — switches at xl (1280px), not the usual md/lg,
+              because all 9 links + logo + live pill only fit cleanly above
+              ~1152px; anything narrower (including both iPad orientations,
+              768px and 1024px) silently overflowed this row with no visible
+              scrollbar, hiding Teams/Awards/Analytics with zero indication
+              more items existed. */}
+          <div className="no-scrollbar hidden flex-1 items-center gap-0.5 overflow-x-auto xl:flex">
             {LINKS.map(([href, label]) => {
               const active = href === "/" ? path === "/" : path.startsWith(href);
               return (
@@ -112,7 +117,7 @@ export function Nav() {
 
             {/* Mobile hamburger */}
             <button
-              className="ml-1 rounded-lg border border-line p-2 text-muted hover:text-cyan md:hidden"
+              className="ml-1 rounded-lg border border-line p-2 text-muted hover:text-cyan xl:hidden"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Menu">
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
@@ -132,8 +137,8 @@ export function Nav() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="overflow-hidden border-t border-line md:hidden">
-              <div className="grid grid-cols-2 gap-1 p-3">
+              className="overflow-hidden border-t border-line xl:hidden">
+              <div className="grid grid-cols-2 gap-1 p-3 sm:grid-cols-3">
                 {LINKS.map(([href, label, icon]) => {
                   const active = href === "/" ? path === "/" : path.startsWith(href);
                   return (
