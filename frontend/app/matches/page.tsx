@@ -471,17 +471,24 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
   const dateStr = m.kickoff ? fmtShort(m.kickoff) : "TBD";
   const timeStr = m.kickoff ? fmtTime(m.kickoff) : "";
 
-  /* prediction outcome outline */
+  /* prediction outcome outline
+   * IMPORTANT: m.predicted_winner is overwritten to the actual winner once a
+   * knockout tie is played (see knockout_engine.py) — comparing against it
+   * here would be tautological (always true) for every decided match. The
+   * original pre-match pick survives in model_predicted_winner; use that. */
+  const modelPick = m.model_predicted_winner ?? m.predicted_winner;
   let outlineCls = "";
-  if (played && m.predicted_winner) {
+  if (played && modelPick) {
     const actualScore = `${m.home_score}-${m.away_score}`;
     const scoreHit = m.predicted_score === actualScore;
     const actualWinner = homeAdv ? m.home_team : awayAdv ? m.away_team : null;
-    const winnerHit = actualWinner != null && actualWinner === m.predicted_winner;
+    const winnerHit = actualWinner != null && actualWinner === modelPick;
     if (scoreHit) {
       outlineCls = "!border-gold/60 shadow-[0_0_18px_rgba(255,215,0,0.18)]";
     } else if (winnerHit) {
       outlineCls = "!border-success/50 shadow-[0_0_14px_rgba(0,230,118,0.10)]";
+    } else {
+      outlineCls = "!border-danger/40";
     }
   }
 
@@ -559,11 +566,11 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
           <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-muted">
             <span>📍 {m.city}</span>
             <div className="flex items-center gap-2">
-              {played && m.predicted_winner && (() => {
+              {played && modelPick && (() => {
                 const actualScore = `${m.home_score}-${m.away_score}`;
                 const scoreHit = m.predicted_score === actualScore;
                 const actualWinner = homeAdv ? m.home_team : awayAdv ? m.away_team : null;
-                const winnerHit = actualWinner != null && actualWinner === m.predicted_winner;
+                const winnerHit = actualWinner != null && actualWinner === modelPick;
                 if (scoreHit) return (
                   <span className="rounded border border-gold/40 bg-gold/10 px-1.5 py-0.5 text-[9px] font-bold text-gold uppercase tracking-wider">
                     Score ✓
@@ -575,8 +582,9 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
                   </span>
                 );
                 return (
-                  <span className="rounded border border-white/10 bg-white/3 px-1.5 py-0.5 text-[9px] font-bold text-muted/50 uppercase tracking-wider">
-                    Miss
+                  <span title={`Model picked ${modelPick}`}
+                    className="rounded border border-danger/40 bg-danger/10 px-1.5 py-0.5 text-[9px] font-bold text-danger uppercase tracking-wider">
+                    Missed — picked {modelPick}
                   </span>
                 );
               })()}
