@@ -148,6 +148,8 @@ WC2026_PLAYED: list[tuple[str, str, int, int, bool]] = [
     ("Australia",       "Egypt",                   1, 1, True),  # Egypt won 4-2 pens
     ("Argentina",       "Cape Verde",              3, 2, True),  # AET
     ("Colombia",        "Ghana",                   1, 0, True),
+    # ── Round of 16 (Jul 4) ──
+    ("Canada",          "Morocco",                 0, 3, True),
 ]
 
 

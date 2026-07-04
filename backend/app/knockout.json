@@ -419,7 +419,16 @@
   "kickoff": "2026-07-04T13:00:00-04:00",
   "city": "Houston",
   "home_label": "Winner Match 73",
-  "away_label": "Winner Match 75"
+  "away_label": "Winner Match 75",
+  "home_score": 0,
+  "away_score": 3,
+  "actual_events": [
+   {"minute": 22, "team": "Morocco", "type": "sub", "text": "Ismael Saibari — Morocco's in-form talisman, a 9.9/10 form rating coming in — goes down injured and has to be replaced by Soufiane Rahimi."},
+   {"minute": 50, "team": "Morocco", "type": "goal", "scorer": "Azzedine Ounahi", "assist": "Achraf Hakimi", "text": "Ounahi curls a free-kick from outside the box into the bottom right — Morocco lead 1-0!"},
+   {"minute": 82, "team": "Morocco", "type": "goal", "scorer": "Azzedine Ounahi", "assist": "Brahim Díaz", "text": "Díaz splits Canada's stretched defence and picks out Ounahi, who sweeps a first-time finish into the top right — Morocco 2-0, and into the quarter-finals."},
+   {"minute": 98, "team": "Morocco", "type": "goal", "scorer": "Soufiane Rahimi", "assist": "Brahim Díaz", "text": "Díaz races into space and squares for Rahimi, who finishes low into the bottom right in stoppage time — 3-0. Díaz's second assist of the match, a tournament-record fourth overall."}
+  ],
+  "actual_stats": {"home_xg": 0.85, "away_xg": 0.79, "result_note": "Rahimi's injury-time introduction for the stricken Saibari proved decisive — he scored Morocco's third after Ounahi's brace either side of the break. Brahim Díaz's two assists took his tournament tally to four, an African record. Canada, who had chances of their own (10 shots to Morocco's 5), never found a way past Bounou."}
  },
  {
   "id": 89,

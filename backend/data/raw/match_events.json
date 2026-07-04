@@ -2220,5 +2220,20 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260703"
+  },
+  "Canada|Morocco": {
+    "home": "Canada",
+    "away": "Morocco",
+    "score": [0, 3],
+    "scorers": {
+      "home": [],
+      "away": [
+        {"player": "Azzedine Ounahi", "minute": 50, "type": "goal"},
+        {"player": "Azzedine Ounahi", "minute": 82, "type": "goal"},
+        {"player": "Soufiane Rahimi", "minute": 98, "type": "goal"}
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260704"
   }
 }

@@ -395,5 +395,16 @@
       "FIFA",
       "NBC News"
     ]
+  },
+  "Canada|Morocco": {
+    "headline": "Rahimi seals it as Morocco end Canada's historic run",
+    "summary": "Ismael Saibari's night ended after 21 minutes when he went down injured, and his replacement Soufiane Rahimi had the last word. Azzedine Ounahi scored either side of the break — a curling free-kick in the 50th minute and a first-time finish from a Brahim Diaz through-ball in the 82nd — before Rahimi added a third in stoppage time, again teed up by Diaz, whose two assists gave him a tournament-record four. Canada created chances of their own (10 shots to Morocco's 5) but could not beat Yassine Bounou, and their first-ever World Cup knockout run ends in the Round of 16.",
+    "star_player": "Brahim Diaz",
+    "star_reason": "Set up both of Morocco's second-half goals, taking his tournament assist tally to four — an African record at a single World Cup.",
+    "turning_point": "Saibari's 21st-minute injury brought on Rahimi, who scored the clinching third goal deep into stoppage time.",
+    "what_lacked": "Canada had the better of the shot count but couldn't turn pressure into clear-cut chances against a well-organised Morocco defence.",
+    "sources": [
+      "ESPN"
+    ]
   }
 }
