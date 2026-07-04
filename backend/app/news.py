@@ -113,7 +113,13 @@ def build(max_results: int = 6) -> dict:
     try:
         hits = n = 0
         for m in played:
-            p = services.predict(m["home_team"], m["away_team"], neutral=m["neutral"])
+            # Pass `match=m` so this matches the prediction actually shown for
+            # the fixture elsewhere (services.match_card does the same) — the
+            # rest-days/travel/weather context inputs are only computed when
+            # a match dict is supplied, so omitting it silently degrades to a
+            # different (less-informed) prediction and disagrees with the
+            # accuracy shown on /matches.
+            p = services.predict(m["home_team"], m["away_team"], neutral=m["neutral"], match=m)
             pw = p.get("predicted_winner")
             if pw:
                 n += 1
