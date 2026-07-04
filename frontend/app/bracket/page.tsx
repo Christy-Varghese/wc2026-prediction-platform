@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -87,11 +87,17 @@ function clipId(prefix: string, idx: number) { return `c-${prefix}-${idx}`; }
 /* ── FlagCircle ── */
 function FlagCircle({
   cx, cy, r, flagUrl, dimmed, winner, gold, predictedWinner, predictedLoser,
-  onClick,
+  tapPad = 6, onClick,
 }: {
   cx: number; cy: number; r: number;
   flagUrl?: string; dimmed?: boolean; winner?: boolean; gold?: boolean;
   predictedWinner?: boolean; predictedLoser?: boolean;
+  // Extra radius (viewBox units) added to the invisible click target beyond
+  // the visible circle. Defaults to a small fixed pad, but the page computes
+  // a larger value on narrow viewports so tap targets stay usable even as
+  // the whole diagram scales down — the visible flag can stay small, but the
+  // tappable area shouldn't shrink below a real-finger-sized minimum.
+  tapPad?: number;
   onClick?: () => void;
 }) {
   const id = `fc-${cx.toFixed(0)}-${cy.toFixed(0)}-${r}`;
@@ -175,7 +181,7 @@ function FlagCircle({
 
       {/* Invisible click target */}
       {onClick && (
-        <circle cx={cx} cy={cy} r={r + 6} fill="transparent" />
+        <circle cx={cx} cy={cy} r={r + tapPad} fill="transparent" />
       )}
     </g>
   );
@@ -209,6 +215,30 @@ export default function BracketPage() {
   const { data: ko } = useSWR("/api/knockout", fetcher, { revalidateOnFocus: false });
   const { data: teams } = useSWR("/api/teams", fetcher, { revalidateOnFocus: false });
   const [hovered, setHovered] = useState<number | null>(null);
+
+  // The whole diagram scales down via the SVG's viewBox to fit narrow
+  // viewports (no horizontal scroll), but that shrinks tap targets right
+  // along with the visuals — a flag that's fine to *see* on a phone can be
+  // too small to reliably *tap*. Track the actual rendered width so we can
+  // pad the invisible tap-target circles up to a real-finger-sized minimum
+  // without changing how anything looks.
+  const svgWrapRef = useRef<HTMLDivElement>(null);
+  const [renderScale, setRenderScale] = useState(1); // rendered CSS width / SZ
+  useEffect(() => {
+    const el = svgWrapRef.current;
+    if (!el) return;
+    const update = () => setRenderScale(el.clientWidth / SZ);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+    // Re-run once `ko` arrives: before that, this component renders
+    // <BracketSkeleton /> instead (see the early return below), so
+    // svgWrapRef.current is still null on the very first effect run.
+  }, [ko]);
+  const MIN_TAP_R_PX = 21; // ~42px minimum tap diameter (Apple/Google guidance is ~44px)
+  const tapPadFor = (baseR: number) =>
+    renderScale > 0 ? Math.max(6, MIN_TAP_R_PX / renderScale - baseR) : 6;
 
   const flagMap = useMemo<Record<string, string>>(() => {
     const m: Record<string, string> = {};
@@ -253,7 +283,7 @@ export default function BracketPage() {
 
       {/* Circular SVG bracket */}
       <div className="flex justify-center w-full overflow-x-auto">
-        <div className="w-full" style={{ minWidth: 320, maxWidth: 760 }}>
+        <div ref={svgWrapRef} className="w-full" style={{ minWidth: 320, maxWidth: 760 }}>
           <svg
             viewBox={`0 0 ${SZ} ${SZ}`}
             className="w-full h-auto select-none"
@@ -389,6 +419,7 @@ export default function BracketPage() {
                     winner={isWinner}
                     predictedWinner={isPredictedWinner}
                     predictedLoser={isPredictedLoser}
+                    tapPad={tapPadFor(SZ_TEAM)}
                     onClick={() => router.push(`/knockout/${slot.matchId}`)}
                   />
                 </motion.g>
@@ -415,6 +446,7 @@ export default function BracketPage() {
                   onMouseEnter={() => setHovered(matchId)}
                   onMouseLeave={() => setHovered(null)}
                 >
+                  <circle cx={pos.x} cy={pos.y} r={SZ_R32 + tapPadFor(SZ_R32)} fill="transparent" />
                   <FlagCircle
                     cx={pos.x} cy={pos.y} r={SZ_R32}
                     flagUrl={flagUrl}
@@ -448,6 +480,7 @@ export default function BracketPage() {
                   style={{ cursor: "pointer" }}
                   onClick={() => router.push(`/knockout/${matchId}`)}
                 >
+                  <circle cx={pos.x} cy={pos.y} r={SZ_R16 + tapPadFor(SZ_R16)} fill="transparent" />
                   <FlagCircle
                     cx={pos.x} cy={pos.y} r={SZ_R16}
                     flagUrl={flagUrl}
@@ -482,6 +515,7 @@ export default function BracketPage() {
                   style={{ cursor: "pointer" }}
                   onClick={() => router.push(`/knockout/${matchId}`)}
                 >
+                  <circle cx={pos.x} cy={pos.y} r={SZ_QF + tapPadFor(SZ_QF)} fill="transparent" />
                   <FlagCircle
                     cx={pos.x} cy={pos.y} r={SZ_QF}
                     flagUrl={flagUrl}
@@ -518,6 +552,7 @@ export default function BracketPage() {
                   {/* Gold accent ring */}
                   <circle cx={pos.x} cy={pos.y} r={SZ_SF + 4}
                     fill="none" stroke="rgba(255,215,0,0.12)" strokeWidth={1} />
+                  <circle cx={pos.x} cy={pos.y} r={SZ_SF + tapPadFor(SZ_SF)} fill="transparent" />
                   <FlagCircle
                     cx={pos.x} cy={pos.y} r={SZ_SF}
                     flagUrl={flagUrl}
@@ -636,7 +671,11 @@ export default function BracketPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.4 }}
-          className="mx-auto max-w-xs rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/8 to-transparent p-5 text-center"
+          // Extra bottom margin + right padding on mobile: the fixed CAI
+          // mascot/feedback widgets sit bottom-right on every page and this
+          // is the last card on the page, so its text can end up directly
+          // under them while scrolling past on a narrow viewport.
+          className="mx-auto mb-24 max-w-xs rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/8 to-transparent p-5 pr-6 text-center sm:mb-6 sm:pr-5"
         >
           <div className="text-[9px] font-bold uppercase tracking-[0.3em] text-gold/60 mb-1">
             CAI Predicted Champion
