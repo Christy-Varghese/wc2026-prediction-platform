@@ -30,21 +30,16 @@ function buildEliminated(koData: any): Set<string> {
   return out;
 }
 
+// Keys must match the real `round` strings from knockout.json exactly
+// ("Quarter-final"/"Semi-final"/"Third place" — singular, hyphenated,
+// lowercase after the hyphen), not a guessed title-cased variant.
 const ROUND_LABEL: Record<string, string> = {
   "Round of 32": "R32",
   "Round of 16": "R16",
-  "Quarter Final": "QF",
-  "Semi Final": "SF",
-  "Third Place": "3P",
+  "Quarter-final": "QF",
+  "Semi-final": "SF",
+  "Third place": "3P",
   "Final": "Final",
-};
-
-const ROUND_DATE: Record<string, string> = {
-  "Round of 32": "Jun 28 – Jul 3",
-  "Round of 16": "Jul 5 – Jul 7",
-  "Quarter Final": "Jul 10 – Jul 11",
-  "Semi Final": "Jul 14 – Jul 15",
-  "Final": "Jul 19",
 };
 
 const ET = "America/New_York";
@@ -175,7 +170,16 @@ export default function MatchesPage() {
       {/* ── Knockout rounds ── */}
       {knockoutRounds.map((r: any, ri: number) => {
         const label = ROUND_LABEL[r.round] ?? r.round;
-        const dateRange = ROUND_DATE[r.round];
+        // Derived from the real kickoff times, not a hand-maintained lookup —
+        // a hardcoded schedule table silently drifts (e.g. R16 was labeled
+        // "Jul 5 – Jul 7" while its actual first kickoff is Jul 4).
+        const kickoffs = (r.matches as any[])
+          .map((m: any) => m.kickoff).filter(Boolean).sort();
+        const dateRange = kickoffs.length
+          ? (fmtShort(kickoffs[0]) === fmtShort(kickoffs[kickoffs.length - 1])
+              ? fmtShort(kickoffs[0])
+              : `${fmtShort(kickoffs[0])} – ${fmtShort(kickoffs[kickoffs.length - 1])}`)
+          : undefined;
         // Default-open the current round (first after sorting active-to-top);
         // once the user has manually toggled a round, respect their choice.
         const isOpen = openRounds[r.round] ?? (ri === 0);
@@ -366,11 +370,7 @@ export default function MatchesPage() {
                 {koAccuracy && Object.entries(koAccuracy.byRound).map(([round, stats]) => (
                   <div key={round} className="flex items-center gap-3 border-t border-white/5 pt-3">
                     <span className="chip-gold text-[9px] shrink-0">
-                      {round === "Round of 32" ? "R32" :
-                       round === "Round of 16" ? "R16" :
-                       round === "Quarter-finals" ? "QF" :
-                       round === "Semi-finals" ? "SF" :
-                       round === "Final" ? "Final" : round}
+                      {ROUND_LABEL[round] ?? round}
                     </span>
                     <span className="font-display text-sm font-bold tabnum text-stadium">
                       {Math.round((stats.correct / stats.n) * 100)}%
