@@ -82,6 +82,18 @@ def team_journey(team: str) -> list[dict]:
         else:
             continue
         result = "W" if gf > ga else ("D" if gf == ga else "L")
+        pens = None
+        if gf == ga:
+            # A drawn scoreline in a knockout tie is decided on penalties —
+            # WC2026_PLAYED only carries the 90'/ET score, so check the real
+            # shootout result and correct W/D/L rather than showing a knockout
+            # win/loss as a plain draw.
+            p = ma._real_pens(home, away)
+            if p:
+                pen_h, pen_a = p
+                team_pens, opp_pens = (pen_h, pen_a) if team == home else (pen_a, pen_h)
+                result = "W" if team_pens > opp_pens else "L"
+                pens = f"{team_pens}-{opp_pens}"
         scorers = ma._real_scorers(home, away) or {"home": [], "away": []}
         try:
             report = ma.post_match_report(home, away, hs, as_, scorers)
@@ -93,6 +105,7 @@ def team_journey(team: str) -> list[dict]:
         out.append({
             "opponent": opp, "opp_flag": _flag(opp),
             "score": f"{gf}-{ga}", "gf": gf, "ga": ga, "result": result,
+            "pens": pens,
             "neutral": neutral,
             "team_scorers": team_scorers, "opp_scorers": opp_scorers,
             "headline": report.get("headline"),

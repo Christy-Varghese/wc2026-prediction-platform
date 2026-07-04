@@ -629,7 +629,9 @@ function JourneyGame({ g }: { g: any }) {
     <li className="border-l-2 border-white/10 pl-3">
       <div className="flex items-center gap-2 text-sm">
         <ResultDot r={g.result} />
-        <span className="font-display font-bold tabular-nums text-stadium">{g.score}</span>
+        <span className="font-display font-bold tabular-nums text-stadium">
+          {g.score}{g.pens && <span className="text-muted"> ({g.pens} pens)</span>}
+        </span>
         <span className="text-muted">vs</span>
         <Flag url={g.opp_flag} name={g.opponent} size={16} />
         <span className="font-medium">{g.opponent}</span>

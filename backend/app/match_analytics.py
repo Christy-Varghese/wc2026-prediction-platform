@@ -92,6 +92,23 @@ def _real_scorers(home: str, away: str) -> dict | None:
     return None
 
 
+def _real_pens(home: str, away: str) -> tuple[int, int] | None:
+    """Penalty shootout score for a fixture, oriented to home/away, or None.
+
+    Knockout ties decided on penalties are recorded in match_events.json with
+    pen_home/pen_away alongside the 90'/ET score — needed because that score
+    alone reads as a draw (e.g. a 1-1 knockout tie), which is misleading for a
+    team's match history unless the shootout winner is also known.
+    """
+    rec = events.scorers_for(home, away)
+    if rec and rec.get("pen_home") is not None:
+        return rec["pen_home"], rec["pen_away"]
+    rec = events.scorers_for(away, home)          # swapped orientation
+    if rec and rec.get("pen_home") is not None:
+        return rec["pen_away"], rec["pen_home"]
+    return None
+
+
 def _shots(rng, lineup, n_goals, n_shots, side) -> list[dict]:
     """Shot locations for one team. `side`='home' attacks right, 'away' left."""
     shots = []

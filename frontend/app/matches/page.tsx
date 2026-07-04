@@ -67,7 +67,7 @@ export default function MatchesPage() {
   const [upcoming, setUpcoming] = useState(false);
   const [view, setView] = useState<"cards" | "table">("cards");
   const [groupsOpen, setGroupsOpen] = useState(false);
-  const [openRounds, setOpenRounds] = useState<Record<string, boolean>>({ "Round of 32": true });
+  const [openRounds, setOpenRounds] = useState<Record<string, boolean>>({});
   const toggleRound = (r: string) => setOpenRounds(p => ({ ...p, [r]: !p[r] }));
 
   const { data: allData, error } = useSWR(`/api/matches?`, fetcher);
@@ -143,7 +143,13 @@ export default function MatchesPage() {
 
   const knockoutRounds: any[] = useMemo(() => {
     if (!knockoutData?.rounds) return [];
-    return knockoutData.rounds as any[];
+    // Bring the current round (still has unplayed matches) to the top so the
+    // live/upcoming action isn't buried below fully-completed earlier rounds
+    // (e.g. once R32 wraps, R16 should lead, not sit under a finished R32).
+    const rounds = [...(knockoutData.rounds as any[])];
+    const isDone = (r: any) => (r.matches as any[]).every((m: any) => m.home_score != null);
+    rounds.sort((a, b) => Number(isDone(a)) - Number(isDone(b)));
+    return rounds;
   }, [knockoutData]);
 
   const eliminated = useMemo(() => buildEliminated(knockoutData), [knockoutData]);
@@ -155,10 +161,12 @@ export default function MatchesPage() {
       <SectionHeader title="FIXTURES" sub="FIFA World Cup 2026 · Canada · Mexico · USA" />
 
       {/* ── Knockout rounds ── */}
-      {knockoutRounds.map((r: any) => {
+      {knockoutRounds.map((r: any, ri: number) => {
         const label = ROUND_LABEL[r.round] ?? r.round;
         const dateRange = ROUND_DATE[r.round];
-        const isOpen = openRounds[r.round] ?? false;
+        // Default-open the current round (first after sorting active-to-top);
+        // once the user has manually toggled a round, respect their choice.
+        const isOpen = openRounds[r.round] ?? (ri === 0);
         const resolvedCount = (r.matches as any[]).filter((m: any) => m.resolved).length;
         const sortedMatches = [...r.matches].sort((a: any, b: any) => {
           if (a.kickoff && b.kickoff)
