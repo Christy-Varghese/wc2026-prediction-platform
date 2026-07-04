@@ -45,7 +45,12 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
       else { actualWinner = m.away_team; actualLoser = m.home_team; }
     }
   }
-  const predictionCorrect = actualWinner != null && actualWinner === m.predicted_winner;
+  // m.predicted_winner is overwritten to the actual winner once a tie is
+  // played (see knockout_engine.py) — comparing against it here would be
+  // tautological (always "correct"). model_predicted_winner preserves the
+  // original pre-match pick.
+  const modelPick = m.model_predicted_winner ?? m.predicted_winner;
+  const predictionCorrect = actualWinner != null && actualWinner === modelPick;
   const isPens = m.pen_home != null && m.pen_away != null;
 
   return (
@@ -95,7 +100,7 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
                     ${predictionCorrect
                       ? "border border-success/30 bg-success/10 text-success"
                       : "border border-white/15 bg-white/5 text-muted"}`}>
-                    {predictionCorrect ? "✓ Prediction correct" : `✗ Model predicted ${m.predicted_winner}`}
+                    {predictionCorrect ? "✓ Prediction correct" : `✗ Model predicted ${modelPick}`}
                   </div>
                 </div>
 
@@ -227,12 +232,12 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
                       </div>
                       <div>
                         <div className={`font-display text-sm font-bold ${predictionCorrect ? "text-success" : "text-stadium"}`}>
-                          {predictionCorrect ? "CAI called it right" : `CAI missed — predicted ${m.predicted_winner}`}
+                          {predictionCorrect ? "CAI called it right" : `CAI missed — predicted ${modelPick}`}
                         </div>
                         <p className="mt-0.5 text-[12px] leading-snug text-muted">
                           {predictionCorrect
                             ? `Model confidence was ${Math.round((m.win_probability ?? 0) * 100)}%. The result validated the pre-match analysis.`
-                            : `Model had ${m.predicted_winner} at ${Math.round((m.win_probability ?? 0) * 100)}% confidence. ${actualWinner} defied the odds.`}
+                            : `Model had ${modelPick} at ${Math.round((m.win_probability ?? 0) * 100)}% confidence. ${actualWinner} defied the odds.`}
                         </p>
                       </div>
                     </div>

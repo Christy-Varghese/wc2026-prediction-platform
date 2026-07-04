@@ -208,11 +208,27 @@ export default function Home() {
   );
   if (!data) return <Skeleton />;
 
-  const r32Matches: any[] = knockoutData?.matches
+  // Current knockout round: whichever round has the next live/upcoming
+  // match, falling back to the most recently played round. A hardcoded
+  // "Round of 32" filter here meant this section froze the moment R32
+  // finished — it never would have shown R16/QF/SF/Final fixtures.
+  const allResolvedKo: any[] = knockoutData?.matches
     ? (knockoutData.matches as any[])
-        .filter((m: any) => m.round === "Round of 32" && m.resolved)
+        .filter((m: any) => m.resolved)
         .sort((a: any, b: any) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime())
     : [];
+  const currentKoRound = (() => {
+    const live = allResolvedKo.find((m: any) =>
+      new Date(m.kickoff).getTime() > Date.now() - 2 * 60 * 60 * 1000);
+    return live?.round ?? allResolvedKo[allResolvedKo.length - 1]?.round;
+  })();
+  const r32Matches: any[] = allResolvedKo.filter((m: any) => m.round === currentKoRound);
+  const currentRoundDates = r32Matches.length
+    ? [...new Set(r32Matches.map((m: any) => fmtDate(m.kickoff)))]
+    : [];
+  const currentRoundDateRange = currentRoundDates.length > 1
+    ? `${currentRoundDates[0]} – ${currentRoundDates[currentRoundDates.length - 1]}`
+    : currentRoundDates[0];
 
   // Today's matches (ET timezone, any round)
   const todayDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: ET });
@@ -226,15 +242,15 @@ export default function Home() {
         .sort((a: any, b: any) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime())
     : [];
 
-  // First upcoming or most recent R32 match drives the hero
+  // First upcoming or most recent match of the current knockout round drives the hero
   const now = Date.now();
-  const nextR32 = r32Matches.find((m: any) => new Date(m.kickoff).getTime() > now - 2 * 60 * 60 * 1000)
+  const nextKo = r32Matches.find((m: any) => new Date(m.kickoff).getTime() > now - 2 * 60 * 60 * 1000)
     ?? r32Matches[0];
 
-  const hero = nextR32
-    ? { ...nextR32, p_home: nextR32.prediction?.p_home ?? 0,
-        p_draw: nextR32.prediction?.p_draw ?? 0,
-        p_away: nextR32.prediction?.p_away ?? 0, isKnockout: true }
+  const hero = nextKo
+    ? { ...nextKo, p_home: nextKo.prediction?.p_home ?? 0,
+        p_draw: nextKo.prediction?.p_draw ?? 0,
+        p_away: nextKo.prediction?.p_away ?? 0, isKnockout: true }
     : data.featured_matches?.[0];
 
   const winner = hero ? (hero.p_home >= hero.p_away ? hero.home_team : hero.away_team) : "";
@@ -269,7 +285,7 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <LiveBadge label="NEXT MATCH" color="cyan" />
                 <span className="chip-cyan font-display text-xs uppercase tracking-widest">
-                  {hero.isKnockout ? "ROUND OF 32" : `GROUP ${hero.group} · MD${hero.matchday}`}
+                  {hero.isKnockout ? hero.round?.toUpperCase() : `GROUP ${hero.group} · MD${hero.matchday}`}
                 </span>
               </div>
               <span className="font-display text-xs uppercase tracking-[0.2em] text-muted">
@@ -444,10 +460,11 @@ export default function Home() {
         </motion.section>
       )}
 
-      {/* ════════════ ROUND OF 32 ════════════ */}
+      {/* ════════════ CURRENT KNOCKOUT ROUND ════════════ */}
       {r32Matches.length > 0 && (
         <motion.section variants={FADE_UP} initial="hidden" animate="show" transition={stagger(6)}>
-          <SectionHeader title="ROUND OF 32" sub="Knockout stage · Jun 28 – Jul 3 · Click for prediction"
+          <SectionHeader title={currentKoRound?.toUpperCase() ?? "KNOCKOUT STAGE"}
+            sub={`Knockout stage${currentRoundDateRange ? ` · ${currentRoundDateRange}` : ""} · Click for prediction`}
             action={<Link href="/matches" className="btn-sm">All fixtures →</Link>} />
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {r32Matches.map((m: any, i: number) => (
