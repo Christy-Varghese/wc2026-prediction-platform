@@ -164,6 +164,15 @@ function FlagCircle({
         />
       )}
 
+      {/* Confirmed-winner wash — a translucent green tint over the flag
+          itself (same idea as the "dimmed" grayscale wash for eliminated
+          teams, opposite direction), so a win reads at a glance even before
+          checking the outline. */}
+      {winner && !gold && flagUrl && (
+        <circle cx={cx} cy={cy} r={r} clipPath={`url(#${id})`}
+          fill="rgba(22,163,74,0.32)" />
+      )}
+
       {/* Invisible click target */}
       {onClick && (
         <circle cx={cx} cy={cy} r={r + 6} fill="transparent" />
