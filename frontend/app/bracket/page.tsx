@@ -73,15 +73,6 @@ function winnerOf(m: any): string | null {
   return m.predicted_winner ?? null;
 }
 
-function scoreLabel(m: any): string {
-  if (!m) return "";
-  if (m.played && m.home_score != null) {
-    const base = `${m.home_score}–${m.away_score}`;
-    return m.pen_home != null ? `${base} (P)` : base;
-  }
-  return m.predicted_score ?? "";
-}
-
 /* ── Round label config ── */
 const ROUND_LABELS = [
   { r: R_TEAM - 32, label: "ROUND OF 32", slotFrac: 15.5 },
@@ -377,47 +368,34 @@ export default function BracketPage() {
             })}
 
             {/* ══════════════════════════════
-                R32 MATCH NODES (score chips)
+                R32 MATCH NODES (winner flags — R32 is complete, so every
+                node here is a real qualifier, not a projection like R16+)
             ══════════════════════════════ */}
             {R32_CIRCLE_ORDER.map((matchId, j) => {
               const pos = r32XY(j);
               const m = byId[matchId];
               const winner = winnerOf(m);
-              const score = scoreLabel(m);
-              const isPlayed = !!m?.played;
+              const flagUrl = winner ? (flagMap[winner] ?? "") : "";
               return (
                 <motion.g
                   key={`r32-${j}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 + j * 0.02 }}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 + j * 0.02, type: "spring" }}
                   style={{ cursor: "pointer" }}
                   onClick={() => router.push(`/knockout/${matchId}`)}
                   onMouseEnter={() => setHovered(matchId)}
                   onMouseLeave={() => setHovered(null)}
                 >
-                  {/* Score badge background */}
-                  <circle cx={pos.x} cy={pos.y} r={SZ_R32}
-                    fill="#0B1525"
-                    stroke={isPlayed ? "rgba(22,163,74,0.5)" : "rgba(255,255,255,0.12)"}
-                    strokeWidth={isPlayed ? 1.5 : 1}
+                  <FlagCircle
+                    cx={pos.x} cy={pos.y} r={SZ_R32}
+                    flagUrl={flagUrl}
+                    winner={!!winner}
                   />
-                  {/* Score text */}
-                  {score ? (
-                    <text
-                      x={pos.x} y={pos.y + 3.5}
-                      textAnchor="middle"
-                      fill={isPlayed ? "#4ADE80" : "rgba(255,255,255,0.45)"}
-                      fontSize={score.length > 5 ? 6.5 : 7.5}
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                    >
-                      {score}
-                    </text>
-                  ) : (
-                    <text x={pos.x} y={pos.y + 3} textAnchor="middle"
-                      fill="rgba(255,255,255,0.15)" fontSize={7} fontFamily="monospace">
-                      vs
+                  {!winner && (
+                    <text x={pos.x} y={pos.y + 3.5} textAnchor="middle"
+                      fill="rgba(255,255,255,0.2)" fontSize={6.5} fontFamily="monospace">
+                      R32
                     </text>
                   )}
                 </motion.g>
@@ -608,7 +586,7 @@ export default function BracketPage() {
         </span>
         <span className="flex items-center gap-1.5">
           <span className="h-3 w-3 rounded-full border border-success/30 bg-success/10" />
-          Score chip (inner)
+          R32 qualifier (inner)
         </span>
         <span className="flex items-center gap-1.5">
           <span className="h-3 w-3 rounded-full border-2 border-gold/60" />
