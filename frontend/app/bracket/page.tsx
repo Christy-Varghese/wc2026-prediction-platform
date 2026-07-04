@@ -86,12 +86,12 @@ function clipId(prefix: string, idx: number) { return `c-${prefix}-${idx}`; }
 
 /* ── FlagCircle ── */
 function FlagCircle({
-  cx, cy, r, flagUrl, dimmed, winner, gold, predictedLoser,
+  cx, cy, r, flagUrl, dimmed, winner, gold, predictedWinner, predictedLoser,
   onClick,
 }: {
   cx: number; cy: number; r: number;
   flagUrl?: string; dimmed?: boolean; winner?: boolean; gold?: boolean;
-  predictedLoser?: boolean;
+  predictedWinner?: boolean; predictedLoser?: boolean;
   onClick?: () => void;
 }) {
   const id = `fc-${cx.toFixed(0)}-${cy.toFixed(0)}-${r}`;
@@ -115,6 +115,17 @@ function FlagCircle({
         <circle cx={cx} cy={cy} r={r + 5}
           fill="none" stroke="rgba(255,215,0,0.4)" strokeWidth={2.5} />
       )}
+      {/* Predicted (not yet played) winner: cyan dashed outline — visually
+          distinct from the solid green "confirmed" ring above, so a
+          projection never reads as an already-settled result. */}
+      {predictedWinner && !winner && !gold && (
+        <circle cx={cx} cy={cy} r={r + 4}
+          fill="none"
+          stroke="rgba(0,212,255,0.55)"
+          strokeWidth={2}
+          strokeDasharray="4 3"
+        />
+      )}
       {/* Predicted loser: yellow dashed outline */}
       {predictedLoser && (
         <circle cx={cx} cy={cy} r={r + 3}
@@ -131,10 +142,12 @@ function FlagCircle({
         stroke={
           gold            ? "rgba(255,215,0,0.65)" :
           winner          ? "#16A34A" :
+          predictedWinner ? "rgba(0,212,255,0.5)" :
           predictedLoser  ? "rgba(253,224,71,0.4)" :
                             "rgba(255,255,255,0.13)"
         }
-        strokeWidth={gold ? 2.5 : winner ? 2 : predictedLoser ? 1.5 : 1}
+        strokeDasharray={!winner && !gold && predictedWinner ? "3 2" : undefined}
+        strokeWidth={gold ? 2.5 : winner ? 2 : predictedWinner ? 2 : predictedLoser ? 1.5 : 1}
         opacity={dimmed ? 0.38 : 1}
       />
 
@@ -331,7 +344,7 @@ export default function BracketPage() {
               const pos = teamXY(ti);
               const m = byId[slot.matchId];
               const played = !!m?.played;
-              const predictedWinner = m?.predicted_winner ?? null;
+              const predictedWinnerName = m?.predicted_winner ?? null;
               const actualWinner = played ? winnerOf(m) : null;
               const hasTeam = slot.team != null;
 
@@ -339,11 +352,16 @@ export default function BracketPage() {
               const isEliminated = played && hasTeam && slot.team !== actualWinner;
               // Green border if match is completed and this team won
               const isWinner = played && hasTeam && slot.team === actualWinner;
+              // Cyan dashed outline if match not yet played but CAI predicts this team wins
+              const isPredictedWinner =
+                !played && hasTeam &&
+                predictedWinnerName != null &&
+                slot.team === predictedWinnerName;
               // Yellow dashed outline if match not yet played but CAI predicts this team loses
               const isPredictedLoser =
                 !played && hasTeam &&
-                predictedWinner != null &&
-                slot.team !== predictedWinner;
+                predictedWinnerName != null &&
+                slot.team !== predictedWinnerName;
 
               return (
                 <motion.g
@@ -360,6 +378,7 @@ export default function BracketPage() {
                     flagUrl={flagMap[slot.team ?? ""] ?? ""}
                     dimmed={isEliminated}
                     winner={isWinner}
+                    predictedWinner={isPredictedWinner}
                     predictedLoser={isPredictedLoser}
                     onClick={() => router.push(`/knockout/${slot.matchId}`)}
                   />
@@ -409,6 +428,7 @@ export default function BracketPage() {
               const pos = r16XY(k);
               const m = byId[matchId];
               const winner = winnerOf(m);
+              const isPlayed = !!m?.played;
               const flagUrl = winner ? (flagMap[winner] ?? "") : "";
               return (
                 <motion.g
@@ -422,7 +442,8 @@ export default function BracketPage() {
                   <FlagCircle
                     cx={pos.x} cy={pos.y} r={SZ_R16}
                     flagUrl={flagUrl}
-                    winner={!!winner}
+                    winner={isPlayed && !!winner}
+                    predictedWinner={!isPlayed && !!winner}
                   />
                   {!winner && (
                     <text x={pos.x} y={pos.y + 3.5} textAnchor="middle"
@@ -441,6 +462,7 @@ export default function BracketPage() {
               const pos = qfXY(mi);
               const m = byId[matchId];
               const winner = winnerOf(m);
+              const isPlayed = !!m?.played;
               const flagUrl = winner ? (flagMap[winner] ?? "") : "";
               return (
                 <motion.g
@@ -454,7 +476,8 @@ export default function BracketPage() {
                   <FlagCircle
                     cx={pos.x} cy={pos.y} r={SZ_QF}
                     flagUrl={flagUrl}
-                    winner={!!winner}
+                    winner={isPlayed && !!winner}
+                    predictedWinner={!isPlayed && !!winner}
                   />
                   {!winner && (
                     <text x={pos.x} y={pos.y + 3.5} textAnchor="middle"
@@ -575,6 +598,10 @@ export default function BracketPage() {
         <span className="flex items-center gap-1.5">
           <span className="h-3 w-3 rounded-full border-2 border-success/70 bg-[#101C38]" />
           Won (confirmed)
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-3 w-3 rounded-full border-2 border-cyan/60 border-dashed bg-[#101C38]" />
+          Predicted to win
         </span>
         <span className="flex items-center gap-1.5">
           <span className="h-3 w-3 rounded-full border-2 border-yellow-400/60 border-dashed bg-[#101C38]" />
