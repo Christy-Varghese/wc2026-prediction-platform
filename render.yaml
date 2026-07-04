@@ -19,6 +19,18 @@ services:
         value: production
       - key: USE_DB
         value: "false"
-      # Comma-separated allowed origins. Replace with your Vercel domain(s).
+      # Comma-separated allowed origins — real production domain + Vercel's
+      # auto-generated project domain. Verified via `vercel alias ls` / `vercel
+      # project ls`; update if the custom alias ever changes.
       - key: CORS_ORIGINS
-        value: "https://wc2026-prediction-platform.vercel.app,http://localhost:3000"
+        value: "https://chris-fifaworldcup26-prediction.vercel.app,https://frontend-five-iota-33.vercel.app,http://localhost:3000"
+      # Auto-generated at first deploy; never committed as a real value.
+      - key: JWT_SECRET
+        generateValue: true
+      # Not synced from this file — set explicitly in the Render dashboard
+      # before the service goes live. Defaults in backend/app/config.py are
+      # admin/admin and MUST NOT be left in place once this API is public.
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

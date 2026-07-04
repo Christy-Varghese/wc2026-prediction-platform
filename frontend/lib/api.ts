@@ -38,22 +38,34 @@ async function fromSnapshot<T>(path: string): Promise<T> {
   return r.json();
 }
 
+// Render free-tier instances sleep after ~15min idle and take ~30-60s to wake.
+// Without a timeout, a cold instance holds the connection pending for the full
+// wake instead of fast-failing to the snapshot fallback — so a sleeping backend
+// looks like a hung page instead of an instant snapshot render.
+const FETCH_TIMEOUT_MS = 2500;
+
 export async function api<T = any>(path: string, init?: RequestInit): Promise<T> {
   const isGet = !init?.method || init.method.toUpperCase() === "GET";
   // Static demo: serve the snapshot directly, no live request (and no 404 noise).
   if (STATIC_ONLY && isGet) return fromSnapshot<T>(path);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     const res = await fetch(`${API}${path}`, {
       ...init,
       headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
       cache: "no-store",
+      signal: controller.signal,
     });
     if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
     return res.json();
   } catch (err) {
-    // Live backend down — fall back to a static snapshot for GET requests.
+    // Live backend down, timed out, or cold-starting — fall back to a static
+    // snapshot for GET requests.
     if (isGet) return fromSnapshot<T>(path);
     throw err;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
