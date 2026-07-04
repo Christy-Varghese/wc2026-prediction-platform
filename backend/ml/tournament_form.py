@@ -40,14 +40,17 @@ def _mov_mult(goal_diff: int, elo_diff: float) -> float:
 
 
 # ---------------------------------------------------------------------------
-# WC 2026 MD1 results (played June 11-19, 2026)
+# WC 2026 results played so far (group stage + knockout ties as they land)
 # Format: (home, away, home_score, away_score, neutral)
 # ---------------------------------------------------------------------------
-# Mirrors the canonical played group games in app/fixtures.py (MD1 + the
-# played MD2 fixtures). Kept in lock-step with that schedule — if you mark a new
-# result there, add the same (home, away, hs, as, neutral) row here so the form
-# /Elo engine and the standings never diverge. neutral=False only when a host
-# nation (USA / Mexico / Canada) plays at home.
+# Mirrors the canonical played games in app/fixtures.py (group stage) and
+# app/knockout.json (knockout stage). Kept in lock-step with those sources —
+# whenever a result is ingested there (group OR knockout), add the same
+# (home, away, hs, as, neutral) row here so the form/Elo engine used to
+# predict remaining ties never falls behind reality. A drawn knockout tie
+# decided on penalties is recorded as its 90'/ET score (a draw) — the
+# shootout itself isn't modeled in Elo. neutral=False only when a host
+# nation (USA / Mexico / Canada) plays a match in its own country.
 WC2026_PLAYED: list[tuple[str, str, int, int, bool]] = [
     # ── Matchday 1 ──
     ("Mexico",          "South Africa",            2, 0, False),
@@ -132,6 +135,19 @@ WC2026_PLAYED: list[tuple[str, str, int, int, bool]] = [
     ("Brazil",          "Japan",                   2, 1, True),
     ("Germany",         "Paraguay",                1, 1, True),  # Paraguay won 4-3 pens
     ("Netherlands",     "Morocco",                 1, 1, True),  # Morocco won 3-2 pens
+    # ── Round of 32 (Jun 29 - Jul 3) ──
+    ("France",          "Sweden",                  3, 0, True),
+    ("Ivory Coast",     "Norway",                  1, 2, True),
+    ("Mexico",          "Ecuador",                 2, 0, False),  # host, Mexico City
+    ("England",         "DR Congo",                2, 1, True),
+    ("United States",   "Bosnia and Herzegovina",  2, 0, False),  # host, San Francisco
+    ("Belgium",         "Senegal",                 3, 2, True),
+    ("Portugal",        "Croatia",                 2, 1, True),
+    ("Spain",           "Austria",                 3, 0, True),
+    ("Switzerland",     "Algeria",                 2, 0, True),
+    ("Australia",       "Egypt",                   1, 1, True),  # Egypt won 4-2 pens
+    ("Argentina",       "Cape Verde",              3, 2, True),  # AET
+    ("Colombia",        "Ghana",                   1, 0, True),
 ]
 
 

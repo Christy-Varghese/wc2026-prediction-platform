@@ -41,20 +41,14 @@ function useKnockoutStatus() {
   }, [ko]);
 }
 
-/* ── Scale raw sim odds to conditional on being in R16 ── */
+/* ── Flag teams already through their R32 tie for the ✓ display ──
+ * The backend sim now resolves the real, fixed bracket directly (already-
+ * decided ties are certain, not re-simulated), so R32/R16+ odds for these
+ * teams are already properly conditioned on the real bracket state — no
+ * rescaling needed here anymore, just the cosmetic ✓ instead of "100%". */
 function applyConditional(r: any, r16Teams: Set<string>): any {
   if (!r16Teams.has(r.team)) return r;
-  const pR16 = r.R16 ?? 0;
-  if (pR16 < 0.01) return r;
-  return {
-    ...r,
-    R32: 1.0,
-    QF:       r.QF       / pR16,
-    SF:       r.SF       / pR16,
-    Final:    r.Final    / pR16,
-    Champion: r.Champion / pR16,
-    _conditional: true,
-  };
+  return { ...r, _conditional: true };
 }
 
 type SortStage = "R32" | "QF" | "SF" | "Final" | "Champion";

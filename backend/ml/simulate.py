@@ -1,17 +1,14 @@
 """Monte Carlo simulation of the 2026 World Cup (48-team format).
 
-Draws groups, plays group stage (3 pts win / 1 draw), ranks, advances top 2
-per group + 8 best third-placed teams to a 32-team knockout bracket, then
-simulates single-elimination to a champion. Aggregates per-team probabilities
-of reaching each stage over N_SIMS runs.
-
-PERFORMANCE NOTE
-----------------
-score_matrix() calls scipy.stats.poisson.pmf — expensive. For 50k sims with
-~103 matches each that's 5M+ scipy calls. Fix: pre-cache all N*(N-1) pairwise
-matrices once before the loop. Each simulation then only does rng.choice()
-dict lookups — reducing scipy calls from 5M to 2,256 (one-time).
-Expected speedup: ~40x (5 min → ~8 sec on M-series Mac).
+The group stage is 100% complete and most of the R32 knockout round has
+already been played (real results live in app/knockout.json). This sim
+resolves the REAL, fixed 32-team bracket ONCE (real_bracket.resolve_r32) —
+no group stage is re-simulated — then Monte Carlos only the ties that are
+genuinely still undecided: an already-played tie always resolves to its real
+winner, an undecided tie is resolved via knockout_resolve.resolve_ko (shared
+with the displayed bracket, so title/survival odds agree with the bracket UI
+renders). Aggregates per-team probabilities of reaching each stage over
+N_SIMS runs.
 """
 from __future__ import annotations
 
@@ -20,14 +17,13 @@ import pickle
 import shutil
 from collections import defaultdict
 from datetime import datetime, timezone
-from typing import Any
 
 import numpy as np
 import pandas as pd
 
-from config import (N_GROUPS, TEAMS_PER_GROUP, N_THIRD_PLACE_ADVANCE,
-                    N_SIMS, PROC, PROJECTED_FIELD, REAL_GROUPS_2026)
+from config import N_SIMS, PROC, PROJECTED_FIELD
 import knockout_resolve
+import real_bracket
 from model import DCModel
 from tournament_form import get_adjusted_elo
 
@@ -41,14 +37,6 @@ except Exception:        # optional dependency — sim still runs without it
 # Momentum is excluded from the tilt (model.elo is already tournament-patched).
 CONDITION_COEF = 1.35
 
-# Type alias for the pre-computed cache
-# {(home, away): (probs_flat, n_cols, elo_home, elo_away)}
-ScoreCache = dict[tuple[str, str], tuple[np.ndarray, int]]
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# CACHE BUILDER  (called ONCE per run() invocation)
-# ─────────────────────────────────────────────────────────────────────────────
 
 def _condition_tilt(mat: np.ndarray, shift: float) -> np.ndarray:
     """Tilt a score matrix toward the squad-condition favourite.
@@ -57,6 +45,9 @@ def _condition_tilt(mat: np.ndarray, shift: float) -> np.ndarray:
     e^-shift, leaving draws (i==j) untouched, then renormalizes. This shifts the
     win/draw/loss outcome mass exactly like ensemble._condition_shift while
     preserving the conditional scoreline shape within each outcome.
+
+    (Called from knockout_resolve.build_ko_params, not from this file's own
+    run() anymore — kept here since knockout_resolve imports it from us.)
     """
     if abs(shift) < 1e-9:
         return mat
@@ -70,168 +61,34 @@ def _condition_tilt(mat: np.ndarray, shift: float) -> np.ndarray:
     return out / out.sum()
 
 
-def _build_score_cache(model: DCModel, field: list[str],
-                       cond: Any | None = None,
-                       coef: float = CONDITION_COEF) -> ScoreCache:
-    """Pre-compute all pairwise score-distribution vectors for the tournament field.
-
-    Returns a dict mapping (home, away) -> (probability_vector, n_cols) so that
-    sampling during simulation is a pure rng.choice() call with no scipy overhead.
-    When `cond` is supplied, each pairing is tilted by that matchup's squad-
-    condition logit shift (form / fitness / availability) before normalizing.
-    """
-    cache: ScoreCache = {}
-    for h in field:
-        for a in field:
-            if h == a:
-                continue
-            mat = model.score_matrix(h, a, neutral=True)
-            if cond is not None:
-                adj = cond.match_condition_adjustment(h, a, include_momentum=False)
-                mat = _condition_tilt(mat, coef * adj["logit_shift"])
-            flat = mat.ravel()
-            total = flat.sum()
-            cache[(h, a)] = (flat / total, mat.shape[1])
-    return cache
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# INNER-LOOP HELPERS  (cache-aware, no scipy calls)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _sample_score(cache: ScoreCache, rng: np.random.Generator,
-                  home: str, away: str) -> tuple[int, int]:
-    probs, n = cache[(home, away)]
-    idx = rng.choice(len(probs), p=probs)
-    return idx // n, idx % n
-
-
-# Knockout ties are resolved by `knockout_resolve.resolve_ko` (shared with the
-# displayed bracket): a knockout-suppressed 90' scoreline → extra time → a
-# GK/composure-weighted shootout. The old Elo-coin-flip on a draw is gone so the
-# title/survival percentages agree with the bracket the UI renders. The helper
-# below is only a fallback for when KO params can't be built (no condition
-# engine): it keeps the legacy 90'-or-Elo-coin behaviour so the sim never breaks.
-def _ko_winner_fallback(cache: ScoreCache, elo: dict[str, float],
-                        rng: np.random.Generator, a: str, b: str) -> str:
-    ga, gb = _sample_score(cache, rng, a, b)
-    if ga > gb:
-        return a
-    if gb > ga:
-        return b
-    sa = elo.get(a, 1500.0)
-    sb = elo.get(b, 1500.0)
-    pa = 1.0 / (1.0 + 10 ** ((sb - sa) / 400.0))
-    return a if rng.random() < pa else b
-
-
-def _draw_groups(rng: np.random.Generator, field: list[str]) -> list[list[str]]:
-    teams = list(field)
-    rng.shuffle(teams)
-    groups = [teams[i::N_GROUPS] for i in range(N_GROUPS)]
-    return [g[:TEAMS_PER_GROUP] for g in groups]
-
-
-def _group_table(cache: ScoreCache, rng: np.random.Generator,
-                 group: list[str]) -> list[tuple[str, int, int]]:
-    """Round-robin. Returns ranked [(team, pts, goal_diff)]."""
-    pts: dict[str, int] = defaultdict(int)
-    gd: dict[str, int] = defaultdict(int)
-    for i in range(len(group)):
-        for j in range(i + 1, len(group)):
-            a, b = group[i], group[j]
-            ga, gb = _sample_score(cache, rng, a, b)
-            gd[a] += ga - gb
-            gd[b] += gb - ga
-            if ga > gb:
-                pts[a] += 3
-            elif gb > ga:
-                pts[b] += 3
-            else:
-                pts[a] += 1
-                pts[b] += 1
-    ranked = sorted(group, key=lambda t: (pts[t], gd[t], rng.random()), reverse=True)
-    return [(t, pts[t], gd[t]) for t in ranked]
-
-
-def simulate_once(cache: ScoreCache, elo: dict[str, float],
-                  rng: np.random.Generator, field: list[str],
-                  fixed_groups: list[list[str]] | None = None,
-                  ko_params: dict[str, Any] | None = None) -> dict[str, str]:
-    """One full tournament. Returns {team: furthest_stage_reached}."""
-    stage: dict[str, str] = {t: "group" for t in field}
-    groups = fixed_groups if fixed_groups is not None else _draw_groups(rng, field)
-
-    advancers: list[str] = []
-    thirds: list[tuple[str, int, int]] = []
-    for g in groups:
-        table = _group_table(cache, rng, g)
-        advancers += [table[0][0], table[1][0]]
-        if len(table) > 2:
-            thirds.append(table[2])
-
-    thirds.sort(key=lambda x: (x[1], x[2], rng.random()), reverse=True)
-    advancers += [t[0] for t in thirds[:N_THIRD_PLACE_ADVANCE]]
-    for t in advancers:
-        stage[t] = "R32"
-
-    rng.shuffle(advancers)
-    bracket = advancers
-    stage_names = ["R16", "QF", "SF", "Final", "Champion"]
-    si = 0
-    while len(bracket) > 1:
-        nxt = []
-        for i in range(0, len(bracket) - 1, 2):
-            if ko_params is not None:
-                w = knockout_resolve.resolve_ko(ko_params, rng,
-                                                bracket[i], bracket[i + 1])
-            else:  # Elo fallback if KO params unavailable
-                w = _ko_winner_fallback(cache, elo, rng,
-                                        bracket[i], bracket[i + 1])
-            nxt.append(w)
-        if len(bracket) % 2 == 1:
-            nxt.append(bracket[-1])
-        label = stage_names[min(si, len(stage_names) - 1)]
-        for t in nxt:
-            stage[t] = label
-        bracket = nxt
-        si += 1
-    return stage
-
-
 _ORDER = ["group", "R32", "R16", "QF", "SF", "Final", "Champion"]
 
 
-def run(model: DCModel, field: list[str] | None = None,
-        fixed_groups: list[list[str]] | None = None,
-        n_sims: int = N_SIMS, seed: int = 42,
+def run(model: DCModel, n_sims: int = N_SIMS, seed: int = 42,
         use_condition: bool = True) -> pd.DataFrame:
-    """Run Monte Carlo tournament simulation with pre-cached score matrices.
+    """Run Monte Carlo simulation of the real, partially-decided bracket.
 
     use_condition: tilt each pairing by squad form/fitness/availability
     (player_condition.py). Defaults on; no-ops if the engine is unavailable.
     """
-    field = field or list(PROJECTED_FIELD)
-    if fixed_groups is None and set(field) == set(PROJECTED_FIELD):
-        fixed_groups = REAL_GROUPS_2026
+    r32_pairs, field32 = real_bracket.resolve_r32()
+    rows_by_id = {r["id"]: r for r in real_bracket.load_bracket_rows()}
 
     cond = (TeamConditionEngine() if use_condition and TeamConditionEngine
             else None)
     tag = "with squad condition" if cond else "Elo+DC only"
-    print(f"[sim] Pre-computing {len(field)*(len(field)-1)} score matrices "
-          f"({tag}) ... ", end="", flush=True)
-    cache = _build_score_cache(model, field, cond=cond)
+    print(f"[sim] Pre-computing knockout score grids for the real 32-team "
+          f"field ({tag}) ... ", end="", flush=True)
     # Shared knockout-resolution params (KO-suppressed 90' grids + penalty model)
-    # so the MC advances ties exactly like the displayed bracket.
-    ko_params = knockout_resolve.build_ko_params(model, field, cond=cond)
+    # so the MC advances undecided ties exactly like the displayed bracket.
+    ko_params = knockout_resolve.build_ko_params(model, field32, cond=cond)
     print("done.")
 
     rng = np.random.default_rng(seed)
-    reached = {t: defaultdict(int) for t in field}
+    reached = {t: defaultdict(int) for t in field32}
 
     for i in range(n_sims):
-        res = simulate_once(cache, model.elo, rng, field,
-                            fixed_groups=fixed_groups, ko_params=ko_params)
+        res = real_bracket.walk_bracket_once(rng, ko_params, r32_pairs, rows_by_id)
         for t, st in res.items():
             hi = _ORDER.index(st)
             for k in range(hi + 1):
@@ -240,11 +97,20 @@ def run(model: DCModel, field: list[str] | None = None,
             print(f"[sim] {i+1}/{n_sims} completed ...", flush=True)
 
     rows = []
-    for t in field:
+    for t in field32:
         row = {"team": t}
         for st in _ORDER:
             row[st] = reached[t][st] / n_sims
         rows.append(row)
+    # Teams already eliminated in the real group stage never entered the
+    # bracket walk at all — record them explicitly (0% from R32 on) so every
+    # PROJECTED_FIELD team still gets a row, matching what every sim_table()
+    # consumer already expects.
+    field32_set = set(field32)
+    for t in PROJECTED_FIELD:
+        if t not in field32_set:
+            rows.append({"team": t, "group": 1.0, "R32": 0.0, "R16": 0.0,
+                        "QF": 0.0, "SF": 0.0, "Final": 0.0, "Champion": 0.0})
     out = pd.DataFrame(rows).sort_values("Champion", ascending=False)
     return out.reset_index(drop=True)
 
@@ -267,9 +133,9 @@ def main() -> None:
     with open(PROC / "dc_model.pkl", "rb") as f:
         model: DCModel = pickle.load(f)
 
-    # Patch Elo with live WC2026 in-tournament results (full group stage)
+    # Patch Elo with live WC2026 results (group stage + played knockout ties)
     model.elo = get_adjusted_elo(model.elo)
-    print(f"[sim] Elo patched with WC2026 full group stage results (MD1-MD3)")
+    print(f"[sim] Elo patched with WC2026 results played so far")
 
     table = run(model)
     save_results(table)

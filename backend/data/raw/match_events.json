@@ -2189,5 +2189,36 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260703"
+  },
+  "Argentina|Cape Verde": {
+    "home": "Argentina",
+    "away": "Cape Verde",
+    "score": [3, 2],
+    "scorers": {
+      "home": [
+        {"player": "Lionel Messi", "minute": 29, "type": "goal"},
+        {"player": "Lisandro Martínez", "minute": 92, "type": "goal"},
+        {"player": "Diney Borges", "minute": 111, "type": "own goal"}
+      ],
+      "away": [
+        {"player": "Deroy Duarte", "minute": 59, "type": "goal"},
+        {"player": "Sidny Lopes Cabral", "minute": 103, "type": "goal"}
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260703"
+  },
+  "Colombia|Ghana": {
+    "home": "Colombia",
+    "away": "Ghana",
+    "score": [1, 0],
+    "scorers": {
+      "home": [
+        {"player": "Jhon Arias", "minute": 14, "type": "goal"}
+      ],
+      "away": []
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260703"
   }
 }

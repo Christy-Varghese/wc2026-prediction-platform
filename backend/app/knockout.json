@@ -378,7 +378,20 @@
   "kickoff": "2026-07-03T18:00:00-04:00",
   "city": "Miami",
   "home_label": "Winner Group J",
-  "away_label": "Runner-up Group H"
+  "away_label": "Runner-up Group H",
+  "actual_home": "Argentina",
+  "actual_away": "Cape Verde",
+  "home_score": 3,
+  "away_score": 2,
+  "actual_events": [
+   {"minute": 29, "team": "Argentina", "type": "goal", "scorer": "Lionel Messi", "assist": "Lisandro Martínez", "text": "Martínez plays a pass into the box and Messi controls it with the outside of his boot before flicking it past Vozinha. Argentina lead 1-0!"},
+   {"minute": 59, "team": "Cape Verde", "type": "goal", "scorer": "Deroy Duarte", "assist": null, "text": "Duarte drills a low shot beyond Emiliano Martínez — Cape Verde shock Argentina, level at 1-1!"},
+   {"minute": 90, "team": null, "type": "phase", "text": "Full time 1-1. Onto extra time."},
+   {"minute": 92, "team": "Argentina", "type": "goal", "scorer": "Lisandro Martínez", "assist": null, "text": "A Messi corner is headed clear to the edge of the box — Martínez takes a touch and blasts a left-footed shot in from a tight angle. Argentina lead 2-1 early in extra time!"},
+   {"minute": 103, "team": "Cape Verde", "type": "goal", "scorer": "Sidny Lopes Cabral", "assist": null, "text": "An incredible strike — Lopes Cabral curls a 26-yard effort into the top corner. Cape Verde level again at 2-2, refusing to go quietly!"},
+   {"minute": 111, "team": "Argentina", "type": "goal", "scorer": "Diney Borges (OG)", "assist": null, "text": "Cristian Romero rises for a Messi set piece and his header deflects in off Diney Borges. Argentina 3-2 — the reigning champions survive a huge scare."}
+  ],
+  "actual_stats": {"result_note": "Messi's 20th World Cup goal put Argentina ahead, but 40-year-old keeper Vozinha and a fearless Cape Verde side pushed the champions to the brink before Romero's deflected header settled it in extra time. Argentina advance to face Egypt in the R16."}
  },
  {
   "id": 87,
@@ -389,7 +402,14 @@
   "city": "Kansas City",
   "home_label": "Winner Group K",
   "away_label": "3rd Group D/E/I/J/L",
-  "actual_away": "Ghana"
+  "actual_home": "Colombia",
+  "actual_away": "Ghana",
+  "home_score": 1,
+  "away_score": 0,
+  "actual_events": [
+   {"minute": 14, "team": "Colombia", "type": "goal", "scorer": "Jhon Arias", "assist": null, "text": "Arias fires Colombia into an early lead — 1-0!"}
+  ],
+  "actual_stats": {"result_note": "Jhon Arias's early strike was enough — Colombia see out a tight, low-scoring win. Ghana's World Cup campaign ends here; Colombia advance to face Switzerland in the R16."}
  },
  {
   "id": 90,
