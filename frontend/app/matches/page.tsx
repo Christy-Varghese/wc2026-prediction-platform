@@ -141,6 +141,18 @@ export default function MatchesPage() {
              totalPct: Math.round((totalCorrect / totalN) * 100) };
   }, [knockoutData]);
 
+  // Site-wide accuracy (group stage + every knockout round played so far) —
+  // not round-specific, so it's hoisted here to show in each round's
+  // collapsed header bar, not just inside the expanded "Model accuracy" panel.
+  const overallAccuracy = useMemo(() => {
+    const grpHits = accuracy?.wdl ?? 0;
+    const grpN = accuracy?.n ?? 0;
+    const totalHits = grpHits + (koAccuracy?.totalCorrect ?? 0);
+    const totalN = grpN + (koAccuracy?.totalN ?? 0);
+    if (!totalN) return null;
+    return { hits: totalHits, n: totalN, pct: Math.round((totalHits / totalN) * 100) };
+  }, [accuracy, koAccuracy]);
+
   const knockoutRounds: any[] = useMemo(() => {
     if (!knockoutData?.rounds) return [];
     // Bring the current round (still has unplayed matches) to the top so the
@@ -190,6 +202,11 @@ export default function MatchesPage() {
                 <span className="text-[11px] text-muted">
                   {resolvedCount}/{r.matches.length} resolved
                 </span>
+                {overallAccuracy && (
+                  <span className="text-[11px] text-cyan">
+                    🎯 {overallAccuracy.pct}% overall accuracy ({overallAccuracy.hits}/{overallAccuracy.n})
+                  </span>
+                )}
               </div>
               <span className="shrink-0 text-muted text-xs font-semibold uppercase tracking-wider">
                 {isOpen ? "▲ Hide" : "▼ Show"}
@@ -214,11 +231,6 @@ export default function MatchesPage() {
                 {koAccuracy?.byRound[r.round] && (() => {
                   const rs = koAccuracy.byRound[r.round];
                   const pct = Math.round((rs.correct / rs.n) * 100);
-                  const grpHits = accuracy?.wdl ?? 0;
-                  const grpN = accuracy?.n ?? 0;
-                  const totalHits = grpHits + koAccuracy.totalCorrect;
-                  const totalN = grpN + koAccuracy.totalN;
-                  const overallPct = totalN ? Math.round((totalHits / totalN) * 100) : null;
                   return (
                     <div className="card-broadcast space-y-4 py-4">
                       <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
@@ -228,12 +240,12 @@ export default function MatchesPage() {
                         </div>
 
                         {/* Overall combined */}
-                        {overallPct !== null && (
+                        {overallAccuracy && (
                           <div className="flex items-center gap-3 rounded-xl border border-cyan/20 bg-cyan/5 px-4 py-2">
                             <div>
-                              <div className="font-display text-2xl font-bold tabnum text-cyan">{overallPct}%</div>
+                              <div className="font-display text-2xl font-bold tabnum text-cyan">{overallAccuracy.pct}%</div>
                               <div className="text-[10px] uppercase tracking-wider text-muted">
-                                Overall · <span className="text-stadium">{totalHits}/{totalN}</span> correct
+                                Overall · <span className="text-stadium">{overallAccuracy.hits}/{overallAccuracy.n}</span> correct
                               </div>
                             </div>
                           </div>
@@ -293,7 +305,12 @@ export default function MatchesPage() {
             </span>
             {accuracy && (
               <span className="text-[11px] text-muted">
-                {accuracy.wdl}/{accuracy.n} correct · {accuracy.wdlPct}% accuracy
+                Group stage: {accuracy.wdl}/{accuracy.n} correct · {accuracy.wdlPct}% accuracy
+              </span>
+            )}
+            {overallAccuracy && (
+              <span className="text-[11px] text-cyan">
+                🎯 {overallAccuracy.pct}% overall accuracy ({overallAccuracy.hits}/{overallAccuracy.n})
               </span>
             )}
           </div>
@@ -315,14 +332,14 @@ export default function MatchesPage() {
                   </div>
 
                   {/* Overall total */}
-                  {koAccuracy && (
+                  {overallAccuracy && (
                     <div className="flex items-center gap-3 rounded-xl border border-cyan/20 bg-cyan/5 px-4 py-2">
                       <div>
                         <div className="font-display text-2xl font-bold tabnum text-cyan">
-                          {Math.round(((accuracy.wdl + koAccuracy.totalCorrect) / (accuracy.n + koAccuracy.totalN)) * 100)}%
+                          {overallAccuracy.pct}%
                         </div>
                         <div className="text-[10px] uppercase tracking-wider text-muted">
-                          Overall · <span className="text-stadium">{accuracy.wdl + koAccuracy.totalCorrect}/{accuracy.n + koAccuracy.totalN}</span> correct
+                          Overall · <span className="text-stadium">{overallAccuracy.hits}/{overallAccuracy.n}</span> correct
                         </div>
                       </div>
                     </div>
