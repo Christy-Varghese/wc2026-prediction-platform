@@ -2235,5 +2235,18 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260704"
+  },
+  "Paraguay|France": {
+    "home": "Paraguay",
+    "away": "France",
+    "score": [0, 1],
+    "scorers": {
+      "home": [],
+      "away": [
+        {"player": "Kylian Mbappé", "minute": 70, "type": "penalty"}
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260704"
   }
 }

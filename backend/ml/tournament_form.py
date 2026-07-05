@@ -150,6 +150,7 @@ WC2026_PLAYED: list[tuple[str, str, int, int, bool]] = [
     ("Colombia",        "Ghana",                   1, 0, True),
     # ── Round of 16 (Jul 4) ──
     ("Canada",          "Morocco",                 0, 3, True),
+    ("Paraguay",        "France",                  0, 1, True),
 ]
 
 

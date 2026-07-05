@@ -438,7 +438,13 @@
   "kickoff": "2026-07-04T17:00:00-04:00",
   "city": "Philadelphia",
   "home_label": "Winner Match 74",
-  "away_label": "Winner Match 77"
+  "away_label": "Winner Match 77",
+  "home_score": 0,
+  "away_score": 1,
+  "actual_events": [
+   {"minute": 70, "team": "France", "type": "goal", "scorer": "Kylian Mbappé", "assist": null, "text": "Mbappé converts the penalty won by Désiré Doué and confirmed by VAR — his 70th-minute strike, in stifling Philadelphia heat, is enough to send France through. His 19th World Cup goal draws him level with Messi atop the Golden Boot on 7."}
+  ],
+  "actual_stats": {"home_xg": 0.15, "away_xg": 1.36, "result_note": "France dominated the ball (76% possession, 15 shots to 5) but a disciplined, physical Paraguay held out until Mbappé's 70th-minute penalty, won by Doué and confirmed by VAR. Goalkeeper Orlando Gill kept it close with a string of second-half saves, including a stoppage-time double stop from Mbappé. France advance to face Morocco in the quarter-finals."}
  },
  {
   "id": 91,

@@ -406,5 +406,16 @@
     "sources": [
       "ESPN"
     ]
+  },
+  "Paraguay|France": {
+    "headline": "Mbappé penalty is enough as France survive Paraguay's heat test",
+    "summary": "France dominated possession (76%) and shots (15 to 5) but were held scoreless until the 70th minute, when Kylian Mbappé converted a penalty won by substitute Désiré Doué and confirmed by VAR. Paraguay, playing a disciplined, physical game in punishing Philadelphia heat, had no reply — goalkeeper Orlando Gill kept the margin at one with a string of second-half saves, including a stoppage-time double stop to deny Mbappé a second. The goal was Mbappé's 19th at a World Cup, drawing him level with Messi atop the Golden Boot on 7, and sends France into the quarter-finals to face Morocco.",
+    "star_player": "Kylian Mbappé",
+    "star_reason": "His 70th-minute penalty was the only goal of a stifling, tightly-fought game — his 7th of the tournament, tying Messi for the Golden Boot lead.",
+    "turning_point": "Doué's introduction at 61' immediately paid off — he drew the foul that led to Mbappé's match-winning penalty.",
+    "what_lacked": "Paraguay defended resolutely but managed just one shot on target and rarely threatened going forward.",
+    "sources": [
+      "ESPN"
+    ]
   }
 }
