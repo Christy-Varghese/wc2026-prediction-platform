@@ -1,6 +1,7 @@
 # WC2026 — CAI (ChrisAI) Prediction Platform — Session Handover
 
-Date: 2026-06-21
+Date: 2026-07-06 (originally 2026-06-21; updated in place each session — see
+§13 for the latest)
 Branch: `main` · all work committed + pushed to
 `github.com/Christy-Varghese/wc2026-prediction-platform`.
 
@@ -219,7 +220,91 @@ existing engine (one engine, no parallel model):
   `KO_GOAL_SCALE` once knockout games land (first KO Jun 28) via
   `backtest.scoreline_calibration()`.
 
+## 13. R16 results (Jul 4-5) + knockout-stage Elo K-bump + full-ensemble Monte Carlo (Jul 6)
+- **Results ingested:** Canada 0-3 Morocco, Paraguay 0-1 France (R16, Jul 4);
+  **Brazil 1-2 Norway, Mexico 2-3 England (R16, Jul 5)**. Haaland's late brace
+  (79', 90' — both set up by half-time sub Schjelderup) ends Brazil's
+  tournament (earliest exit since 1990; Neymar's stoppage-time penalty was
+  academic and marked his final Brazil appearance). Bellingham's 98-second
+  brace + a Kane penalty — scored minutes after Quansah's 54th-minute red
+  card — see 10-man England hold off a Mexico fightback (Quiñones, Jiménez
+  pen) to win 3-2 at the Azteca, Mexico's first-ever World Cup loss there.
+  Standard ingest workflow each time (`COMMANDS.md`): `knockout.json` +
+  `WC2026_PLAYED_KNOCKOUT` (see below) + `match_events.json` +
+  `post_match.json`, then re-sim + regenerate snapshots.
+- **Knockout-stage Elo K-factor bump** (`ml/tournament_form.py`): single-
+  elimination results are higher-signal than group-stage games (no dead
+  rubbers, full effort every match), so they should move a team's
+  in-tournament rating faster than a group game did. `WC2026_PLAYED` is now
+  split into `WC2026_PLAYED_GROUP` (frozen now the group stage is complete;
+  `TOURNEY_K = 20`) and `WC2026_PLAYED_KNOCKOUT` (grows as results land;
+  `TOURNEY_K_KNOCKOUT = 30`) — `WC2026_PLAYED` itself stays their
+  concatenation so every other consumer (`knockout_engine`, `real_bracket`,
+  `tournament_stats`, `match_flow`, `backtest`, `tune_condition_coef`) needs
+  no change. **New knockout results go in `WC2026_PLAYED_KNOCKOUT`, not
+  `WC2026_PLAYED`** — `COMMANDS.md`'s knockout-ingest workflow is updated to
+  match. Net effect: Norway's tournament-form Elo bump grows from +23 to
+  +33, England's from +15 to +21, Brazil's from +2 to ~0 — flows through
+  `ensemble.py`'s Elo member into every live match/knockout prediction.
+- **Tournament Monte Carlo now routes through the full ensemble**
+  (`ml/simulate.py` + `ml/knockout_resolve.py`). Previously the 50k-run
+  title-odds sim scored every knockout pairing with `DCModel.score_matrix`
+  directly (Dixon-Coles lambdas + squad-condition tilt only) — Elo, XGBoost,
+  market odds, and calibration never entered it, so the K-factor bump above
+  (and any future model improvement) moved live match/knockout-page
+  predictions but left the Champion/Final/SF percentages completely
+  untouched — confirmed byte-for-byte identical `sim_results.json` before
+  and after the K-bump alone. Fix: `knockout_resolve.build_ko_params` now
+  accepts an `ensemble_engine`; each pairing's DC-generated scoreline grid
+  (still `KO_GOAL_SCALE`-suppressed, for a realistic knockout scoreline
+  shape/xG) has its aggregate win/draw/loss mass retargeted
+  (`_retarget_outcome`, a generalization of the existing `_condition_tilt`
+  trick to an arbitrary W/D/L target instead of just a home/away
+  exponential tilt) to match `ensemble.predict()`'s full blend.
+  `simulate.run()` builds the ensemble once per run and reuses its
+  `TeamConditionEngine` for the shootout `pen` inputs instead of
+  constructing a second one. Falls back to the old condition-only tilt if
+  the ensemble can't load. **Net effect on the current bracket: Argentina
+  30.4% → 26.2%, France 15.5% → 23.4%** (market/XGBoost rate France's
+  remaining path more favourably than raw DC did), **Morocco 10.2% →
+  6.1%**. One-time setup cost of ~992 `ensemble.predict()` calls (every
+  possible pairing among the 32-team field, built once, not per
+  Monte-Carlo iteration) adds ~1-2s to the ~10s run. All 39 backend/ml
+  tests pass throughout.
+- **Re-tune later:** revisit `TOURNEY_K_KNOCKOUT` and whether the ensemble
+  retarget should also account for `KO_GOAL_SCALE`'s effect on draw
+  likelihood (currently `ensemble.predict()` doesn't know a tie is a
+  knockout match) once more knockout-stage results land.
+
 ## Known issues / watch-outs
+- **Production `NEXT_PUBLIC_STATIC_ONLY` gap — FIXED Jul 6.** Neither
+  `NEXT_PUBLIC_API_URL` nor `NEXT_PUBLIC_STATIC_ONLY` was actually set on
+  Vercel Production (despite `DEPLOY.md` documenting `STATIC_ONLY` as
+  already set — it wasn't). With both unset, `frontend/lib/api.ts`'s `API`
+  defaulted to `http://localhost:8000`, so every page load wasted a failed
+  request to that dead address before falling back to the snapshot; during
+  that window (and in the pre-hydration SSR shell, which is all a
+  `curl`/fast page-read ever sees since these are Client Components) the UI
+  showed `components/nav.tsx`'s hardcoded `NEWS_FALLBACK` ticker — content
+  frozen from the Round-of-32 era, which made a perfectly correct, correctly
+  -aliased deploy look exactly like a stale CDN cache. Fixed: `vercel env
+  add NEXT_PUBLIC_STATIC_ONLY production` (value `1`) then `vercel redeploy
+  chris-fifaworldcup26-prediction.vercel.app --target production` (editing
+  the env var alone does nothing until the next build — `NEXT_PUBLIC_*` is
+  inlined at build time). Verified via a clean headless-browser session
+  (not `curl` — see below): zero requests to `localhost:8000`, ticker
+  matches `/snapshot/api_news.json` immediately. Stays this way until
+  Render is actually provisioned (§1 backend deployment below) — full
+  root-cause writeup in `DEPLOY.md` → "Stale ticker / wasted localhost
+  round-trip".
+  **Verifying this class of bug:** don't trust `curl`/a one-shot fetch — it
+  will always show the Client Component's pre-hydration fallback text on
+  this app. Use a real browser (or headless-browser-with-JS) and wait for
+  network-idle before reading page content. Also watch for a stale cached
+  JS bundle in whatever browser/tool you're testing with (compare the
+  `_next/static/chunks/*` hash in the page source against a fresh `curl` of
+  the same page) — a persistent test-browser session can serve cached JS
+  from before your fix and make a working fix look broken.
 - **`match_flow` regression — FIXED Jun 25.** After §11's unify work, the
   `from knockout_resolve import shootout` collided with a local boolean-mask named
   `shootout` in `_simulate`, so `match_flow` raised on every knockout tie and the
