@@ -7,8 +7,12 @@ no group stage is re-simulated — then Monte Carlos only the ties that are
 genuinely still undecided: an already-played tie always resolves to its real
 winner, an undecided tie is resolved via knockout_resolve.resolve_ko (shared
 with the displayed bracket, so title/survival odds agree with the bracket UI
-renders). Aggregates per-team probabilities of reaching each stage over
-N_SIMS runs.
+renders). Every undecided pairing's win/draw/loss odds come from the full
+ensemble (ensemble.py: Elo+DC+XGBoost+market+calibration) via
+knockout_resolve.build_ko_params(ensemble_engine=...) — the SAME blend that
+powers the live per-tie predictions — so this Monte-Carlo's title odds track
+every model improvement, not just Elo+DC+condition. Aggregates per-team
+probabilities of reaching each stage over N_SIMS runs.
 """
 from __future__ import annotations
 
@@ -31,6 +35,11 @@ try:
     from player_condition import TeamConditionEngine
 except Exception:        # optional dependency — sim still runs without it
     TeamConditionEngine = None
+
+try:
+    import ensemble
+except Exception:        # optional dependency — sim still runs without it
+    ensemble = None
 
 # Squad-condition strength in the sim. Matches ensemble.CONDITION_COEF so a
 # match sampled here tilts the same way the match-level prediction does.
@@ -65,23 +74,41 @@ _ORDER = ["group", "R32", "R16", "QF", "SF", "Final", "Champion"]
 
 
 def run(model: DCModel, n_sims: int = N_SIMS, seed: int = 42,
-        use_condition: bool = True) -> pd.DataFrame:
+        use_condition: bool = True, use_ensemble: bool = True) -> pd.DataFrame:
     """Run Monte Carlo simulation of the real, partially-decided bracket.
 
+    use_ensemble: resolve each pairing's win/draw/loss odds through the SAME
+    Elo+DC+XGBoost+market+calibration blend (ensemble.py) that powers the
+    live per-tie predictions, so title odds track every model improvement —
+    not just Elo+DC+condition. Defaults on; falls back to use_condition's
+    squad-condition-only tilt if the ensemble can't be built (missing
+    artifacts etc).
     use_condition: tilt each pairing by squad form/fitness/availability
-    (player_condition.py). Defaults on; no-ops if the engine is unavailable.
+    (player_condition.py) when use_ensemble is off/unavailable. Defaults on;
+    no-ops if the engine is unavailable.
     """
     r32_pairs, field32 = real_bracket.resolve_r32()
     rows_by_id = {r["id"]: r for r in real_bracket.load_bracket_rows()}
 
-    cond = (TeamConditionEngine() if use_condition and TeamConditionEngine
-            else None)
-    tag = "with squad condition" if cond else "Elo+DC only"
+    ens = None
+    if use_ensemble and ensemble is not None:
+        try:
+            ens = ensemble.get_engine()
+        except Exception:
+            ens = None
+    # Reuse the ensemble's own TeamConditionEngine for the shootout `pen`
+    # inputs when available, instead of constructing a second one.
+    cond = (ens.cond if ens is not None else
+            (TeamConditionEngine() if use_condition and TeamConditionEngine
+             else None))
+    tag = ("full ensemble" if ens is not None else
+           "with squad condition" if cond else "Elo+DC only")
     print(f"[sim] Pre-computing knockout score grids for the real 32-team "
           f"field ({tag}) ... ", end="", flush=True)
     # Shared knockout-resolution params (KO-suppressed 90' grids + penalty model)
     # so the MC advances undecided ties exactly like the displayed bracket.
-    ko_params = knockout_resolve.build_ko_params(model, field32, cond=cond)
+    ko_params = knockout_resolve.build_ko_params(model, field32, cond=cond,
+                                                 ensemble_engine=ens)
     print("done.")
 
     rng = np.random.default_rng(seed)

@@ -93,18 +93,51 @@ def _expected_goals(probs: np.ndarray, n: int) -> tuple[float, float]:
     return eh, ea
 
 
+def _retarget_outcome(mat: np.ndarray, p_home: float, p_draw: float,
+                      p_away: float) -> np.ndarray:
+    """Reweight a scoreline grid so its aggregate win/draw/loss mass matches
+    (p_home, p_draw, p_away) exactly, while preserving the CONDITIONAL
+    scoreline shape within each region (same trick as _condition_tilt, just
+    driven by an explicit target instead of a home/away exponential tilt —
+    lets a draw-shifting signal, like a market or momentum swing, come
+    through too, not just home/away).
+    """
+    n, m = mat.shape
+    i = np.arange(n)[:, None]
+    j = np.arange(m)[None, :]
+    home_mask, draw_mask, away_mask = i > j, i == j, i < j
+    out = np.zeros_like(mat)
+    for mask, target in ((home_mask, p_home), (draw_mask, p_draw), (away_mask, p_away)):
+        raw = mat[mask].sum()
+        if raw > 1e-12:
+            out[mask] = mat[mask] * (target / raw)
+    s = out.sum()
+    return out / s if s > 1e-12 else mat
+
+
 def build_ko_params(model: Any, field: list[str], cond: Any | None = None,
-                    coef: float = None) -> dict[str, Any]:
+                    coef: float = None, ensemble_engine: Any | None = None
+                    ) -> dict[str, Any]:
     """Pre-compute knockout-resolution inputs for the whole field, ONCE.
 
     Returns a dict with:
       * ``cache`` – {(home, away): (probs_flat, n_cols, exp_home, exp_away)}
-        knockout 90' score grids (KO_GOAL_SCALE applied, condition-tilted), plus
-        each side's expected goals for the extra-time leg.
+        knockout 90' score grids (KO_GOAL_SCALE applied for realistic
+        scoreline shape/xG, outcome mass retargeted to the full ensemble
+        blend when `ensemble_engine` is given — falls back to the
+        condition-only tilt otherwise), plus each side's expected goals for
+        the extra-time leg.
       * ``pen``   – {team: (composure, attack_rating, gk_quality, availability)}
         for the shootout conversion model.
-    Mirrors `ml.simulate._build_score_cache` so the knockout 90' distribution
-    matches the group sim's tilt — just goal-suppressed for the knockout stage.
+
+    `ensemble_engine`, when passed (an `ensemble.Ensemble` instance), makes the
+    Monte-Carlo's win/draw/loss odds for every pairing match the SAME
+    Elo+DC+XGBoost+market+calibration blend that powers the live per-tie
+    predictions — so a knockout-stage Elo bump, a retrained XGBoost, a
+    calibration refit etc. all move the tournament title odds too, not just
+    the single-match predictions. `cond` is still used standalone for the
+    shootout `pen` inputs (per-team, not an outcome blend) and as the
+    fallback tilt when no ensemble engine is supplied.
     """
     # Local import to avoid a hard dependency cycle (simulate imports this).
     from simulate import _condition_tilt, CONDITION_COEF
@@ -117,7 +150,10 @@ def build_ko_params(model: Any, field: list[str], cond: Any | None = None,
                 continue
             mat = model.score_matrix(h, a, neutral=True,
                                      goal_scale=config.KO_GOAL_SCALE)
-            if cond is not None:
+            if ensemble_engine is not None:
+                pred = ensemble_engine.predict(h, a, neutral=True)
+                mat = _retarget_outcome(mat, pred["p_home"], pred["p_draw"], pred["p_away"])
+            elif cond is not None:
                 adj = cond.match_condition_adjustment(h, a, include_momentum=False)
                 mat = _condition_tilt(mat, coef * adj["logit_shift"])
             flat = mat.ravel()
