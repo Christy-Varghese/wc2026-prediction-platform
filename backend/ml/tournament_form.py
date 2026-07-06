@@ -10,7 +10,10 @@ the trained baseline using the ACTUAL WC2026 results. This means:
 
 The updates use the same FiveThirtyEight-style formula as elo.py but with a
 SMALLER K (= 20 instead of 40) since WC group matches have high variance and
-we don't want to over-react to a single result.
+we don't want to over-react to a single result. Knockout-stage results get a
+higher K (= 30) — single-elimination, no dead rubbers/rotation to explain away
+a shock result, so a knockout win/loss should move ratings faster than a group
+game did.
 
 Usage:
     from tournament_form import apply_tournament_updates
@@ -24,6 +27,11 @@ from typing import Any
 
 # Lighter K-factor for in-tournament updates (base elo.py uses 40)
 TOURNEY_K = 20.0
+# Knockout-stage results are higher-signal (no dead rubbers, full effort every
+# game) so they get a bigger nudge — but still below the full 40 used to train
+# the pre-tournament prior, so a single shootout fluke can't swing a team's
+# rating for the rest of the bracket.
+TOURNEY_K_KNOCKOUT = 30.0
 ELO_HOME_ADV = 65.0   # same as elo.py; all WC matches are effectively neutral
 
 
@@ -40,18 +48,25 @@ def _mov_mult(goal_diff: int, elo_diff: float) -> float:
 
 
 # ---------------------------------------------------------------------------
-# WC 2026 results played so far (group stage + knockout ties as they land)
+# WC 2026 results played so far — split into group stage and knockout stage
+# so apply_tournament_updates() can apply TOURNEY_K to one and
+# TOURNEY_K_KNOCKOUT to the other. WC2026_PLAYED (below) concatenates both,
+# in play order, for every OTHER consumer (knockout_engine, real_bracket,
+# tournament_stats, match_flow, backtest, tune_condition_coef) — none of them
+# need to change.
 # Format: (home, away, home_score, away_score, neutral)
 # ---------------------------------------------------------------------------
 # Mirrors the canonical played games in app/fixtures.py (group stage) and
 # app/knockout.json (knockout stage). Kept in lock-step with those sources —
-# whenever a result is ingested there (group OR knockout), add the same
-# (home, away, hs, as, neutral) row here so the form/Elo engine used to
-# predict remaining ties never falls behind reality. A drawn knockout tie
-# decided on penalties is recorded as its 90'/ET score (a draw) — the
-# shootout itself isn't modeled in Elo. neutral=False only when a host
-# nation (USA / Mexico / Canada) plays a match in its own country.
-WC2026_PLAYED: list[tuple[str, str, int, int, bool]] = [
+# whenever a result is ingested there, add the same (home, away, hs, as,
+# neutral) row to WC2026_PLAYED_GROUP (group stage; frozen now that the
+# group stage is complete) or WC2026_PLAYED_KNOCKOUT (Round of 32 onward) so
+# the form/Elo engine used to predict remaining ties never falls behind
+# reality. A drawn knockout tie decided on penalties is recorded as its
+# 90'/ET score (a draw) — the shootout itself isn't modeled in Elo.
+# neutral=False only when a host nation (USA / Mexico / Canada) plays a
+# match in its own country.
+WC2026_PLAYED_GROUP: list[tuple[str, str, int, int, bool]] = [
     # ── Matchday 1 ──
     ("Mexico",          "South Africa",            2, 0, False),
     ("South Korea",     "Czech Republic",          2, 1, True),
@@ -130,6 +145,9 @@ WC2026_PLAYED: list[tuple[str, str, int, int, bool]] = [
     ("DR Congo",        "Uzbekistan",              3, 1, True),
     ("Algeria",         "Austria",                 3, 3, True),
     ("Jordan",          "Argentina",               1, 3, True),
+]
+
+WC2026_PLAYED_KNOCKOUT: list[tuple[str, str, int, int, bool]] = [
     # ── Round of 32 (Jun 28-29) ──
     ("South Africa",    "Canada",                  0, 1, True),
     ("Brazil",          "Japan",                   2, 1, True),
@@ -156,6 +174,10 @@ WC2026_PLAYED: list[tuple[str, str, int, int, bool]] = [
     ("Mexico",          "England",                 2, 3, True),
 ]
 
+# Full play-order ledger for consumers that don't care about stage (form/
+# stats/bracket resolution) — see the module docstring above.
+WC2026_PLAYED: list[tuple[str, str, int, int, bool]] = WC2026_PLAYED_GROUP + WC2026_PLAYED_KNOCKOUT
+
 
 @lru_cache(maxsize=1)
 def apply_tournament_updates(base_elo: tuple[tuple[str, float], ...]) -> dict[str, float]:
@@ -169,7 +191,11 @@ def apply_tournament_updates(base_elo: tuple[tuple[str, float], ...]) -> dict[st
     """
     ratings: dict[str, float] = dict(base_elo)
 
-    for home, away, hs, as_, neutral in WC2026_PLAYED:
+    games = (
+        [(m, TOURNEY_K) for m in WC2026_PLAYED_GROUP]
+        + [(m, TOURNEY_K_KNOCKOUT) for m in WC2026_PLAYED_KNOCKOUT]
+    )
+    for (home, away, hs, as_, neutral), base_k in games:
         rh = ratings.get(home, 1500.0)
         ra = ratings.get(away, 1500.0)
 
@@ -178,7 +204,7 @@ def apply_tournament_updates(base_elo: tuple[tuple[str, float], ...]) -> dict[st
         score_h = 1.0 if hs > as_ else 0.5 if hs == as_ else 0.0
 
         gd = hs - as_
-        k = TOURNEY_K * _mov_mult(gd, (rh + adv) - ra)
+        k = base_k * _mov_mult(gd, (rh + adv) - ra)
         delta = k * (score_h - exp_h)
 
         ratings[home] = rh + delta

@@ -24,11 +24,12 @@ Run all commands from the **project root** (`wc2026-prediction-platform/`).
 ## Workflow: ingesting new group-stage match scores
 
 1. Edit `backend/app/fixtures.py` — change `None, None` to `home_score, away_score` for completed matches
-2. Add the same `(home, away, hs, as, neutral)` row to `WC2026_PLAYED` in
+2. Add the same `(home, away, hs, as, neutral)` row to `WC2026_PLAYED_GROUP` in
    `backend/ml/tournament_form.py` — **do not skip this.** It's what patches
    the Elo used to predict every remaining match; skipping it silently lets
    the model fall behind reality (this happened for 10 R32 results before
-   being caught and backfilled).
+   being caught and backfilled). (Moot now that the group stage is complete —
+   new results all go to `WC2026_PLAYED_KNOCKOUT` instead, see below.)
 3. Add goal scorers to `backend/data/raw/match_events.json`
 4. Add a match report to `backend/data/raw/post_match.json`
 5. Run `make ingest-scores` (sim + snapshots)
@@ -47,12 +48,14 @@ Run all commands from the **project root** (`wc2026-prediction-platform/`).
 1. Edit `backend/app/knockout.json` — fill in `home_score`/`away_score`
    (+ `pen_home`/`pen_away` on a shootout) and `actual_events`/`actual_stats`
    for the played match id.
-2. Add the same `(home, away, hs, as, neutral)` row to `WC2026_PLAYED` in
-   `backend/ml/tournament_form.py` (a shootout is recorded as its 90'/ET
+2. Add the same `(home, away, hs, as, neutral)` row to `WC2026_PLAYED_KNOCKOUT`
+   in `backend/ml/tournament_form.py` (a shootout is recorded as its 90'/ET
    score, i.e. a draw — the shootout itself isn't modeled in Elo). This
    feeds both the retrospective Elo patch AND `backend/ml/real_bracket.py`'s
    real-bracket resolution, so the simulator/knockout pages both reflect the
-   result immediately.
+   result immediately. Knockout results are patched at `TOURNEY_K_KNOCKOUT`
+   (30, vs 20 for group-stage games) — higher-stakes, no dead rubbers, so a
+   result should move ratings faster.
 3. Add the scorer(s) to `backend/data/raw/match_events.json` (own goals go
    under the *benefiting* team's array, `"type": "own goal"`, `player` =
    the scorer).
