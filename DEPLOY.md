@@ -40,15 +40,22 @@ reachable" and "credentials are rotated" is exposure time.
 2. **Root Directory:** `frontend`. Framework preset: **Next.js** (auto).
 3. **Environment Variable:**
    `NEXT_PUBLIC_API_URL = https://wc2026-api.onrender.com` (your Render URL).
-4. **If `NEXT_PUBLIC_STATIC_ONLY=1` is already set on this project** (it is, as
-   of this writing — added to serve the demo from snapshots only while there was
-   no live backend): **remove it**, or the frontend will never call the Render
-   API at all. `frontend/lib/api.ts`'s `api()` short-circuits to
-   `fromSnapshot()` before constructing any request when this flag is set —
-   every step above will look successful (health check green, no errors) while
-   the frontend silently keeps serving only snapshots. Vercel → project →
-   **Settings ▸ Environment Variables** → remove `NEXT_PUBLIC_STATIC_ONLY`
-   from Production → redeploy.
+4. **Current live state (as of 2026-07-06): `NEXT_PUBLIC_STATIC_ONLY=1` IS set**
+   on Vercel Production — deliberately, because Render (§1) has never actually
+   been provisioned. `frontend/lib/api.ts`'s `api()` short-circuits to
+   `fromSnapshot()` for every GET before constructing any request when this
+   flag is set, so the frontend serves only snapshots with no live-backend
+   traffic at all — no request, successful or failed, ever reaches
+   `NEXT_PUBLIC_API_URL`. (Previously this var was believed to already be
+   set but actually wasn't; see "Stale ticker" below for what that caused
+   and how it was found.) **Once you provision Render (§1) and set
+   `NEXT_PUBLIC_API_URL` to its real URL, remove `NEXT_PUBLIC_STATIC_ONLY`**:
+   Vercel → project → **Settings ▸ Environment Variables** → remove it from
+   Production, **then redeploy** — `vercel redeploy <deployment-url-or-alias>
+   --target production` (required: `NEXT_PUBLIC_*` vars are inlined into the
+   JS bundle at build time, so editing the env var alone does not change an
+   already-built deployment) — or the frontend will keep serving only
+   snapshots even though a live backend now exists.
 5. Deploy. Vercel gives you a URL like
    `https://wc2026-prediction-platform.vercel.app`.
 
@@ -95,8 +102,12 @@ and fall back to the snapshot, not hang the page for the full ~30-60s wake.
 ## Troubleshooting
 
 **Page loads but always shows snapshot data, never live data:**
-- Check `NEXT_PUBLIC_STATIC_ONLY` isn't still set on Vercel (§2.4 above) — this
-  is the #1 cause and produces no visible error anywhere.
+- **Expected right now** — `NEXT_PUBLIC_STATIC_ONLY=1` is deliberately set
+  because Render isn't provisioned (§2.4). Nothing to fix unless you've
+  already provisioned Render and set `NEXT_PUBLIC_API_URL`.
+- If you *have* set up Render and it's still snapshot-only: check
+  `NEXT_PUBLIC_STATIC_ONLY` wasn't left set on Vercel (§2.4) — this is the #1
+  cause and produces no visible error anywhere.
 - Open browser DevTools → Network tab → reload → look for a request to
   `wc2026-api.onrender.com`. If there's no request at all, it's `STATIC_ONLY`.
   If there's a request that fails, read on.
@@ -163,6 +174,48 @@ inside it makes Vercel look for `frontend/frontend` and fail):
 npx vercel --prod --yes                  # prints a Production URL: chris-...-<hash>.vercel.app
 npx vercel alias set <that-hash-url> chris-fifaworldcup26-prediction.vercel.app
 ```
+
+## Stale ticker / wasted localhost round-trip ⚠️ (root cause + fix, 2026-07-06)
+
+**Symptom:** the live site's nav ticker (and any page reading `/api/news`)
+showed weeks-old content — "Round of 32 underway", "outcome accuracy: 51/77
+(66%)", "Argentina champions (26.7%)" — while every other check (latest commit
+deployed, alias pointed at the right deployment, static snapshot JSON fetched
+directly) showed the correct, current data. Looked exactly like a stale CDN
+cache (`x-vercel-cache: HIT`, growing `age` header) but wasn't.
+
+**Root cause:** neither `NEXT_PUBLIC_API_URL` nor `NEXT_PUBLIC_STATIC_ONLY` was
+actually set on Vercel Production (§2.4 had documented `STATIC_ONLY` as already
+set — it wasn't). With both unset, `API` in `lib/api.ts` defaulted to
+`http://localhost:8000`, so every page load attempted — and failed — a request
+to that dead address before falling back to `fromSnapshot()`. During that
+window, and in the server-rendered pre-hydration HTML (which is *all* `curl` or
+a fast page-read ever sees, since these pages are Client Components — the
+`useSWR` data is `undefined` until client JS runs), the UI showed
+`components/nav.tsx`'s hardcoded `NEWS_FALLBACK` array — a snapshot frozen from
+an old tournament state, never updated since. So `curl`-based "is the deploy
+stale?" checks were misleading here: they weren't seeing a caching bug, they
+were seeing the intended fallback UI, made unusually visible/persistent by the
+localhost round-trip.
+
+**Fix:** set `NEXT_PUBLIC_STATIC_ONLY=1` on Vercel Production
+(`vercel env add NEXT_PUBLIC_STATIC_ONLY production`), then rebuild —
+`vercel redeploy chris-fifaworldcup26-prediction.vercel.app --target
+production` (editing the env var alone does nothing until the next build,
+since `NEXT_PUBLIC_*` vars are inlined at build time). This makes `api()` skip
+straight to the snapshot with no localhost attempt at all.
+
+**How to actually verify this class of issue:** don't rely on `curl` or a
+one-shot page fetch — check the browser Network tab (or a scripted headless
+browser with JS execution) after the page has hydrated, and confirm there's no
+request to `localhost:8000` (or your Render URL, per the alias troubleshooting
+above) and that the ticker text matches `/snapshot/api_news.json`'s current
+content. Also watch for a **stale cached JS bundle in whatever browser/tool
+you're testing with** — Next.js fingerprints chunk filenames by content hash,
+so if a re-check still shows the old hash (visible in the Network tab / page
+source), the browser session itself is serving cached JS from before your fix,
+not the live deployment; hard-refresh or use a fresh session before concluding
+a fix didn't work.
 
 ## Verify the live data
 
