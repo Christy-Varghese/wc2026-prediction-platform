@@ -454,7 +454,15 @@
   "kickoff": "2026-07-05T16:00:00-04:00",
   "city": "New York/NJ",
   "home_label": "Winner Match 76",
-  "away_label": "Winner Match 78"
+  "away_label": "Winner Match 78",
+  "home_score": 1,
+  "away_score": 2,
+  "actual_events": [
+   {"minute": 79, "team": "Norway", "type": "goal", "scorer": "Erling Haaland", "assist": "Andreas Schjelderup", "text": "Schjelderup, on at the break, whips in a left-wing cross and Haaland gets across his marker to break the deadlock — Norway lead 1-0."},
+   {"minute": 90, "team": "Norway", "type": "goal", "scorer": "Erling Haaland", "assist": null, "text": "Haaland drives in from the left and rifles a low shot into the corner — his second of the night puts Norway 2-0 up and level with Messi and Mbappé atop the Golden Boot on 7."},
+   {"minute": 100, "team": "Brazil", "type": "goal", "scorer": "Neymar", "assist": null, "text": "Neymar converts a stoppage-time penalty, won after an elbow on Casemiro — academic by then. It proves to be his final touch for the Seleção."}
+  ],
+  "actual_stats": {"home_xg": 1.65, "away_xg": 1.05, "result_note": "Brazil were wasteful — Bruno Guimarães had a first-half penalty saved by Ørjan Nyland after a VAR review — and paid for it as second-half substitute Andreas Schjelderup teed up both Haaland goals either side of the 80th minute. Neymar's stoppage-time penalty was too little, too late; this marks Brazil's earliest World Cup exit since 1990, and Neymar's final match for the Seleção. Norway reach a first-ever quarter-final."}
  },
  {
   "id": 92,
@@ -464,7 +472,18 @@
   "kickoff": "2026-07-05T20:00:00-04:00",
   "city": "Mexico City",
   "home_label": "Winner Match 79",
-  "away_label": "Winner Match 80"
+  "away_label": "Winner Match 80",
+  "home_score": 2,
+  "away_score": 3,
+  "actual_events": [
+   {"minute": 36, "team": "England", "type": "goal", "scorer": "Jude Bellingham", "assist": null, "text": "Bellingham strikes to give England an early lead in a hostile Azteca."},
+   {"minute": 38, "team": "England", "type": "goal", "scorer": "Jude Bellingham", "assist": null, "text": "Bellingham scores again just 98 seconds after his first — a stunning quickfire double stuns the 80,000+ crowd. England 2-0 up."},
+   {"minute": 42, "team": "Mexico", "type": "goal", "scorer": "Julián Quiñones", "assist": null, "text": "Quiñones pulls one back for Mexico just before the break — 2-1."},
+   {"minute": 54, "team": "England", "type": "red", "player": "Jarell Quansah", "text": "Quansah is sent off after a VAR review for a high challenge on Jesús Gallardo — England down to 10 men."},
+   {"minute": 60, "team": "England", "type": "goal", "scorer": "Harry Kane", "assist": null, "text": "Kane converts from the spot, awarded after a foul on Anthony Gordon, to restore England's two-goal cushion despite the man disadvantage — 3-1."},
+   {"minute": 69, "team": "Mexico", "type": "goal", "scorer": "Raúl Jiménez", "assist": null, "text": "Jiménez converts a penalty of his own to set up a grandstand finish — 3-2."}
+  ],
+  "actual_stats": {"home_xg": 1.9, "away_xg": 2.25, "result_note": "Bellingham's 98-second brace either side of the half-hour set the tone, and Kane's penalty — scored just minutes after Quansah's red card — proved decisive. Mexico, roared on by 80,000+ at the Azteca, threw everything at a 10-man England for the final 21 minutes plus 11 of stoppage time, but Jordan Pickford and the England defence held out. England become the first team to beat Mexico in a World Cup at the Azteca."}
  },
  {
   "id": 93,

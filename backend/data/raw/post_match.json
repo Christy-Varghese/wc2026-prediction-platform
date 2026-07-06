@@ -417,5 +417,27 @@
     "sources": [
       "ESPN"
     ]
+  },
+  "Brazil|Norway": {
+    "headline": "Haaland, Norway condemn Brazil to earliest World Cup exit since 1990",
+    "summary": "Brazil were wasteful throughout — Bruno Guimarães had a first-half penalty saved by Ørjan Nyland after a VAR review — and paid the price late on. Substitute Andreas Schjelderup, on at the break, set up both Erling Haaland goals either side of the 80th minute: a cross turned home in the 79th, then a low, driven finish in the 90th. Neymar's stoppage-time penalty, won after an elbow on Casemiro, was too little too late. The result marks Brazil's earliest World Cup exit since 1990 and, by his own announcement afterward, Neymar's final appearance for the Seleção. Norway reach the quarter-finals for the first time in their history.",
+    "star_player": "Erling Haaland",
+    "star_reason": "Scored twice in the final 11 minutes to send Norway through — his 7th goal of the tournament draws him level with Messi and Mbappé atop the Golden Boot.",
+    "turning_point": "Schjelderup's half-time introduction — he set up both of Haaland's goals.",
+    "what_lacked": "Brazil created chances (including a missed first-half penalty) but were toothless in front of goal until a consolation penalty in stoppage time.",
+    "sources": [
+      "ESPN"
+    ]
+  },
+  "Mexico|England": {
+    "headline": "Bellingham's quickfire double and Kane's penalty send England past 10-man scare at the Azteca",
+    "summary": "Jude Bellingham scored twice in 98 seconds either side of the half-hour to give England control at a raucous Azteca, before Julián Quiñones halved the gap just before the break. Jarell Quansah was sent off in the 54th minute for a high challenge on Jesús Gallardo, but England extended their lead from the spot through Harry Kane minutes later. Raúl Jiménez's own penalty, in the 69th, set up a grandstand finish, and Mexico threw everything at a 10-man England for the final 21 minutes plus 11 of stoppage time — but Jordan Pickford and the England defence held out. England become the first team ever to beat Mexico in a World Cup match at the Azteca.",
+    "star_player": "Jude Bellingham",
+    "star_reason": "Scored twice in 98 seconds to set the tone, calling it the best night of his England career.",
+    "turning_point": "Quansah's 54th-minute red card should have swung the game toward Mexico, but Kane's penalty minutes later restored England's two-goal cushion instead.",
+    "what_lacked": "Mexico had a full second half plus stoppage time with a man advantage but couldn't find a fourth English error or a decisive equaliser.",
+    "sources": [
+      "ESPN"
+    ]
   }
 }

@@ -2248,5 +2248,39 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260704"
+  },
+  "Brazil|Norway": {
+    "home": "Brazil",
+    "away": "Norway",
+    "score": [1, 2],
+    "scorers": {
+      "home": [
+        {"player": "Neymar", "minute": 100, "type": "penalty"}
+      ],
+      "away": [
+        {"player": "Erling Haaland", "minute": 79, "type": "goal"},
+        {"player": "Erling Haaland", "minute": 90, "type": "goal"}
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260705"
+  },
+  "Mexico|England": {
+    "home": "Mexico",
+    "away": "England",
+    "score": [2, 3],
+    "scorers": {
+      "home": [
+        {"player": "Julián Quiñones", "minute": 42, "type": "goal"},
+        {"player": "Raúl Jiménez", "minute": 69, "type": "penalty"}
+      ],
+      "away": [
+        {"player": "Jude Bellingham", "minute": 36, "type": "goal"},
+        {"player": "Jude Bellingham", "minute": 38, "type": "goal"},
+        {"player": "Harry Kane", "minute": 60, "type": "penalty"}
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260705"
   }
 }
