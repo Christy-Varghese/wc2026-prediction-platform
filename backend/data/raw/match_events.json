@@ -2313,5 +2313,23 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260706"
+  },
+  "Argentina|Egypt": {
+    "home": "Argentina",
+    "away": "Egypt",
+    "score": [3, 2],
+    "scorers": {
+      "home": [
+        {"player": "Cristian Romero", "minute": 79, "type": "goal"},
+        {"player": "Lionel Messi", "minute": 83, "type": "goal"},
+        {"player": "Enzo Fernández", "minute": 92, "type": "goal"}
+      ],
+      "away": [
+        {"player": "Yasser Ibrahim", "minute": 15, "type": "goal"},
+        {"player": "Mostafa Zico", "minute": 67, "type": "goal"}
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260707"
   }
 }

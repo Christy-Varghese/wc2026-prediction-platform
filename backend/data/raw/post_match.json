@@ -461,5 +461,16 @@
     "sources": [
       "ESPN"
     ]
+  },
+  "Argentina|Egypt": {
+    "headline": "Messi and Argentina erupt for three goals in 13 minutes to complete a stunning comeback past Egypt",
+    "summary": "Egypt had Argentina on the ropes in Atlanta — Yasser Ibrahim's early header and a Mostafa Zico strike sandwiched a save by Mostafa Shoubir off a first-half Messi penalty, leaving the reigning champions 2-0 down with 20 minutes to go. Then the collapse: Cristian Romero headed in from a Messi cross in the 79th minute, Messi leveled it himself four minutes later, and Enzo Fernández rose to head home a stoppage-time winner in the 92nd. Argentina dominated the underlying numbers throughout (2.80 xG to 0.98, 64% possession) but needed a furious late rally to turn control into a result, extending Messi's scoring streak and sending Argentina through to face the winner of Switzerland vs Colombia.",
+    "star_player": "Lionel Messi",
+    "star_reason": "Missed a first-half penalty but kept probing, then set up Romero's equalizer before scoring the leveler himself in a decisive four-minute spell.",
+    "turning_point": "Cristian Romero's 79th-minute header off a Messi cross broke the deadlock and ignited the comeback.",
+    "what_lacked": "Egypt sat too deep after going 2-0 up and couldn't manage the game's closing stages, conceding three times in the final 13 minutes.",
+    "sources": [
+      "ESPN"
+    ]
   }
 }

@@ -530,7 +530,18 @@
   "kickoff": "2026-07-07T12:00:00-04:00",
   "city": "Atlanta",
   "home_label": "Winner Match 86",
-  "away_label": "Winner Match 88"
+  "away_label": "Winner Match 88",
+  "home_score": 3,
+  "away_score": 2,
+  "actual_events": [
+   {"minute": 15, "team": "Egypt", "type": "goal", "scorer": "Yasser Ibrahim", "assist": null, "text": "Ibrahim rises unmarked to head Egypt in front — 1-0!"},
+   {"minute": 40, "team": "Argentina", "type": "var", "text": "Mostafa Shoubir saves Lionel Messi's first-half penalty — Egypt survive an early scare and stay in front."},
+   {"minute": 67, "team": "Egypt", "type": "goal", "scorer": "Mostafa Zico", "assist": null, "text": "Zico doubles Egypt's lead — Argentina in real trouble at 2-0 with just over 20 minutes left."},
+   {"minute": 79, "team": "Argentina", "type": "goal", "scorer": "Cristian Romero", "assist": "Lionel Messi", "text": "Messi picks out Romero with a cross and he heads past Shoubir — Argentina pull one back, 2-1."},
+   {"minute": 83, "team": "Argentina", "type": "goal", "scorer": "Lionel Messi", "assist": null, "text": "Messi levels it himself — 2-2! Argentina complete a remarkable turnaround in the space of four minutes."},
+   {"minute": 92, "team": "Argentina", "type": "goal", "scorer": "Enzo Fernández", "assist": null, "text": "Fernández rises to head in a stoppage-time cross — Argentina complete the comeback, 3-2, deep into added time!"}
+  ],
+  "actual_stats": {"home_xg": 2.8, "away_xg": 0.98, "result_note": "Egypt led twice — Yasser Ibrahim's early header and a Mostafa Zico strike either side of Mostafa Shoubir saving a first-half Messi penalty — but Argentina scored three times in the final 13 minutes to complete the comeback. Cristian Romero headed in from a Messi cross, Messi leveled it himself four minutes later, and Enzo Fernández's stoppage-time header sealed it. Argentina advance to face the winner of Switzerland vs Colombia in the quarter-finals."}
  },
  {
   "id": 96,
