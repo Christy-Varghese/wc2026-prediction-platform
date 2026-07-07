@@ -413,8 +413,8 @@ export default function Home() {
               ))
               : <p className="text-sm text-muted py-4">Run the simulator to surface dark horses.</p>}
           </div>
-          <Link href="/simulator" className="mt-4 btn-sm block text-center">
-            Full Tournament Simulator →
+          <Link href="/analytics" className="mt-4 btn-sm block text-center">
+            Full Tournament Analytics →
           </Link>
         </motion.div>
       </section>
@@ -423,7 +423,7 @@ export default function Home() {
       {data.stage_probs?.length > 0 && (
         <motion.section variants={FADE_UP} initial="hidden" animate="show" transition={stagger(4)}>
           <SectionHeader title="ADVANCEMENT ODDS" sub="Top contenders · all stages"
-            action={<Link href="/simulator" className="btn-sm">Full table</Link>} />
+            action={<Link href="/analytics" className="btn-sm">Full table</Link>} />
           <div className="card-broadcast overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

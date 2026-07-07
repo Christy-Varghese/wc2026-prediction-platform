@@ -177,7 +177,7 @@ wc2026-prediction-platform/
 │   └── requirements.txt
 ├── frontend/                   # Next.js dashboard
 │   ├── app/                    # routes: / live matches groups knockout
-│   │   │                       #         simulator teams analytics admin
+│   │   │                       #         teams analytics admin
 │   ├── components/             # ui.tsx, nav.tsx, match-analytics.tsx
 │   └── lib/api.ts              # API client
 ├── docs/ARCHITECTURE.md        # deeper design notes
@@ -293,9 +293,8 @@ Smoke-test a running API: `python backend/validate_api.py`
 | `/matches` · `/matches/[id]` | fixture list; full match center + post-match analytics |
 | `/groups` | live group standings table + advancement % |
 | `/knockout` | projected bracket (R32 → Final), podium, title-% per team, click-a-tie analysis modal |
-| `/simulator` | champion-probability chart + stage-by-stage odds + group projections |
 | `/teams` · `/teams/[name]` | all 48 teams by strength; profile + squad |
-| `/analytics` | title chart, upset alerts, dark horses |
+| `/analytics` | champion-probability chart + trend, stage-by-stage odds, group projections, upset alerts, dark horses |
 
 ## Deployment
 - **Frontend → Vercel** (auto-deploys from `main`, root dir `frontend`). Live at
