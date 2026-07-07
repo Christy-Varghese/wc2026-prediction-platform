@@ -439,5 +439,27 @@
     "sources": [
       "ESPN"
     ]
+  },
+  "Portugal|Spain": {
+    "headline": "Substitute Merino breaks Portuguese hearts in the 91st minute as Ronaldo's World Cup career ends",
+    "summary": "A tense, largely chanceless Round of 16 tie in the Dallas-area heat was settled in the first minute of stoppage time: substitute Mikel Merino took a pass from fellow substitute Ferran Torres on the edge of the box and finished low into the corner. Portugal's best chance had come earlier through Nuno Mendes, whose deflected effort came back off the crossbar, but they never found a way through Spain's midfield, marshalled all game by Man of the Match Rodri. The result ends Cristiano Ronaldo's World Cup career — he had confirmed before the tournament this would be his last — and prompted Portugal manager Roberto Martínez to resign on the spot. Spain advance to face Belgium in the quarter-finals.",
+    "star_player": "Rodri",
+    "star_reason": "Controlled Spain's midfield for the full 90+ minutes and set up the platform for the two late substitutes to combine for the winner.",
+    "turning_point": "Spain's double substitution just before the hour — Merino and Torres both coming on — directly produced the 91st-minute winner.",
+    "what_lacked": "Portugal created little beyond Nuno Mendes's deflected crossbar effort and never tested Unai Simón in the second half.",
+    "sources": [
+      "ESPN"
+    ]
+  },
+  "United States|Belgium": {
+    "headline": "De Ketelaere brace sends Belgium past the hosts as the USA become the last co-host eliminated",
+    "summary": "Charles De Ketelaere scored twice inside the first half-hour — either side of Malik Tillman's leveller for the hosts — as Belgium controlled the game from start to finish at Lumen Field. Hans Vanaken, on early for the injured Amadou Onana, made it 3-1 just after the hour, and substitute Romelu Lukaku added a fourth in stoppage time to complete a comfortable win. The United States never recovered from De Ketelaere's early opener and become the last of the three co-hosts eliminated, following Canada and Mexico. Belgium advance to face Spain in the quarter-finals.",
+    "star_player": "Charles De Ketelaere",
+    "star_reason": "His brace inside the first half-hour set the tone and gave Belgium a lead they never relinquished.",
+    "turning_point": "De Ketelaere's 9th-minute opener — Tillman's leveller 22 minutes later was as close as the USA got before Belgium pulled away.",
+    "what_lacked": "The hosts had no answer defensively once Onana went off injured; Vanaken and Lukaku both scored off the bench in the space they were given.",
+    "sources": [
+      "ESPN"
+    ]
   }
 }

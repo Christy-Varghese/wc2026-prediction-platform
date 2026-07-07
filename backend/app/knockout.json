@@ -493,7 +493,14 @@
   "kickoff": "2026-07-06T15:00:00-04:00",
   "city": "Dallas",
   "home_label": "Winner Match 83",
-  "away_label": "Winner Match 84"
+  "away_label": "Winner Match 84",
+  "home_score": 0,
+  "away_score": 1,
+  "actual_events": [
+   {"minute": 41, "team": "Portugal", "type": "var", "text": "Nuno Mendes hits the crossbar after his shot deflects off Pedro Porro — Portugal's best chance goes begging."},
+   {"minute": 91, "team": "Spain", "type": "goal", "scorer": "Mikel Merino", "assist": "Ferran Torres", "text": "Substitute Merino takes a pass from fellow substitute Torres on the edge of the box and finishes low into the left corner — the only goal of the game, deep into stoppage time. Ronaldo's World Cup career ends here; Portugal boss Roberto Martínez resigns immediately after."}
+  ],
+  "actual_stats": {"home_xg": 1.1, "away_xg": 1.35, "result_note": "A tense, cagey Dallas-area classic decided in the 91st minute — Rodri (Man of the Match) marshalled Spain's midfield throughout, and substitutes Torres and Merino combined for the winner right at the death. Portugal's Ronaldo, who had confirmed this would be his last World Cup, departs without a goal in the knockout rounds; manager Roberto Martínez quit on the spot. Spain advance to face Belgium in the quarter-finals."}
  },
  {
   "id": 94,
@@ -503,7 +510,17 @@
   "kickoff": "2026-07-06T20:00:00-04:00",
   "city": "Seattle",
   "home_label": "Winner Match 81",
-  "away_label": "Winner Match 82"
+  "away_label": "Winner Match 82",
+  "home_score": 1,
+  "away_score": 4,
+  "actual_events": [
+   {"minute": 9, "team": "Belgium", "type": "goal", "scorer": "Charles De Ketelaere", "assist": null, "text": "De Ketelaere opens the scoring early — Belgium ahead inside 10 minutes."},
+   {"minute": 31, "team": "United States", "type": "goal", "scorer": "Malik Tillman", "assist": null, "text": "Tillman pulls one back for the hosts — 1-1."},
+   {"minute": 33, "team": "Belgium", "type": "goal", "scorer": "Charles De Ketelaere", "assist": null, "text": "De Ketelaere's second of the match restores Belgium's lead before the half-hour mark — 2-1."},
+   {"minute": 57, "team": "Belgium", "type": "goal", "scorer": "Hans Vanaken", "assist": null, "text": "Vanaken, on for the injured Onana in the 21st minute, extends Belgium's lead — 3-1."},
+   {"minute": 93, "team": "Belgium", "type": "goal", "scorer": "Romelu Lukaku", "assist": null, "text": "Substitute Lukaku caps a dominant Belgian display in stoppage time — 4-1. The United States become the last co-host eliminated, after Canada and Mexico."}
+  ],
+  "actual_stats": {"home_xg": 0.9, "away_xg": 2.6, "result_note": "Man of the Match Charles De Ketelaere's early brace set the tone and Belgium were comfortably the better side throughout, with Vanaken and a late Lukaku strike turning it into a rout. The United States — the final co-host standing after Canada and Mexico's exits — never got a foothold beyond Tillman's leveller. Belgium advance to face Spain in the quarter-finals."}
  },
  {
   "id": 95,

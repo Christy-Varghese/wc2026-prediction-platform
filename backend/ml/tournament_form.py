@@ -172,6 +172,9 @@ WC2026_PLAYED_KNOCKOUT: list[tuple[str, str, int, int, bool]] = [
     # ── Round of 16 (Jul 5) ──
     ("Brazil",          "Norway",                  1, 2, True),
     ("Mexico",          "England",                 2, 3, True),
+    # ── Round of 16 (Jul 6) ──
+    ("Portugal",        "Spain",                   0, 1, True),
+    ("United States",   "Belgium",                 1, 4, False),  # host, Seattle
 ]
 
 # Full play-order ledger for consumers that don't care about stage (form/

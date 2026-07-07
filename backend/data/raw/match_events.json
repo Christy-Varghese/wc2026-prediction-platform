@@ -2282,5 +2282,36 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260705"
+  },
+  "Portugal|Spain": {
+    "home": "Portugal",
+    "away": "Spain",
+    "score": [0, 1],
+    "scorers": {
+      "home": [],
+      "away": [
+        {"player": "Mikel Merino", "minute": 91, "type": "goal"}
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260706"
+  },
+  "United States|Belgium": {
+    "home": "United States",
+    "away": "Belgium",
+    "score": [1, 4],
+    "scorers": {
+      "home": [
+        {"player": "Malik Tillman", "minute": 31, "type": "goal"}
+      ],
+      "away": [
+        {"player": "Charles De Ketelaere", "minute": 9, "type": "goal"},
+        {"player": "Charles De Ketelaere", "minute": 33, "type": "goal"},
+        {"player": "Hans Vanaken", "minute": 57, "type": "goal"},
+        {"player": "Romelu Lukaku", "minute": 93, "type": "goal"}
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260706"
   }
 }
