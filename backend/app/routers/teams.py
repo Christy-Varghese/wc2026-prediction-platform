@@ -2,7 +2,7 @@
 from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
-from .. import fixtures, ml_engine
+from .. import fixtures, knockout_engine, ml_engine
 
 router = APIRouter(prefix="/api/teams", tags=["teams"])
 
@@ -37,6 +37,7 @@ def team_profile(name: str):
         "injury_report": ml_engine.injuries_report(name),
         "group_rivals": [x for x in fixtures._draw().get(t["group"], []) if x != name],
         "progression": _progression(name),
+        "journey": knockout_engine.team_journey(name),
     }
 
 

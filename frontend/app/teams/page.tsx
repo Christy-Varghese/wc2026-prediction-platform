@@ -12,15 +12,23 @@ const GROUPS = "ABCDEFGHIJKL".split("");
 
 function useKnockoutSets() {
   const { data: ko } = useSWR("/api/knockout", fetcher, { revalidateOnFocus: false });
-  return useMemo<{ r32Teams: Set<string>; eliminated: Set<string> }>(() => {
+  return useMemo<{ r32Teams: Set<string>; eliminated: Set<string>; qfTeams: Set<string> }>(() => {
     const r32Teams = new Set<string>();
     const eliminated = new Set<string>();
-    if (!ko?.matches) return { r32Teams, eliminated };
+    const qfTeams = new Set<string>();
+    if (!ko?.matches) return { r32Teams, eliminated, qfTeams };
     for (const m of ko.matches as any[]) {
       // Collect all teams that made the R32
       if (m.round === "Round of 32") {
         if (m.home_team) r32Teams.add(m.home_team);
         if (m.away_team) r32Teams.add(m.away_team);
+      }
+      // Collect teams through to (or projected for) the Quarter-final —
+      // resolve_bracket() fills in actual teams once a tie is decided and
+      // the model's predicted winner for ties still in progress.
+      if (m.round === "Quarter-final") {
+        if (m.home_team) qfTeams.add(m.home_team);
+        if (m.away_team) qfTeams.add(m.away_team);
       }
       // Collect teams knocked out in R32 or later
       const hs = m.home_score;
@@ -38,13 +46,13 @@ function useKnockoutSets() {
         else                                      eliminated.add(home);
       }
     }
-    return { r32Teams, eliminated };
+    return { r32Teams, eliminated, qfTeams };
   }, [ko]);
 }
 
 export default function TeamsPage() {
   const { data, error } = useSWR("/api/teams", fetcher);
-  const { r32Teams, eliminated } = useKnockoutSets();
+  const { r32Teams, eliminated, qfTeams } = useKnockoutSets();
   const [group, setGroup] = useState("");
   const [search, setSearch] = useState("");
   const [showElim, setShowElim] = useState(true);
@@ -126,7 +134,8 @@ export default function TeamsPage() {
       {/* active teams */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {activeFiltered.map((t: any, i: number) => (
-          <TeamCard key={t.name} t={t} i={i} eliminated={false} getTier={getTier} />
+          <TeamCard key={t.name} t={t} i={i} eliminated={false} getTier={getTier}
+            qfBound={qfTeams.has(t.name)} />
         ))}
       </div>
 
@@ -155,9 +164,10 @@ export default function TeamsPage() {
   );
 }
 
-function TeamCard({ t, i, eliminated, getTier }: {
+function TeamCard({ t, i, eliminated, getTier, qfBound = false }: {
   t: any; i: number; eliminated: boolean;
   getTier: (elo: number) => { label: string; color: string };
+  qfBound?: boolean;
 }) {
   const tier = getTier(t.elo);
   const strengthW = Math.min(100, Math.max(0, ((t.strength_index - 30) / 70) * 100));
@@ -165,7 +175,8 @@ function TeamCard({ t, i, eliminated, getTier }: {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: i * 0.025 }}>
+      transition={{ delay: i * 0.025 }}
+      className={qfBound ? "overflow-hidden rounded-2xl ring-1 ring-gold/25" : ""}>
       <Link href={`/teams/${encodeURIComponent(t.name)}`}
         className={`group flex items-center gap-4 rounded-2xl border p-4 transition
           ${eliminated
@@ -192,6 +203,7 @@ function TeamCard({ t, i, eliminated, getTier }: {
             {!eliminated && (
               <span className={`shrink-0 text-[10px] font-bold ${tier.color}`}>{tier.label}</span>
             )}
+            {qfBound && <span className="chip-gold shrink-0 text-[9px]">QF</span>}
           </div>
           <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted/60">
             <span className="chip text-[9px]">GRP {t.group}</span>
@@ -215,7 +227,42 @@ function TeamCard({ t, i, eliminated, getTier }: {
           <div className="text-[10px] text-muted/40">Strength</div>
         </div>
       </Link>
+
+      {/* Quarter-final-bound teams: their WC2026 journey so far */}
+      {qfBound && <TeamJourneyStrip name={t.name} />}
     </motion.div>
+  );
+}
+
+/* Compact WC2026 match-by-match journey (group + knockout), sourced from
+   /api/teams/{name}'s `journey` field (backend/app/knockout_engine.py::team_journey). */
+function TeamJourneyStrip({ name }: { name: string }) {
+  const { data } = useSWR(`/api/teams/${encodeURIComponent(name)}`, fetcher,
+    { revalidateOnFocus: false });
+  const journey: any[] = data?.journey ?? [];
+  if (!journey.length) return null;
+
+  const resultCls = (r: string) =>
+    r === "W" ? "text-success border-success/30 bg-success/10"
+      : r === "D" ? "text-gold border-gold/30 bg-gold/10"
+        : "text-danger border-danger/30 bg-danger/10";
+
+  return (
+    <div className="border-t border-gold/15 px-4 py-2.5">
+      <div className="mb-1.5 text-[9px] uppercase tracking-widest text-gold/60">
+        Road to the Quarter-Final · {journey.length} played
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {journey.map((m, idx) => (
+          <div key={idx} title={m.headline ?? `${name} ${m.score} ${m.opponent}`}
+            className={`flex items-center gap-1 rounded-lg border px-1.5 py-1 text-[10px] ${resultCls(m.result)}`}>
+            <span className="font-bold">{m.result}</span>
+            <Flag url={m.opp_flag} name={m.opponent} size={12} />
+            <span className="tabnum">{m.score}{m.pens ? ` (${m.pens}p)` : ""}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
