@@ -459,7 +459,7 @@
   "away_score": 2,
   "actual_events": [
    {"minute": 79, "team": "Norway", "type": "goal", "scorer": "Erling Haaland", "assist": "Andreas Schjelderup", "text": "Schjelderup, on at the break, whips in a left-wing cross and Haaland gets across his marker to break the deadlock — Norway lead 1-0."},
-   {"minute": 90, "team": "Norway", "type": "goal", "scorer": "Erling Haaland", "assist": null, "text": "Haaland drives in from the left and rifles a low shot into the corner — his second of the night puts Norway 2-0 up and level with Messi and Mbappé atop the Golden Boot on 7."},
+   {"minute": 90, "team": "Norway", "type": "goal", "scorer": "Erling Haaland", "assist": "Andreas Schjelderup", "text": "Haaland drives in from the left and rifles a low shot into the corner — his second of the night, again teed up by Schjelderup, puts Norway 2-0 up and level with Messi and Mbappé atop the Golden Boot on 7."},
    {"minute": 100, "team": "Brazil", "type": "goal", "scorer": "Neymar", "assist": null, "text": "Neymar converts a stoppage-time penalty, won after an elbow on Casemiro — academic by then. It proves to be his final touch for the Seleção."}
   ],
   "actual_stats": {"home_xg": 1.65, "away_xg": 1.05, "result_note": "Brazil were wasteful — Bruno Guimarães had a first-half penalty saved by Ørjan Nyland after a VAR review — and paid for it as second-half substitute Andreas Schjelderup teed up both Haaland goals either side of the 80th minute. Neymar's stoppage-time penalty was too little, too late; this marks Brazil's earliest World Cup exit since 1990, and Neymar's final match for the Seleção. Norway reach a first-ever quarter-final."}

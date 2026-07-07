@@ -57,14 +57,6 @@ def _match_top_scorer(events: dict, home: str, away: str) -> str | None:
     return f"{name} {'⚽' * min(n, 3)}" if n >= 2 else name
 
 
-def _actual_winner(m: dict) -> str:
-    if m["home_score"] > m["away_score"]:
-        return m["home_team"]
-    if m["away_score"] > m["home_score"]:
-        return m["away_team"]
-    return "Draw"
-
-
 def build(max_results: int = 6) -> dict:
     sched = fixtures.schedule()
     played = sorted([m for m in sched if m["played"]],
@@ -109,9 +101,9 @@ def build(max_results: int = 6) -> dict:
     except Exception:  # noqa: BLE001
         pass
 
-    # ── outcome accuracy: group stage ──
+    # ── outcome accuracy: group stage (points ladder — see services.prediction_points) ──
     try:
-        hits = n = 0
+        pts = n = 0
         for m in played:
             # Pass `match=m` so this matches the prediction actually shown for
             # the fixture elsewhere (services.match_card does the same) — the
@@ -123,12 +115,16 @@ def build(max_results: int = 6) -> dict:
             pw = p.get("predicted_winner")
             if pw:
                 n += 1
-                hits += int(pw == _actual_winner(m))
+                top_scores = p.get("top_scores") or []
+                pscore = top_scores[0]["score"] if top_scores else None
+                pts += services.prediction_points(
+                    pw, pscore, m["home_team"], m["away_team"],
+                    m["home_score"], m["away_score"])
         # ── add knockout accuracy from bracket engine ──
         try:
             from .knockout_engine import resolve_bracket
             ko_data = resolve_bracket()
-            ko_hits = ko_n = 0
+            ko_pts = ko_n = 0
             for km in ko_data.get("matches", []):
                 if km.get("home_score") is None:
                     continue
@@ -146,17 +142,23 @@ def build(max_results: int = 6) -> dict:
                 else:
                     continue
                 ko_n += 1
-                ko_hits += int(mpw == actual)
+                ko_pts += services.prediction_points(
+                    mpw, km.get("predicted_score"), km["home_team"], km["away_team"],
+                    hs, aws, actual_winner=actual)
         except Exception:  # noqa: BLE001
-            ko_hits = ko_n = 0
+            ko_pts = ko_n = 0
 
-        total_hits = hits + ko_hits
+        total_pts = pts + ko_pts
         total_n = n + ko_n
+        MAX_PTS = 5
         if total_n:
-            msg = f"🎯 CAI outcome accuracy: {total_hits}/{total_n} ({round(total_hits / total_n * 100)}%)"
+            max_total = total_n * MAX_PTS
+            msg = (f"🎯 CAI accuracy: {total_pts}/{max_total} pts "
+                   f"({round(total_pts / max_total * 100)}%)")
             if ko_n:
                 rnd_label = "R32" if ko_n <= 16 else "KO"
-                msg += f" · {rnd_label}: {ko_hits}/{ko_n} ({round(ko_hits / ko_n * 100)}%)"
+                max_ko = ko_n * MAX_PTS
+                msg += f" · {rnd_label}: {ko_pts}/{max_ko} pts ({round(ko_pts / max_ko * 100)}%)"
             items.append(msg)
     except Exception:  # noqa: BLE001
         pass

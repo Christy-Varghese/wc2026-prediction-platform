@@ -5,7 +5,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
 import { api, pct0 } from "@/lib/api";
-import { Flag, ProbBar, LiveBadge, SectionHeader, LowConfidenceTag, isLowConfidence, PredictionBadge, predictionHit, predictionGoldHit } from "@/components/ui";
+import { Flag, ProbBar, LiveBadge, SectionHeader, LowConfidenceTag, isLowConfidence, PredictionBadge, predictionHit, predictionGoldHit, predictionPoints } from "@/components/ui";
 
 const fetcher = (p: string) => api(p);
 const GROUPS = "ABCDEFGHIJKL".split("");
@@ -54,6 +54,13 @@ const fmtTime = (iso: string) =>
 const fmtShort = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: ET });
 
+// Dot color per points tier (5/3/1/0 ladder — see components/ui.tsx predictionPoints).
+const pointsDotClass = (pts: number) =>
+  pts === 5 ? "bg-gold/40 border-gold/70"
+    : pts === 3 ? "bg-success/30 border-success/60"
+    : pts === 1 ? "bg-white/20 border-white/40"
+    : "bg-danger/15 border-danger/30";
+
 export default function MatchesPage() {
   const router = useRouter();
   const [group, setGroup] = useState("");
@@ -84,14 +91,20 @@ export default function MatchesPage() {
   const played = (data ?? []).filter((m: any) => m.played).length;
   const total = (data ?? []).length;
 
+  // Points ladder (see components/ui.tsx predictionPoints, mirrors backend
+  // services.prediction_points): 5 = winner + exact score, 3 = winner only,
+  // 1 = actual result was a draw, 0 = wrong winner. MAX_PTS = 5 per game.
+  const MAX_PTS = 5;
+
   const accuracy = useMemo(() => {
     const pl = (allData ?? []).filter((m: any) => m.played);
     const n = pl.length;
     if (!n) return null;
-    const wdl = pl.filter((m: any) => predictionHit(m) === true).length;
+    const pts = pl.reduce((sum: number, m: any) => sum + predictionPoints(m), 0);
     const exact = pl.filter((m: any) =>
       m.top_score && m.top_score.score === `${m.home_score}-${m.away_score}`).length;
-    return { n, wdl, wdlPct: Math.round((wdl / n) * 100),
+    const maxPts = n * MAX_PTS;
+    return { n, pts, maxPts, pct: Math.round((pts / maxPts) * 100),
              exact, exactPct: Math.round((exact / n) * 100) };
   }, [allData]);
 
@@ -106,8 +119,8 @@ export default function MatchesPage() {
     );
     if (!playedWithPred.length) return null;
 
-    const byRound: Record<string, { n: number; correct: number }> = {};
-    let totalN = 0, totalCorrect = 0;
+    const byRound: Record<string, { n: number; pts: number; games: number[] }> = {};
+    let totalN = 0, totalPts = 0;
 
     for (const m of playedWithPred) {
       const hs = m.home_score as number;
@@ -122,30 +135,32 @@ export default function MatchesPage() {
 
       // Use model_predicted_winner if available (original pre-match pick)
       const modelPick = m.model_predicted_winner ?? m.predicted_winner;
-      const hit = modelPick === actual;
+      const pts = predictionPoints({ ...m, predicted_winner: modelPick, played: true }, actual);
       const round: string = m.round ?? "Knockout";
-      if (!byRound[round]) byRound[round] = { n: 0, correct: 0 };
+      if (!byRound[round]) byRound[round] = { n: 0, pts: 0, games: [] };
       byRound[round].n++;
-      if (hit) byRound[round].correct++;
+      byRound[round].pts += pts;
+      byRound[round].games.push(pts);
       totalN++;
-      if (hit) totalCorrect++;
+      totalPts += pts;
     }
 
     if (!totalN) return null;
-    return { byRound, totalN, totalCorrect,
-             totalPct: Math.round((totalCorrect / totalN) * 100) };
+    const maxPts = totalN * MAX_PTS;
+    return { byRound, totalN, totalPts, maxPts,
+             totalPct: Math.round((totalPts / maxPts) * 100) };
   }, [knockoutData]);
 
   // Site-wide accuracy (group stage + every knockout round played so far) —
   // not round-specific, so it's hoisted here to show in each round's
   // collapsed header bar, not just inside the expanded "Model accuracy" panel.
   const overallAccuracy = useMemo(() => {
-    const grpHits = accuracy?.wdl ?? 0;
-    const grpN = accuracy?.n ?? 0;
-    const totalHits = grpHits + (koAccuracy?.totalCorrect ?? 0);
-    const totalN = grpN + (koAccuracy?.totalN ?? 0);
-    if (!totalN) return null;
-    return { hits: totalHits, n: totalN, pct: Math.round((totalHits / totalN) * 100) };
+    const grpPts = accuracy?.pts ?? 0;
+    const grpMax = accuracy?.maxPts ?? 0;
+    const totalPts = grpPts + (koAccuracy?.totalPts ?? 0);
+    const maxPts = grpMax + (koAccuracy?.maxPts ?? 0);
+    if (!maxPts) return null;
+    return { pts: totalPts, maxPts, pct: Math.round((totalPts / maxPts) * 100) };
   }, [accuracy, koAccuracy]);
 
   const knockoutRounds: any[] = useMemo(() => {
@@ -208,7 +223,7 @@ export default function MatchesPage() {
                 </span>
                 {overallAccuracy && (
                   <span className="text-[11px] text-cyan">
-                    🎯 {overallAccuracy.pct}% overall accuracy ({overallAccuracy.hits}/{overallAccuracy.n})
+                    🎯 {overallAccuracy.pct}% overall accuracy ({overallAccuracy.pts}/{overallAccuracy.maxPts} pts)
                   </span>
                 )}
               </div>
@@ -234,7 +249,8 @@ export default function MatchesPage() {
                 {/* Model accuracy for this round (shown once results are in) */}
                 {koAccuracy?.byRound[r.round] && (() => {
                   const rs = koAccuracy.byRound[r.round];
-                  const pct = Math.round((rs.correct / rs.n) * 100);
+                  const rsMax = rs.n * MAX_PTS;
+                  const pct = Math.round((rs.pts / rsMax) * 100);
                   return (
                     <div className="card-broadcast space-y-4 py-4">
                       <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
@@ -249,7 +265,7 @@ export default function MatchesPage() {
                             <div>
                               <div className="font-display text-2xl font-bold tabnum text-cyan">{overallAccuracy.pct}%</div>
                               <div className="text-[10px] uppercase tracking-wider text-muted">
-                                Overall · <span className="text-stadium">{overallAccuracy.hits}/{overallAccuracy.n}</span> correct
+                                Overall · <span className="text-stadium">{overallAccuracy.pts}/{overallAccuracy.maxPts}</span> pts
                               </div>
                             </div>
                           </div>
@@ -261,31 +277,30 @@ export default function MatchesPage() {
                             {pct}%
                           </div>
                           <div className="text-[10px] uppercase tracking-wider text-muted">
-                            {label} · <span className="text-stadium">{rs.correct}/{rs.n}</span> correct
+                            {label} · <span className="text-stadium">{rs.pts}/{rsMax}</span> pts
                           </div>
                         </div>
 
                         {/* Group stage */}
                         {accuracy && (
                           <div>
-                            <div className="font-display text-2xl font-bold tabnum text-success">{accuracy.wdlPct}%</div>
+                            <div className="font-display text-2xl font-bold tabnum text-success">{accuracy.pct}%</div>
                             <div className="text-[10px] uppercase tracking-wider text-muted">
-                              Group stage · <span className="text-stadium">{accuracy.wdl}/{accuracy.n}</span>
+                              Group stage · <span className="text-stadium">{accuracy.pts}/{accuracy.maxPts}</span> pts
                             </div>
                           </div>
                         )}
                       </div>
 
-                      {/* Dot chart for this round */}
+                      {/* Dot chart for this round — colored by points tier: gold=5 (exact score),
+                          green=3 (correct winner), gray=1 (draw), red=0 (miss) */}
                       <div className="flex items-center gap-3 border-t border-white/5 pt-3">
                         <span className="chip-gold text-[9px] shrink-0">{label}</span>
-                        <span className="text-[11px] text-muted">{rs.correct}/{rs.n} predicted correctly</span>
+                        <span className="text-[11px] text-muted">{rs.pts}/{rsMax} pts</span>
                         <div className="ml-auto flex gap-1.5">
-                          {Array.from({ length: rs.n }).map((_, i) => (
-                            <span key={i} className={`h-3 w-3 rounded-full border ${
-                              i < rs.correct
-                                ? "bg-success/30 border-success/60"
-                                : "bg-white/8 border-white/15"}`} />
+                          {rs.games.map((pts, i) => (
+                            <span key={i} title={`+${pts}pt${pts === 1 ? "" : "s"}`}
+                              className={`h-3 w-3 rounded-full border ${pointsDotClass(pts)}`} />
                           ))}
                         </div>
                       </div>
@@ -309,12 +324,12 @@ export default function MatchesPage() {
             </span>
             {accuracy && (
               <span className="text-[11px] text-muted">
-                Group stage: {accuracy.wdl}/{accuracy.n} correct · {accuracy.wdlPct}% accuracy
+                Group stage: {accuracy.pts}/{accuracy.maxPts} pts · {accuracy.pct}% accuracy
               </span>
             )}
             {overallAccuracy && (
               <span className="text-[11px] text-cyan">
-                🎯 {overallAccuracy.pct}% overall accuracy ({overallAccuracy.hits}/{overallAccuracy.n})
+                🎯 {overallAccuracy.pct}% overall accuracy ({overallAccuracy.pts}/{overallAccuracy.maxPts} pts)
               </span>
             )}
           </div>
@@ -343,7 +358,7 @@ export default function MatchesPage() {
                           {overallAccuracy.pct}%
                         </div>
                         <div className="text-[10px] uppercase tracking-wider text-muted">
-                          Overall · <span className="text-stadium">{overallAccuracy.hits}/{overallAccuracy.n}</span> correct
+                          Overall · <span className="text-stadium">{overallAccuracy.pts}/{overallAccuracy.maxPts}</span> pts
                         </div>
                       </div>
                     </div>
@@ -351,9 +366,9 @@ export default function MatchesPage() {
 
                   {/* Group stage WDL */}
                   <div>
-                    <div className="font-display text-2xl font-bold tabnum text-success">{accuracy.wdlPct}%</div>
+                    <div className="font-display text-2xl font-bold tabnum text-success">{accuracy.pct}%</div>
                     <div className="text-[10px] uppercase tracking-wider text-muted">
-                      Outcome · <span className="text-stadium">{accuracy.wdl}/{accuracy.n}</span> correct
+                      Outcome · <span className="text-stadium">{accuracy.pts}/{accuracy.maxPts}</span> pts
                     </div>
                   </div>
 
@@ -367,25 +382,28 @@ export default function MatchesPage() {
                 </div>
 
                 {/* Per-round KO breakdown */}
-                {koAccuracy && Object.entries(koAccuracy.byRound).map(([round, stats]) => (
-                  <div key={round} className="flex items-center gap-3 border-t border-white/5 pt-3">
-                    <span className="chip-gold text-[9px] shrink-0">
-                      {ROUND_LABEL[round] ?? round}
-                    </span>
-                    <span className="font-display text-sm font-bold tabnum text-stadium">
-                      {Math.round((stats.correct / stats.n) * 100)}%
-                    </span>
-                    <span className="text-[11px] text-muted">
-                      {stats.correct}/{stats.n} predicted correctly
-                    </span>
-                    <div className="ml-auto flex gap-1">
-                      {Array.from({ length: stats.n }).map((_, i) => (
-                        <span key={i} className={`h-2 w-2 rounded-full ${
-                          i < stats.correct ? "bg-success" : "bg-white/15"}`} />
-                      ))}
+                {koAccuracy && Object.entries(koAccuracy.byRound).map(([round, stats]) => {
+                  const roundMax = stats.n * MAX_PTS;
+                  return (
+                    <div key={round} className="flex items-center gap-3 border-t border-white/5 pt-3">
+                      <span className="chip-gold text-[9px] shrink-0">
+                        {ROUND_LABEL[round] ?? round}
+                      </span>
+                      <span className="font-display text-sm font-bold tabnum text-stadium">
+                        {Math.round((stats.pts / roundMax) * 100)}%
+                      </span>
+                      <span className="text-[11px] text-muted">
+                        {stats.pts}/{roundMax} pts
+                      </span>
+                      <div className="ml-auto flex gap-1">
+                        {stats.games.map((pts, i) => (
+                          <span key={i} title={`+${pts}pt${pts === 1 ? "" : "s"}`}
+                            className={`h-2 w-2 rounded-full ${pointsDotClass(pts)}`} />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 

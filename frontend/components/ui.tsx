@@ -69,28 +69,62 @@ export function predictionHit(m: any): boolean | null {
   return m.predicted_winner === actual;
 }
 
+/* Points ladder for a played match's prediction, mirroring
+ * backend/app/services.py's prediction_points() exactly:
+ *   5 pts — predicted winner correct AND the predicted score is an exact match
+ *   3 pts — predicted winner correct (score wasn't exact)
+ *   1 pt  — actual result was a draw (not already a 5pt exact hit)
+ *   0 pts — predicted winner wrong
+ * Works for both group matches (predicted score lives at `top_score.score`)
+ * and knockout ties (a plain `predicted_score` string, e.g. "1-1"). Pass
+ * `actualWinner` for knockout ties so a penalty-shootout result is graded
+ * against the real (penalty-resolved) winner, not the level 90'/ET score. */
+export function predictionPoints(m: any, actualWinner?: string | null): number {
+  if (!m?.played || m.home_score == null || m.away_score == null || !m.predicted_winner)
+    return 0;
+  const actual = actualWinner ?? (
+    m.home_score > m.away_score ? m.home_team
+      : m.away_score > m.home_score ? m.away_team : "Draw");
+  const predictedScore: string | undefined = m.predicted_score ?? m.top_score?.score;
+  const exact = predictedScore === `${m.home_score}-${m.away_score}`;
+  if (m.predicted_winner === actual && exact) return 5;
+  if (m.predicted_winner === actual) return 3;
+  if (actual === "Draw") return 1;
+  return 0;
+}
+
 export function predictionGoldHit(m: any): boolean {
-  if (predictionHit(m) !== true) return false;  // outcome must be correct first
-  if (!m.top_score?.score) return false;
-  if (m.top_score.score === `${m.home_score}-${m.away_score}`) return true;
-  const parts = (m.top_score.score as string).split("-").map(Number);
-  if (parts.length !== 2 || parts.some(isNaN)) return false;
-  return parts[0] - parts[1] === m.home_score - m.away_score;
+  return predictionPoints(m) === 5;
 }
 
 export function PredictionBadge({ m, className = "" }: { m: any; className?: string }) {
   const hit = predictionHit(m);
   if (hit === null) return null;
-  return hit ? (
-    <span title={`Model predicted ${m.predicted_winner} — correct`}
+  const pts = predictionPoints(m);
+  if (pts === 5) return (
+    <span title={`Model predicted ${m.predicted_winner} with the exact score — +5pts`}
+      className={`inline-flex items-center gap-1 rounded-full border border-gold/30 bg-gold/10
+                  px-2.5 py-0.5 text-[10px] font-semibold text-gold ${className}`}>
+      ★ Exact score · +5pts
+    </span>
+  );
+  if (pts === 3) return (
+    <span title={`Model predicted ${m.predicted_winner} — correct — +3pts`}
       className={`inline-flex items-center gap-1 rounded-full border border-success/30 bg-success/10
                   px-2.5 py-0.5 text-[10px] font-semibold text-success ${className}`}>
-      ✓ Prediction correct
+      ✓ Prediction correct · +3pts
     </span>
-  ) : (
-    <span title={`Model predicted ${m.predicted_winner}`}
+  );
+  if (pts === 1) return (
+    <span title={`Match was a draw — +1pt`}
       className={`chip text-[10px] ${className}`}>
-      ✗ Off — predicted {m.predicted_winner}
+      ≈ Draw · +1pt
+    </span>
+  );
+  return (
+    <span title={`Model predicted ${m.predicted_winner} — +0pts`}
+      className={`chip text-[10px] ${className}`}>
+      ✗ Off — predicted {m.predicted_winner} · +0pts
     </span>
   );
 }

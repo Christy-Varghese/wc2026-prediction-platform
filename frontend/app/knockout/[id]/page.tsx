@@ -3,7 +3,7 @@ import useSWR from "swr";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
-import { Flag, LowConfidenceTag, isLowConfidence } from "@/components/ui";
+import { Flag, LowConfidenceTag, isLowConfidence, predictionPoints } from "@/components/ui";
 import { MatchFlowReport } from "@/components/match-flow";
 import { CaiScenarios, CaiPainPoints, CaiCompareBar } from "@/components/cai-blocks";
 import {
@@ -51,6 +51,11 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
   // original pre-match pick.
   const modelPick = m.model_predicted_winner ?? m.predicted_winner;
   const predictionCorrect = actualWinner != null && actualWinner === modelPick;
+  // Points ladder (see components/ui.tsx predictionPoints): 5 = exact score,
+  // 3 = correct winner, 1 = draw, 0 = miss.
+  const predictionPts = actualWinner != null
+    ? predictionPoints({ ...m, predicted_winner: modelPick, played: true }, actualWinner)
+    : null;
   const isPens = m.pen_home != null && m.pen_away != null;
 
   return (
@@ -97,10 +102,14 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
                     {isPens ? "After Extra Time + Penalties" : "Full Time"}
                   </div>
                   <div className={`mt-2 inline-block rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider
-                    ${predictionCorrect
+                    ${predictionPts === 5
+                      ? "border border-gold/40 bg-gold/10 text-gold"
+                      : predictionCorrect
                       ? "border border-success/30 bg-success/10 text-success"
                       : "border border-white/15 bg-white/5 text-muted"}`}>
-                    {predictionCorrect ? "✓ Prediction correct" : `✗ Model predicted ${modelPick}`}
+                    {predictionPts === 5 ? "★ Exact score · +5pts"
+                      : predictionCorrect ? `✓ Prediction correct · +${predictionPts}pts`
+                      : `✗ Model predicted ${modelPick} · +0pts`}
                   </div>
                 </div>
 
@@ -226,19 +235,33 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
                     )}
 
                     {/* Model accuracy verdict */}
-                    <div className={`flex items-start gap-4 rounded-xl border p-4 ${predictionCorrect ? "border-success/25 bg-success/5" : "border-white/10 bg-white/3"}`}>
-                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-bold ${predictionCorrect ? "bg-success/15 text-success" : "bg-white/8 text-muted"}`}>
-                        {predictionCorrect ? "✓" : "✗"}
+                    <div className={`flex items-start gap-4 rounded-xl border p-4 ${
+                      predictionPts === 5 ? "border-gold/30 bg-gold/5"
+                        : predictionCorrect ? "border-success/25 bg-success/5" : "border-white/10 bg-white/3"}`}>
+                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-bold ${
+                        predictionPts === 5 ? "bg-gold/15 text-gold"
+                          : predictionCorrect ? "bg-success/15 text-success" : "bg-white/8 text-muted"}`}>
+                        {predictionPts === 5 ? "★" : predictionCorrect ? "✓" : "✗"}
                       </div>
                       <div>
-                        <div className={`font-display text-sm font-bold ${predictionCorrect ? "text-success" : "text-stadium"}`}>
-                          {predictionCorrect ? "CAI called it right" : `CAI missed — predicted ${modelPick}`}
+                        <div className={`font-display text-sm font-bold ${
+                          predictionPts === 5 ? "text-gold" : predictionCorrect ? "text-success" : "text-stadium"}`}>
+                          {predictionPts === 5 ? `CAI called it exactly — +${predictionPts}pts`
+                            : predictionCorrect ? `CAI called it right — +${predictionPts}pts`
+                            : `CAI missed — predicted ${modelPick} · +0pts`}
                         </div>
                         <p className="mt-0.5 text-[12px] leading-snug text-muted">
                           {predictionCorrect
                             ? `Model confidence was ${Math.round((m.win_probability ?? 0) * 100)}%. The result validated the pre-match analysis.`
                             : `Model had ${modelPick} at ${Math.round((m.win_probability ?? 0) * 100)}% confidence. ${actualWinner} defied the odds.`}
                         </p>
+                        {m.pipeline_disagreement && (
+                          <p className="mt-1.5 text-[11px] leading-snug text-muted/80">
+                            ⚠ This was a split call — the model's stat-driven reasoning favoured one side while
+                            its knockout simulation (form/momentum-weighted) favoured the other. Confidence was
+                            docked to reflect that internal disagreement.
+                          </p>
+                        )}
                       </div>
                     </div>
 

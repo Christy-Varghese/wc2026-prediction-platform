@@ -311,6 +311,30 @@ def _resolve_tie(home: str, away: str, rows_by_id: dict, match_id: int) -> dict:
         win_p = ph if winner == home else pa
         win_p_norm = round(win_p / (ph + pa), 4) if (ph + pa) else 0.5
         score, shootout = _consistent_score(home, away, winner)
+
+    # `p` (ensemble.predict) and `flow` (match_flow's own regulation-time
+    # Monte-Carlo, independently derived from raw DC lambdas + its own
+    # form/condition tilt — see ml/match_flow.py) are two SEPARATE
+    # calculations. They normally agree, but a big enough tournament-form
+    # swing (e.g. a knockout-stage Elo bump) can flip which side `flow`
+    # favours in regulation while `p` still favours the other — the "reasons"
+    # text (from `p`) then reads as picking one team while `predicted_winner`
+    # (from `flow`) is the other. That disagreement is a genuine uncertainty
+    # signal `ensemble._confidence()` never sees (it only measures agreement
+    # *within* the ensemble's own members), so dock confidence when it fires.
+    PIPELINE_DISAGREEMENT_CONF_PENALTY = 15
+    conf = p.get("confidence")
+    pipeline_disagreement = False
+    if flow and conf is not None:
+        freg = flow.get("probabilities", {}).get("regulation", {})
+        fh, fa = freg.get("home"), freg.get("away")
+        if fh is not None and fa is not None and (fh != fa) and (ph != pa):
+            ens_fav_home = ph >= pa
+            flow_fav_home = fh >= fa
+            if ens_fav_home != flow_fav_home:
+                pipeline_disagreement = True
+                conf = max(1, conf - PIPELINE_DISAGREEMENT_CONF_PENALTY)
+
     cond = p.get("condition", {}) or {}
     analysis = {
         # player squad condition composite (0-1) per side
@@ -338,7 +362,8 @@ def _resolve_tie(home: str, away: str, rows_by_id: dict, match_id: int) -> dict:
         "win_probability": win_p_norm,
         "predicted_score": score,
         "shootout": shootout,
-        "confidence": p.get("confidence"),
+        "confidence": conf,
+        "pipeline_disagreement": pipeline_disagreement,
         "reasons": p.get("win_reasons", []),
         "analysis": analysis,
         "flow": flow,
@@ -422,6 +447,7 @@ def resolve_bracket() -> dict:
                 "pen_home": tie.get("pen_home"),
                 "pen_away": tie.get("pen_away"),
                 "confidence": tie["confidence"],
+                "pipeline_disagreement": tie.get("pipeline_disagreement", False),
                 "reasons": tie["reasons"],
                 "analysis": tie["analysis"],
                 "flow": tie["flow"],

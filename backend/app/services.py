@@ -4,6 +4,35 @@ from __future__ import annotations
 from . import fixtures, ml_engine
 
 
+# ── prediction scoring ───────────────────────────────────────────────────────
+# Points ladder for grading a prediction against a played match's actual
+# result. Same rule for group-stage and knockout matches: pass an
+# already-penalty-resolved `actual_winner` for knockout ties (a shootout
+# always produces a decisive winner, never "Draw" — the 1pt draw tier is
+# reachable only for group-stage matches).
+#   5 pts — predicted_winner correct AND predicted_score is an exact match
+#   3 pts — predicted_winner correct (result direction right, score wasn't exact)
+#   1 pt  — actual result was a draw (regulation draw; not already a 5pt exact hit)
+#   0 pts — predicted_winner wrong (the other side won)
+def prediction_points(predicted_winner: str | None, predicted_score: str | None,
+                      home_team: str, away_team: str,
+                      actual_home: int, actual_away: int,
+                      actual_winner: str | None = None) -> int:
+    if not predicted_winner:
+        return 0
+    if actual_winner is None:
+        actual_winner = (home_team if actual_home > actual_away
+                         else away_team if actual_away > actual_home else "Draw")
+    exact = predicted_score is not None and predicted_score == f"{actual_home}-{actual_away}"
+    if predicted_winner == actual_winner and exact:
+        return 5
+    if predicted_winner == actual_winner:
+        return 3
+    if actual_winner == "Draw":
+        return 1
+    return 0
+
+
 def _conditions(home: str, away: str, match: dict | None) -> dict:
     """Rest, travel (km) and weather severity for a scheduled match."""
     if not match:
