@@ -6,6 +6,13 @@ all of the actual vector math, Monte Carlo, and knockout-report logic lives
 there, reused from `match_flow.py`/`ensemble.py`. Nothing here reimplements
 prediction logic.
 
+GET, not POST: matches this app's own convention (`GET /api/predict?home=&
+away=`), and — the deciding factor — GET-with-querystring is what
+`frontend/lib/api.ts`'s snapshot-fallback system and `gen_snapshots.py` are
+built around. A POST-only route can never be pre-snapshotted for the
+backend-free Vercel demo, which is exactly why the KIS card showed
+"backend offline" there. See KIS_SPEC.md's snapshot-support status note.
+
 D4 (KIS_SPEC.md §10) resolved by precedent: like the existing `/api/predict`,
 this route does not require `home`/`away` to be a real scheduled fixture —
 any two valid team names work, enabling a future "what-if" simulator. Team
@@ -18,36 +25,30 @@ from __future__ import annotations
 
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException, Query
 
 from .. import fixtures, ml_engine, services
 
 router = APIRouter(prefix="/api/v1/predict", tags=["kis"])
 
 
-class KISPredictionRequest(BaseModel):
-    home_team: str
-    away_team: str
-    neutral: bool = True
-    knockout: bool = True
-    weather_condition: Literal["Clear", "Rain", "Extreme_Heat"] = "Clear"
-    referee_strictness: float = Field(0.5, ge=0.0, le=1.0)
+@router.get("/kis")
+def generate_kis_prediction(
+    home_team: str, away_team: str,
+    neutral: bool = True, knockout: bool = True,
+    weather_condition: Literal["Clear", "Rain", "Extreme_Heat"] = "Clear",
+    referee_strictness: float = Query(0.5, ge=0.0, le=1.0),
     # Optional real-venue override — when given, the actual venue climate
     # signal (weather.py) wins over `weather_condition` (see
     # kis_engine.chaos_sigma()'s docstring). Left None for a hypothetical
     # "what-if" matchup with no real venue.
-    city: str | None = None
-    kickoff_iso: str | None = None
-
-
-@router.post("/kis")
-def generate_kis_prediction(payload: KISPredictionRequest):
+    city: str | None = None, kickoff_iso: str | None = None,
+):
     teams = fixtures.team_index()
-    for name in (payload.home_team, payload.away_team):
+    for name in (home_team, away_team):
         if name not in teams:
             raise HTTPException(404, f"team not found: {name!r}")
-    if payload.home_team == payload.away_team:
+    if home_team == away_team:
         raise HTTPException(400, "home_team and away_team must differ")
 
     # services.predict() (not ml_engine.predict_match() directly) so `base`
@@ -56,11 +57,11 @@ def generate_kis_prediction(payload: KISPredictionRequest):
     # bracket's knockout_engine._resolve_tie() goes through this exact path.
     # Skipping it silently drops real signal and materially shifts
     # `confidence` (observed up to ~20pt swings without it).
-    base = services.predict(payload.home_team, payload.away_team, neutral=payload.neutral)
+    base = services.predict(home_team, away_team, neutral=neutral)
     return ml_engine.kis(
-        payload.home_team, payload.away_team, base,
-        knockout=payload.knockout, neutral=payload.neutral,
-        weather_condition=payload.weather_condition,
-        referee_strictness=payload.referee_strictness,
-        city=payload.city, kickoff_iso=payload.kickoff_iso,
+        home_team, away_team, base,
+        knockout=knockout, neutral=neutral,
+        weather_condition=weather_condition,
+        referee_strictness=referee_strictness,
+        city=city, kickoff_iso=kickoff_iso,
     )

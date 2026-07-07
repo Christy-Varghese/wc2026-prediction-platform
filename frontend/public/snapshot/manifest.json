@@ -202,5 +202,14 @@
  "/api/teams/England": "api_teams_England.json",
  "/api/teams/Croatia": "api_teams_Croatia.json",
  "/api/teams/Ghana": "api_teams_Ghana.json",
- "/api/teams/Panama": "api_teams_Panama.json"
+ "/api/teams/Panama": "api_teams_Panama.json",
+ "/api/v1/predict/kis?home_team=Switzerland&away_team=Colombia": "api_v1_predict_kis_home_team_Switzerland_away_team_Colombia.json",
+ "/api/v1/predict/kis?home_team=France&away_team=Morocco": "api_v1_predict_kis_home_team_France_away_team_Morocco.json",
+ "/api/v1/predict/kis?home_team=Spain&away_team=Belgium": "api_v1_predict_kis_home_team_Spain_away_team_Belgium.json",
+ "/api/v1/predict/kis?home_team=Norway&away_team=England": "api_v1_predict_kis_home_team_Norway_away_team_England.json",
+ "/api/v1/predict/kis?home_team=Argentina&away_team=Colombia": "api_v1_predict_kis_home_team_Argentina_away_team_Colombia.json",
+ "/api/v1/predict/kis?home_team=France&away_team=Spain": "api_v1_predict_kis_home_team_France_away_team_Spain.json",
+ "/api/v1/predict/kis?home_team=England&away_team=Argentina": "api_v1_predict_kis_home_team_England_away_team_Argentina.json",
+ "/api/v1/predict/kis?home_team=France&away_team=England": "api_v1_predict_kis_home_team_France_away_team_England.json",
+ "/api/v1/predict/kis?home_team=Spain&away_team=Argentina": "api_v1_predict_kis_home_team_Spain_away_team_Argentina.json"
 }

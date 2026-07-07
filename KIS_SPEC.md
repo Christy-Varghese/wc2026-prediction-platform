@@ -69,6 +69,39 @@ implementation bug.
   permanently.
 - Full suite: **118/118 passing** (117 + this new test).
 
+**Post-v1 follow-up #2 — the deployed demo showed "backend offline"
+(2026-07-07):** The Vercel deployment is backend-free by design (see
+`README.md`) — `frontend/lib/api.ts` falls back to pre-generated static
+JSON (`gen_snapshots.py`) whenever the live backend is unreachable. That
+fallback only works for **GET** requests (`gen_snapshots.py`'s `grab()` only
+calls `client.get(path)`); `/api/v1/predict/kis` was a POST route, so it
+could never be pre-snapshotted and always showed "KIS simulation
+unavailable — backend offline" on the deployed site.
+
+- **Fix**: converted the route from `POST` (JSON body) to `GET`
+  (querystring) — `home_team`/`away_team`/etc. as query params, matching
+  this app's own existing convention (`GET /api/predict?home=&away=`) that
+  the original mega-request's literal `POST` sample deviated from without
+  good reason. `kis-powered-card.tsx` and `/kis/page.tsx` updated to fetch
+  via `api()`'s normal GET path, which already has snapshot fallback built
+  in — no new frontend fallback logic needed.
+- `gen_snapshots.py` now pre-generates a KIS snapshot for every
+  **currently-unresolved bracket tie**, pulled live from the knockout
+  response (not hardcoded), so it stays correct as results come in. An
+  arbitrary "what-if" pairing typed into the `/kis` Hub that isn't one of
+  those ties still needs a live backend — there's no way to pre-snapshot
+  every possible team combination, and the existing offline error is the
+  honest behavior for that case.
+- **Verified for real**, not assumed: ran the frontend with
+  `NEXT_PUBLIC_STATIC_ONLY=1` and the Python backend **not running at all**
+  (curl confirmed connection refused) — both `/knockout/97` (France v
+  Morocco, an upcoming tie) and the `/kis` Hub (Spain v Belgium, a snapshotted
+  matchup) rendered the full KIS breakdown from the static snapshot alone.
+  Zero "backend offline" errors, zero console errors.
+- Tests updated to GET (`test_kis_api.py`, all 10 tests), plus a new
+  `test_kis_get_request_is_snapshottable_shape` guard so the route can't
+  silently regress back to POST-only. Full suite: **119/119 passing.**
+
 **Phase 1 — what actually shipped:**
 - `backend/ml/xgb_model.py` confirmed already trained (`data/processed/xgb_model.ubj`
   exists, `xgb_model.load()` returns non-None) and already live in
@@ -675,6 +708,15 @@ Design notes:
 New file: `backend/app/routers/kis.py`, registered in `main.py` alongside
 the existing routers (pattern: `backend/app/routers/predictions.py`,
 `simulate.py`).
+
+**This code block is the original design-phase sketch, kept for the
+rationale — it does NOT match what shipped.** Two things changed post-v1,
+both documented in the status notes above: (1) `base` is built via
+`services.predict()`, not `ml_engine.predict_match()` directly (the
+confidence bug fix); (2) the route is `GET` with query params, not `POST`
+with a JSON body (the snapshot-support fix — POST can never be
+pre-snapshotted for the backend-free Vercel demo). See
+`backend/app/routers/kis.py` for the actual, current implementation.
 
 ```python
 """KIS — Knockout Intelligence System. Vector-decomposed match-flow report."""

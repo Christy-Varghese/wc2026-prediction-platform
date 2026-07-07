@@ -48,7 +48,7 @@ def main() -> None:
     grab("/api/home")
     grab("/api/news")
     grab("/api/insights")
-    grab("/api/knockout")
+    knockout = grab("/api/knockout")
     grab("/api/awards")
     grab("/api/teams")
     grab("/api/simulate/groups")
@@ -74,6 +74,19 @@ def main() -> None:
             continue
         from urllib.parse import quote
         grab(f"/api/teams/{quote(name)}")
+
+    # ── KIS: every currently-upcoming bracket tie ─────────────────────────
+    # GET, not POST, specifically so it CAN be snapshotted this way — see
+    # routers/kis.py's docstring. Pulled live from the knockout response
+    # (not a hardcoded list) so this stays correct as the bracket advances;
+    # an arbitrary "what-if" pairing off the bracket still needs a live
+    # backend (there's no way to pre-snapshot every possible team pair).
+    from urllib.parse import quote
+    for m in (knockout or {}).get("matches", []):
+        if m.get("home_score") is not None or not m.get("home_team") or not m.get("away_team"):
+            continue
+        h, a = quote(m["home_team"]), quote(m["away_team"])
+        grab(f"/api/v1/predict/kis?home_team={h}&away_team={a}")
 
     (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1))
     print(f"\nwrote {len(manifest)} snapshots + manifest -> {OUT}")

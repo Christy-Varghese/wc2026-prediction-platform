@@ -1,10 +1,16 @@
 "use client";
 /* "Powered by KIS" card for upcoming (unplayed) knockout ties. Fetches
-   POST /api/v1/predict/kis for the given fixture and renders the vector
+   GET /api/v1/predict/kis for the given fixture and renders the vector
    decomposition (reusing kis-vector-grid.tsx / kis-pressure-gauge.tsx from
    the KIS Hub) plus a click-to-expand "How KIS works" explainer. Shown only
    for unplayed ties — played matches already have their own post-match
-   analysis on this page. */
+   analysis on this page.
+
+   GET (not POST): lets this route through `api()`'s existing snapshot
+   fallback (frontend/lib/api.ts), same as every other GET endpoint on the
+   site — required for the backend-free Vercel demo to show KIS results
+   instead of "backend offline" (gen_snapshots.py pre-generates this exact
+   query for every currently-upcoming bracket tie). */
 import { useState } from "react";
 import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,18 +18,12 @@ import { api } from "@/lib/api";
 import { KisVectorGrid } from "@/components/kis-vector-grid";
 import { KisPressureGauge } from "@/components/kis-pressure-gauge";
 
-// POST body varies per fixture, so key on a stable string and fetch manually
-// (useSWR's default fetcher assumes GET) rather than reusing the sitewide
-// `api()`-only `fetcher`.
-const kisFetcher = ([, home, away]: [string, string, string]) =>
-  api("/api/v1/predict/kis", {
-    method: "POST",
-    body: JSON.stringify({ home_team: home, away_team: away }),
-  });
+const kisPath = (home: string, away: string) =>
+  `/api/v1/predict/kis?home_team=${encodeURIComponent(home)}&away_team=${encodeURIComponent(away)}`;
 
 export function KisPoweredCard({ home, away }: { home: string; away: string }) {
   const [showHow, setShowHow] = useState(false);
-  const { data: result, error } = useSWR(["kis", home, away], kisFetcher, {
+  const { data: result, error } = useSWR(kisPath(home, away), (p: string) => api(p), {
     revalidateOnFocus: false,
   });
 

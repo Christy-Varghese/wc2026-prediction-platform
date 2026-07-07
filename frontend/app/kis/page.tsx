@@ -34,10 +34,12 @@ export default function KisHubPage() {
     setState("loading");
     setErrorMsg("");
     try {
-      const r = await api("/api/v1/predict/kis", {
-        method: "POST",
-        body: JSON.stringify({ home_team: home, away_team: away }),
-      });
+      // GET, not POST — lets a currently-upcoming bracket matchup fall back
+      // to its pre-generated snapshot (gen_snapshots.py) when the live
+      // backend is unreachable, same as every other GET route on the site.
+      // An arbitrary "what-if" pairing not on the bracket still requires a
+      // live backend (there's no way to pre-snapshot every possible pair).
+      const r = await api(`/api/v1/predict/kis?home_team=${encodeURIComponent(home)}&away_team=${encodeURIComponent(away)}`);
       setResult(r);
       setState("done");
     } catch (err: any) {

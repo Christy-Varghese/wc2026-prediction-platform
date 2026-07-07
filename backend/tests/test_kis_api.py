@@ -1,8 +1,13 @@
-"""Integration tests for POST /api/v1/predict/kis (KIS_SPEC.md §6.2, Phase 3).
+"""Integration tests for GET /api/v1/predict/kis (KIS_SPEC.md §6.2, Phase 3).
 
 Uses FastAPI's TestClient against the real app (same pattern as
 gen_snapshots.py) — no live server needed. `settings.use_db` is False by
 default so this never touches any database.
+
+GET, not POST — see routers/kis.py's docstring: matches this app's own
+`/api/predict?home=&away=` convention and is required for the snapshot
+system (gen_snapshots.py / lib/api.ts) to be able to pre-generate this
+route's results for the backend-free Vercel demo at all.
 
 Runnable via pytest or standalone:
     python backend/tests/test_kis_api.py
@@ -22,8 +27,8 @@ client = TestClient(app)
 
 
 def test_kis_valid_matchup_returns_200_with_full_schema():
-    r = client.post("/api/v1/predict/kis",
-                    json={"home_team": "Argentina", "away_team": "Switzerland"})
+    r = client.get("/api/v1/predict/kis",
+                   params={"home_team": "Argentina", "away_team": "Switzerland"})
     assert r.status_code == 200
     d = r.json()
     for key in ("predicted_winner", "win_probability", "predicted_score",
@@ -36,43 +41,43 @@ def test_kis_valid_matchup_returns_200_with_full_schema():
 
 
 def test_kis_unknown_home_team_404s():
-    r = client.post("/api/v1/predict/kis",
-                    json={"home_team": "Nonexistent Team XYZ", "away_team": "Argentina"})
+    r = client.get("/api/v1/predict/kis",
+                   params={"home_team": "Nonexistent Team XYZ", "away_team": "Argentina"})
     assert r.status_code == 404
 
 
 def test_kis_unknown_away_team_404s():
-    r = client.post("/api/v1/predict/kis",
-                    json={"home_team": "Argentina", "away_team": "Nonexistent Team XYZ"})
+    r = client.get("/api/v1/predict/kis",
+                   params={"home_team": "Argentina", "away_team": "Nonexistent Team XYZ"})
     assert r.status_code == 404
 
 
 def test_kis_same_team_both_sides_400s():
-    r = client.post("/api/v1/predict/kis",
-                    json={"home_team": "Argentina", "away_team": "Argentina"})
+    r = client.get("/api/v1/predict/kis",
+                   params={"home_team": "Argentina", "away_team": "Argentina"})
     assert r.status_code == 400
 
 
 def test_kis_referee_strictness_out_of_range_422s():
-    r = client.post("/api/v1/predict/kis",
-                    json={"home_team": "Argentina", "away_team": "Switzerland",
-                          "referee_strictness": 1.5})
+    r = client.get("/api/v1/predict/kis",
+                   params={"home_team": "Argentina", "away_team": "Switzerland",
+                           "referee_strictness": 1.5})
     assert r.status_code == 422
 
 
 def test_kis_hypothetical_matchup_not_scheduled_still_works():
     # D4 (KIS_SPEC.md §10) resolved by precedent: not restricted to a real
     # scheduled fixture. Brazil vs Germany aren't currently drawn together.
-    r = client.post("/api/v1/predict/kis",
-                    json={"home_team": "Brazil", "away_team": "Germany"})
+    r = client.get("/api/v1/predict/kis",
+                   params={"home_team": "Brazil", "away_team": "Germany"})
     assert r.status_code == 200
     assert r.json()["home_team"] == "Brazil"
 
 
 def test_kis_weather_condition_enum_accepted_without_city():
-    r = client.post("/api/v1/predict/kis",
-                    json={"home_team": "Argentina", "away_team": "Switzerland",
-                          "weather_condition": "Extreme_Heat"})
+    r = client.get("/api/v1/predict/kis",
+                   params={"home_team": "Argentina", "away_team": "Switzerland",
+                           "weather_condition": "Extreme_Heat"})
     assert r.status_code == 200
     assert r.json()["vector_metrics"]["luck_sigma_chaos"] > 0
 
@@ -85,8 +90,8 @@ def test_kis_consistent_with_match_flow_knockout_report():
     # 90'-only market pick and isn't the right comparison for a knockout tie).
     from app import ml_engine
     flow = ml_engine.match_flow("France", "Morocco", knockout=True, neutral=True)
-    kis_r = client.post("/api/v1/predict/kis",
-                        json={"home_team": "France", "away_team": "Morocco"})
+    kis_r = client.get("/api/v1/predict/kis",
+                       params={"home_team": "France", "away_team": "Morocco"})
     assert kis_r.status_code == 200
     kis_d = kis_r.json()
     assert kis_d["predicted_winner"] == flow["predicted_winner"]
@@ -107,12 +112,12 @@ def test_kis_stress_repeated_calls_stay_fast_and_consistent():
     # predicted_winner (proves the cache isn't serving stale/wrong data
     # across repeated identical requests).
     import time
-    payload = {"home_team": "Norway", "away_team": "England"}
+    params = {"home_team": "Norway", "away_team": "England"}
     times = []
     winners = set()
     for _ in range(20):
         t0 = time.perf_counter()
-        r = client.post("/api/v1/predict/kis", json=payload)
+        r = client.get("/api/v1/predict/kis", params=params)
         times.append((time.perf_counter() - t0) * 1000)
         assert r.status_code == 200
         winners.add(r.json()["predicted_winner"])
@@ -141,7 +146,7 @@ def test_kis_route_confidence_and_win_prob_match_bracket_within_tolerance():
     failures = []
     for m in upcoming:
         h, a = m["home_team"], m["away_team"]
-        r = client.post("/api/v1/predict/kis", json={"home_team": h, "away_team": a})
+        r = client.get("/api/v1/predict/kis", params={"home_team": h, "away_team": a})
         assert r.status_code == 200
         kis = r.json()
         wp_delta = abs(m["win_probability"] - kis["win_probability"]) * 100
@@ -154,6 +159,17 @@ def test_kis_route_confidence_and_win_prob_match_bracket_within_tolerance():
             failures.append(f"{h} v {a}: confidence delta {conf_delta} "
                             f"(bracket={m['confidence']}, kis={kis['confidence']})")
     assert not failures, "KIS route diverges from the bracket:\n" + "\n".join(failures)
+
+
+def test_kis_get_request_is_snapshottable_shape():
+    # The whole point of switching to GET: gen_snapshots.py's grab() only
+    # does client.get(path) — this locks in that the route stays GET-shaped
+    # so it never regresses back to POST-only (and unsnapshottable).
+    from app.routers import kis as kis_router
+    route = next(r for r in kis_router.router.routes
+                if r.path == "/api/v1/predict/kis")
+    assert "GET" in route.methods
+    assert "POST" not in route.methods
 
 
 if __name__ == "__main__":
