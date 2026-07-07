@@ -451,6 +451,61 @@ GK_QUALITY_DEFAULT = 0.55
 GK_COEF = 0.25
 
 
+# ── knockout pedigree (KIS Phase 1 — see KIS_SPEC.md §4[6] Pressure Score) ──
+# Real, pre-2026 major-tournament (World Cup + continental championship)
+# knockout-stage experience and shootout record. Web-informed / best-effort
+# curated, same precision tier as MANAGER_WINRATE and GK_QUALITY above — not
+# an exhaustively-cited stat. Only covers the 32 teams that reached WC2026's
+# Round of 32 (the only teams a KIS knockout-tie request will ever need this
+# for). Teams not listed (eliminated at the group stage, or not yet reached)
+# fall back to KNOCKOUT_PEDIGREE_DEFAULT with basis="default", not a guess.
+#
+#   team: (knockout_experience, shootout_wins, shootout_losses)
+#
+# `knockout_experience` = approx. count of major-tournament knockout-stage
+# matches played historically. `shootout_wins/losses` = major-tournament
+# penalty-shootout record. Deliberately excludes captain_maturity /
+# sub_aggression / crowd_factor from the KIS Pressure Score formula (spec
+# §4[6]) — those need per-player data (captain identity, caps) this table
+# can't responsibly source yet; see KIS_SPEC.md Phase 1 notes.
+KNOCKOUT_PEDIGREE: dict[str, tuple[int, int, int]] = {
+    "Algeria": (5, 0, 1), "Argentina": (32, 6, 2), "Australia": (6, 1, 1),
+    "Austria": (4, 0, 0), "Belgium": (10, 0, 0),
+    "Bosnia and Herzegovina": (0, 0, 0), "Brazil": (35, 5, 2),
+    "Canada": (1, 0, 0), "Cape Verde": (2, 0, 0), "Colombia": (14, 1, 1),
+    "Croatia": (16, 4, 0), "DR Congo": (3, 0, 0), "Ecuador": (3, 0, 0),
+    "Egypt": (10, 3, 2), "England": (20, 1, 4), "France": (28, 1, 2),
+    "Germany": (30, 5, 1), "Ghana": (10, 2, 3), "Ivory Coast": (8, 2, 0),
+    "Japan": (8, 0, 2), "Mexico": (14, 0, 1), "Morocco": (6, 1, 0),
+    "Netherlands": (14, 1, 0), "Norway": (2, 0, 0), "Paraguay": (6, 1, 0),
+    "Portugal": (18, 2, 1), "Senegal": (6, 1, 0), "South Africa": (3, 0, 0),
+    "Spain": (18, 0, 2), "Sweden": (8, 0, 0), "Switzerland": (10, 1, 1),
+    "United States": (8, 0, 0),
+}
+KNOCKOUT_PEDIGREE_DEFAULT = (0, 0, 0)
+
+
+def knockout_pedigree(team: str) -> dict:
+    """Real pre-2026 knockout experience + shootout record for `team`.
+
+    `shootout_win_rate` is None (not 0.5) when the team has no curated
+    shootout appearances — a team that's never faced a shootout isn't a
+    coin-flip, it's unknown, and callers (the future KIS Pressure Score
+    composite) should fall back to a neutral prior explicitly rather than
+    silently reading a 0.
+    """
+    exp, wins, losses = KNOCKOUT_PEDIGREE.get(team, KNOCKOUT_PEDIGREE_DEFAULT)
+    total = wins + losses
+    return {
+        "team": team,
+        "knockout_experience": exp,
+        "shootout_wins": wins,
+        "shootout_losses": losses,
+        "shootout_win_rate": round(wins / total, 3) if total else None,
+        "basis": "curated" if team in KNOCKOUT_PEDIGREE else "default",
+    }
+
+
 # ── tournament-evidence blending ────────────────────────────────────────────
 # The GK and manager tables above are pre-tournament priors. Once games are
 # played we blend in the actual evidence (goals conceded / clean sheets for the

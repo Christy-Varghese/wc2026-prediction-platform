@@ -64,6 +64,29 @@ def match_flow(home: str, away: str, base: dict | None = None,
     return res
 
 
+def kis(home: str, away: str, base: dict | None = None, *,
+       knockout: bool = True, neutral: bool = True,
+       weather_condition: str = "Clear", referee_strictness: float = 0.5,
+       city: str | None = None, kickoff_iso: str | None = None) -> dict:
+    """KIS (Knockout Intelligence System) vector-decomposed match report —
+    same bridge pattern as `match_flow()` above, cache key extended with the
+    weather/referee inputs (both feed `kis_engine.chaos_sigma()` and change
+    the output)."""
+    key = (f"kis:{home}:{away}:{int(knockout)}:{int(neutral)}:"
+          f"{weather_condition}:{referee_strictness}:{city or ''}")
+    hit = cache.get(key)
+    if hit:
+        return hit
+    import kis_engine as kis_mod
+    res = kis_mod.compose(engine(), home, away, base,
+                          neutral=neutral, knockout=knockout,
+                          city=city, kickoff_iso=kickoff_iso,
+                          referee_strictness=referee_strictness,
+                          weather_condition=weather_condition)
+    cache.set(key, res)
+    return res
+
+
 def sim_table(top: int | None = None) -> list[dict]:
     p = ML_DIR.parent / "data" / "processed" / "sim_results.json"
     if not p.exists():

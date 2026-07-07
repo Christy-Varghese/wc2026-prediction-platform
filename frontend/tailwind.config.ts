@@ -17,6 +17,12 @@ const config: Config = {
         stadium: "#FFFFFF",           // text primary
         muted:   "#C8D3E8",           // text secondary
         line:    "rgba(0,212,255,0.12)",
+        // KIS-scoped only (D2, KIS_SPEC.md §10) — Skill (S_t) reuses the
+        // existing `success` grass-green (already the site's "prediction
+        // correct" color, fits the Skill/preparation narrative); `chaos` is
+        // the one net-new token, for Luck (L_t)/chaos-event UI. Not used
+        // outside kis-*.tsx components — no sitewide reskin.
+        chaos:   "#B14EFF",
         // legacy aliases kept for backward compat
         navy:    "#0F1D3D",
         "navy-2": "#15284A",

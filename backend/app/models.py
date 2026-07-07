@@ -2,20 +2,24 @@
 
 Tables
 ------
-teams        national teams (code, name, confederation, flag, elo, manager)
-players      squad players (team, position, club, goals/assists/xG/xA, fitness)
-matches      fixtures + results (group/knockout, venue, kickoff, weather)
-predictions  cached ensemble output per match (probs, scores, explanation)
-team_news    injuries / suspensions / availability snapshots
-model_runs   retraining history + accuracy metrics (freshness)
-users        admin accounts (hashed password)
+teams                national teams (code, name, confederation, flag, elo, manager)
+players              squad players (team, position, club, goals/assists/xG/xA, fitness)
+matches              fixtures + results (group/knockout, venue, kickoff, weather)
+predictions          cached ensemble output per match (probs, scores, explanation)
+team_news            injuries / suspensions / availability snapshots
+model_runs           retraining history + accuracy metrics (freshness)
+users                admin accounts (hashed password)
+kis_simulations      KIS vector-decomposition run log (KIS_SPEC.md §6.1, Phase 3)
+team_pressure_inputs KIS curated Pressure Score inputs (KIS_SPEC.md §6.1, Phase 3;
+                     not yet populated — ml/player_condition.KNOCKOUT_PEDIGREE
+                     remains the source of truth)
 """
 from __future__ import annotations
 
 from datetime import datetime
 
 from sqlalchemy import (Boolean, DateTime, Float, ForeignKey, Integer, JSON,
-                        String, Text, func)
+                        String, Text, UniqueConstraint, func)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base
@@ -122,3 +126,66 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(32), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(128))
     is_admin: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class KISSimulation(Base):
+    """Audit log + cache of a KIS vector-decomposition run (KIS_SPEC.md §6.1).
+
+    `match_id` is nullable — D4 (§10) resolved by precedent: `services.predict()`
+    has no "must be a real scheduled fixture" gate, so KIS follows the same
+    pattern and allows a hypothetical matchup with no corresponding `Match` row.
+    Purely additive: nothing in the existing schema references this table, so
+    dropping it has zero impact elsewhere (§13 Rollback Plan).
+    """
+    __tablename__ = "kis_simulations"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    match_id: Mapped[int | None] = mapped_column(ForeignKey("matches.id", ondelete="CASCADE"),
+                                                  nullable=True, index=True)
+    home_team: Mapped[str] = mapped_column(String(64))
+    away_team: Mapped[str] = mapped_column(String(64))
+    sim_runs_executed: Mapped[int] = mapped_column(Integer, default=50000)
+    weather_condition: Mapped[str] = mapped_column(String(32), default="Clear")
+    referee_strictness: Mapped[float] = mapped_column(Float, default=0.50)
+
+    p_home_win: Mapped[float] = mapped_column(Float)
+    p_away_win: Mapped[float] = mapped_column(Float)
+    p_draw_90: Mapped[float] = mapped_column(Float)
+    p_extra_time: Mapped[float] = mapped_column(Float)
+    p_shootout: Mapped[float] = mapped_column(Float)
+
+    home_skill_score: Mapped[float] = mapped_column(Float)
+    away_skill_score: Mapped[float] = mapped_column(Float)
+    home_luck_mu_bias: Mapped[float | None] = mapped_column(Float, nullable=True)
+    away_luck_mu_bias: Mapped[float | None] = mapped_column(Float, nullable=True)
+    luck_sigma_chaos: Mapped[float] = mapped_column(Float)
+
+    chaos_events: Mapped[dict] = mapped_column(JSON, default=dict)  # {run_count, run_rate, ...}
+    pressure_score_home: Mapped[float | None] = mapped_column(Float, nullable=True)
+    pressure_score_away: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+    __table_args__ = (
+        UniqueConstraint("match_id", "weather_condition", "referee_strictness",
+                         name="uq_kis_sim_fixture_inputs"),
+    )
+
+
+class TeamPressureInput(Base):
+    """Curated per-team Pressure Score inputs (KIS_SPEC.md §4[6]/§6.1).
+
+    Phase 1/2 shipped these as the `KNOCKOUT_PEDIGREE` Python dict in
+    `ml/player_condition.py` (same precedent as MANAGER_WINRATE/GK_QUALITY) —
+    this table is the eventual DB-backed home for that data once/if it needs
+    to be queryable/editable without a code change. Not yet populated or read
+    by the ML pipeline; `knockout_pedigree()` remains the source of truth
+    until a Phase 3+ migration script backfills this table.
+    """
+    __tablename__ = "team_pressure_inputs"
+    team_name: Mapped[str] = mapped_column(String(64), primary_key=True)
+    knockout_experience: Mapped[int] = mapped_column(Integer, default=0)
+    shootout_win_rate: Mapped[float | None] = mapped_column(Float, nullable=True)
+    captain_caps: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    captain_tournament_apps: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    sub_aggression: Mapped[str | None] = mapped_column(String(8), nullable=True)  # early/average/late
+    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

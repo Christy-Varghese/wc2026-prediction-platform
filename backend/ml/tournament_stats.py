@@ -112,6 +112,110 @@ def player_goals() -> dict[str, int]:
     return goals
 
 
+@lru_cache(maxsize=1)
+def _load_events() -> dict:
+    try:
+        return json.loads(_EVENTS.read_text())
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def comeback_rate(team: str) -> dict:
+    """How often `team` has trailed at some point in a match and still avoided
+    defeat (won or drew) — KIS category [1] 'historic comeback delta'.
+
+    Needs minute-stamped goals (data/raw/match_events.json); matches without
+    that event data are excluded from the denominator rather than counted as
+    0, so a small sample isn't silently penalised. `rate` is None until the
+    team has trailed in at least one match with event data.
+    """
+    events = _load_events()
+    trailed = 0
+    recovered = 0
+    for home, away, hg, ag, _neu in WC2026_PLAYED:
+        if team not in (home, away):
+            continue
+        rec = events.get(f"{home}|{away}")
+        if not rec:
+            continue
+        is_home = team == home
+        own = rec.get("scorers", {}).get("home" if is_home else "away", [])
+        opp = rec.get("scorers", {}).get("away" if is_home else "home", [])
+        own_min = [g["minute"] for g in own if g.get("minute") is not None]
+        opp_min = [g["minute"] for g in opp if g.get("minute") is not None]
+        timeline = sorted([(m, 1) for m in own_min] + [(m, -1) for m in opp_min])
+        diff = 0
+        team_trailed = False
+        for _, delta in timeline:
+            diff += delta
+            if diff < 0:
+                team_trailed = True
+        if not team_trailed:
+            continue
+        trailed += 1
+        final_gf = hg if is_home else ag
+        final_ga = ag if is_home else hg
+        if final_gf >= final_ga:
+            recovered += 1
+    return {
+        "trailed_matches": trailed,
+        "recovered": recovered,
+        "rate": round(recovered / trailed, 3) if trailed else None,
+    }
+
+
+def defensive_variance(team: str) -> dict:
+    """Variance of goals conceded per match — KIS category [1] 'defensive
+    consistency index'. Lower = steady (few blowout concessions); higher =
+    streaky (clean sheets mixed with drubbings). Uses WC2026_PLAYED directly
+    (final scores only), so it covers every played match, not just the ones
+    with event data.
+    """
+    ga_list: list[int] = []
+    for home, away, hg, ag, _neu in WC2026_PLAYED:
+        if team == home:
+            ga_list.append(ag)
+        elif team == away:
+            ga_list.append(hg)
+    n = len(ga_list)
+    if n == 0:
+        return {"played": 0, "mean_ga": None, "variance": None}
+    mean = sum(ga_list) / n
+    var = sum((x - mean) ** 2 for x in ga_list) / n
+    return {"played": n, "mean_ga": round(mean, 3), "variance": round(var, 3)}
+
+
+def late_game_breakdown_rate(team: str, threshold_minute: int = 75) -> dict:
+    """Rate at which `team` concedes a goal after `threshold_minute` — KIS
+    category [5] 'late-game breakdown risk (75'-90'+)'. Needs minute-stamped
+    goals; matches without event data are excluded from the denominator.
+    """
+    events = _load_events()
+    with_data = 0
+    breakdown_matches = 0
+    late_goals = 0
+    for home, away, hg, ag, _neu in WC2026_PLAYED:
+        if team not in (home, away):
+            continue
+        rec = events.get(f"{home}|{away}")
+        if not rec:
+            continue
+        is_home = team == home
+        opp = rec.get("scorers", {}).get("away" if is_home else "home", [])
+        late = [g for g in opp if (g.get("minute") or 0) > threshold_minute]
+        with_data += 1
+        if late:
+            breakdown_matches += 1
+        late_goals += len(late)
+    return {
+        "matches_with_data": with_data,
+        "matches_with_late_concession": breakdown_matches,
+        "late_goals_conceded": late_goals,
+        "rate": round(breakdown_matches / with_data, 3) if with_data else None,
+    }
+
+
 def invalidate() -> None:
     team_stats.cache_clear()
     player_goals.cache_clear()
+    _load_events.cache_clear()
