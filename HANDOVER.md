@@ -303,6 +303,23 @@ existing engine (one engine, no parallel model):
   and the `api_knockout.json` snapshot, updated the Golden Boot table and
   accuracy log to the new points system, and fixed a stale `condition_coef`
   in Appendix A (said 2.45, code has 2.0).
+- **Scoring revised again, same day — now out of 3, exact-score is a separate
+  bonus.** The 5/3/1/0 ladder above lasted a few hours: rebuilt to **3 pts**
+  correct winner, **1 pt** actual draw (flat — correctly calling "Draw"
+  itself doesn't lift it to 3), **0 pts** wrong winner. Exact-scoreline is no
+  longer a scoring tier — it's `prediction_exact_bonus()`, a separate +1
+  tally shown alongside the 0-3 score, never summed into it. Caught and fixed
+  an ordering bug in first draft of both `services.prediction_points()` and
+  `ui.tsx`'s mirror: checking "predicted winner correct" before "actual is a
+  draw" let a correctly-called "Draw" prediction score 3 instead of the
+  intended flat 1 — the draw check must run first. Updated everywhere:
+  backend `news.py` ticker (now `MAX_PTS=3` + a bonus count in the message),
+  `/matches` page (dot-chart legend, per-round panels, a new combined
+  "Exact score bonus" stat replacing the old group-only one), and
+  `/knockout/[id]`'s verdict card. Current: **215/285 pts overall (75%), 15
+  exact-score bonuses, 63/69 pts knockout (91%)** — jumped from the 5-point
+  system's 51%/62% purely from the rescale (draws no longer eat a full 0-4
+  point swing) and from the flat-draw floor.
 
 ## Known issues / watch-outs
 - **Production `NEXT_PUBLIC_STATIC_ONLY` gap — FIXED Jul 6.** Neither

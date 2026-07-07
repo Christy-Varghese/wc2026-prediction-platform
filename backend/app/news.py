@@ -103,7 +103,7 @@ def build(max_results: int = 6) -> dict:
 
     # ── outcome accuracy: group stage (points ladder — see services.prediction_points) ──
     try:
-        pts = n = 0
+        pts = bonus = n = 0
         for m in played:
             # Pass `match=m` so this matches the prediction actually shown for
             # the fixture elsewhere (services.match_card does the same) — the
@@ -120,11 +120,13 @@ def build(max_results: int = 6) -> dict:
                 pts += services.prediction_points(
                     pw, pscore, m["home_team"], m["away_team"],
                     m["home_score"], m["away_score"])
+                bonus += services.prediction_exact_bonus(
+                    pscore, m["home_score"], m["away_score"])
         # ── add knockout accuracy from bracket engine ──
         try:
             from .knockout_engine import resolve_bracket
             ko_data = resolve_bracket()
-            ko_pts = ko_n = 0
+            ko_pts = ko_bonus = ko_n = 0
             for km in ko_data.get("matches", []):
                 if km.get("home_score") is None:
                     continue
@@ -145,20 +147,25 @@ def build(max_results: int = 6) -> dict:
                 ko_pts += services.prediction_points(
                     mpw, km.get("predicted_score"), km["home_team"], km["away_team"],
                     hs, aws, actual_winner=actual)
+                ko_bonus += services.prediction_exact_bonus(
+                    km.get("predicted_score"), hs, aws)
         except Exception:  # noqa: BLE001
-            ko_pts = ko_n = 0
+            ko_pts = ko_bonus = ko_n = 0
 
         total_pts = pts + ko_pts
+        total_bonus = bonus + ko_bonus
         total_n = n + ko_n
-        MAX_PTS = 5
+        MAX_PTS = 3
         if total_n:
             max_total = total_n * MAX_PTS
             msg = (f"🎯 CAI accuracy: {total_pts}/{max_total} pts "
-                   f"({round(total_pts / max_total * 100)}%)")
+                   f"({round(total_pts / max_total * 100)}%) · "
+                   f"{total_bonus} exact scores")
             if ko_n:
                 rnd_label = "R32" if ko_n <= 16 else "KO"
                 max_ko = ko_n * MAX_PTS
-                msg += f" · {rnd_label}: {ko_pts}/{max_ko} pts ({round(ko_pts / max_ko * 100)}%)"
+                msg += (f" · {rnd_label}: {ko_pts}/{max_ko} pts "
+                        f"({round(ko_pts / max_ko * 100)}%)")
             items.append(msg)
     except Exception:  # noqa: BLE001
         pass

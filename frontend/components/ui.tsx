@@ -70,10 +70,10 @@ export function predictionHit(m: any): boolean | null {
 }
 
 /* Points ladder for a played match's prediction, mirroring
- * backend/app/services.py's prediction_points() exactly:
- *   5 pts — predicted winner correct AND the predicted score is an exact match
- *   3 pts — predicted winner correct (score wasn't exact)
- *   1 pt  — actual result was a draw (not already a 5pt exact hit)
+ * backend/app/services.py's prediction_points() exactly — out of 3 per match:
+ *   3 pts — predicted winner correct AND the actual result wasn't a draw
+ *   1 pt  — actual result was a draw (flat, regardless of what was predicted —
+ *           even correctly calling "Draw" caps here, it does not reach 3)
  *   0 pts — predicted winner wrong
  * Works for both group matches (predicted score lives at `top_score.score`)
  * and knockout ties (a plain `predicted_score` string, e.g. "1-1"). Pass
@@ -85,27 +85,34 @@ export function predictionPoints(m: any, actualWinner?: string | null): number {
   const actual = actualWinner ?? (
     m.home_score > m.away_score ? m.home_team
       : m.away_score > m.home_score ? m.away_team : "Draw");
-  const predictedScore: string | undefined = m.predicted_score ?? m.top_score?.score;
-  const exact = predictedScore === `${m.home_score}-${m.away_score}`;
-  if (m.predicted_winner === actual && exact) return 5;
-  if (m.predicted_winner === actual) return 3;
   if (actual === "Draw") return 1;
+  if (m.predicted_winner === actual) return 3;
   return 0;
 }
 
+/* Exact-scoreline bonus — a separate stat, NOT part of the 0-3 total above.
+ * Mirrors backend/app/services.py's prediction_exact_bonus(): +1 whenever
+ * the predicted score is an exact match, independent of the points tier. */
+export function predictionExactBonus(m: any): boolean {
+  if (!m?.played || m.home_score == null || m.away_score == null) return false;
+  const predictedScore: string | undefined = m.predicted_score ?? m.top_score?.score;
+  return predictedScore === `${m.home_score}-${m.away_score}`;
+}
+
 export function predictionGoldHit(m: any): boolean {
-  return predictionPoints(m) === 5;
+  return predictionPoints(m) === 3 && predictionExactBonus(m);
 }
 
 export function PredictionBadge({ m, className = "" }: { m: any; className?: string }) {
   const hit = predictionHit(m);
   if (hit === null) return null;
   const pts = predictionPoints(m);
-  if (pts === 5) return (
-    <span title={`Model predicted ${m.predicted_winner} with the exact score — +5pts`}
+  const bonus = predictionExactBonus(m);
+  if (pts === 3 && bonus) return (
+    <span title={`Model predicted ${m.predicted_winner} with the exact score — 3pts + 1 exact-score bonus`}
       className={`inline-flex items-center gap-1 rounded-full border border-gold/30 bg-gold/10
                   px-2.5 py-0.5 text-[10px] font-semibold text-gold ${className}`}>
-      ★ Exact score · +5pts
+      ★ Exact score · 3pts +1 bonus
     </span>
   );
   if (pts === 3) return (
@@ -116,9 +123,9 @@ export function PredictionBadge({ m, className = "" }: { m: any; className?: str
     </span>
   );
   if (pts === 1) return (
-    <span title={`Match was a draw — +1pt`}
+    <span title={bonus ? "Match was a draw, exact score too — +1pt + 1 bonus" : "Match was a draw — +1pt"}
       className={`chip text-[10px] ${className}`}>
-      ≈ Draw · +1pt
+      ≈ Draw · +1pt{bonus ? " +1 bonus" : ""}
     </span>
   );
   return (

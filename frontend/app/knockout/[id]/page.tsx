@@ -3,7 +3,7 @@ import useSWR from "swr";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { api } from "@/lib/api";
-import { Flag, LowConfidenceTag, isLowConfidence, predictionPoints } from "@/components/ui";
+import { Flag, LowConfidenceTag, isLowConfidence, predictionPoints, predictionExactBonus } from "@/components/ui";
 import { MatchFlowReport } from "@/components/match-flow";
 import { CaiScenarios, CaiPainPoints, CaiCompareBar } from "@/components/cai-blocks";
 import {
@@ -51,11 +51,15 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
   // original pre-match pick.
   const modelPick = m.model_predicted_winner ?? m.predicted_winner;
   const predictionCorrect = actualWinner != null && actualWinner === modelPick;
-  // Points ladder (see components/ui.tsx predictionPoints): 5 = exact score,
-  // 3 = correct winner, 1 = draw, 0 = miss.
+  // Points ladder (see components/ui.tsx predictionPoints): 3 = correct
+  // winner, 1 = draw, 0 = miss. Knockout ties are always decisive (pens
+  // resolve any level tie), so a KO verdict only ever lands on 3 or 0.
+  // Exact-scoreline is a separate bonus, not part of this total.
+  const scoredMatch = { ...m, predicted_winner: modelPick, played: true };
   const predictionPts = actualWinner != null
-    ? predictionPoints({ ...m, predicted_winner: modelPick, played: true }, actualWinner)
+    ? predictionPoints(scoredMatch, actualWinner)
     : null;
+  const predictionBonus = actualWinner != null && predictionExactBonus(scoredMatch);
   const isPens = m.pen_home != null && m.pen_away != null;
 
   return (
@@ -102,12 +106,12 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
                     {isPens ? "After Extra Time + Penalties" : "Full Time"}
                   </div>
                   <div className={`mt-2 inline-block rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider
-                    ${predictionPts === 5
+                    ${predictionCorrect && predictionBonus
                       ? "border border-gold/40 bg-gold/10 text-gold"
                       : predictionCorrect
                       ? "border border-success/30 bg-success/10 text-success"
                       : "border border-white/15 bg-white/5 text-muted"}`}>
-                    {predictionPts === 5 ? "★ Exact score · +5pts"
+                    {predictionCorrect && predictionBonus ? "★ Exact score · 3pts +1 bonus"
                       : predictionCorrect ? `✓ Prediction correct · +${predictionPts}pts`
                       : `✗ Model predicted ${modelPick} · +0pts`}
                   </div>
@@ -236,17 +240,17 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
 
                     {/* Model accuracy verdict */}
                     <div className={`flex items-start gap-4 rounded-xl border p-4 ${
-                      predictionPts === 5 ? "border-gold/30 bg-gold/5"
+                      predictionCorrect && predictionBonus ? "border-gold/30 bg-gold/5"
                         : predictionCorrect ? "border-success/25 bg-success/5" : "border-white/10 bg-white/3"}`}>
                       <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-bold ${
-                        predictionPts === 5 ? "bg-gold/15 text-gold"
+                        predictionCorrect && predictionBonus ? "bg-gold/15 text-gold"
                           : predictionCorrect ? "bg-success/15 text-success" : "bg-white/8 text-muted"}`}>
-                        {predictionPts === 5 ? "★" : predictionCorrect ? "✓" : "✗"}
+                        {predictionCorrect && predictionBonus ? "★" : predictionCorrect ? "✓" : "✗"}
                       </div>
                       <div>
                         <div className={`font-display text-sm font-bold ${
-                          predictionPts === 5 ? "text-gold" : predictionCorrect ? "text-success" : "text-stadium"}`}>
-                          {predictionPts === 5 ? `CAI called it exactly — +${predictionPts}pts`
+                          predictionCorrect && predictionBonus ? "text-gold" : predictionCorrect ? "text-success" : "text-stadium"}`}>
+                          {predictionCorrect && predictionBonus ? `CAI called it exactly — +${predictionPts}pts +1 bonus`
                             : predictionCorrect ? `CAI called it right — +${predictionPts}pts`
                             : `CAI missed — predicted ${modelPick} · +0pts`}
                         </div>

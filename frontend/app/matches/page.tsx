@@ -5,7 +5,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
 import { api, pct0 } from "@/lib/api";
-import { Flag, ProbBar, LiveBadge, SectionHeader, LowConfidenceTag, isLowConfidence, PredictionBadge, predictionHit, predictionGoldHit, predictionPoints } from "@/components/ui";
+import { Flag, ProbBar, LiveBadge, SectionHeader, LowConfidenceTag, isLowConfidence, PredictionBadge, predictionHit, predictionGoldHit, predictionPoints, predictionExactBonus } from "@/components/ui";
 
 const fetcher = (p: string) => api(p);
 const GROUPS = "ABCDEFGHIJKL".split("");
@@ -54,9 +54,11 @@ const fmtTime = (iso: string) =>
 const fmtShort = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: ET });
 
-// Dot color per points tier (5/3/1/0 ladder — see components/ui.tsx predictionPoints).
-const pointsDotClass = (pts: number) =>
-  pts === 5 ? "bg-gold/40 border-gold/70"
+// Dot color per points tier (3/1/0 ladder — see components/ui.tsx predictionPoints).
+// Gold flags an exact-scoreline bonus on top of a 3pt hit; it's a cosmetic
+// highlight only — the bonus itself is tracked separately, not added to pts.
+const pointsDotClass = (pts: number, bonus = false) =>
+  pts === 3 && bonus ? "bg-gold/40 border-gold/70"
     : pts === 3 ? "bg-success/30 border-success/60"
     : pts === 1 ? "bg-white/20 border-white/40"
     : "bg-danger/15 border-danger/30";
@@ -92,17 +94,17 @@ export default function MatchesPage() {
   const total = (data ?? []).length;
 
   // Points ladder (see components/ui.tsx predictionPoints, mirrors backend
-  // services.prediction_points): 5 = winner + exact score, 3 = winner only,
-  // 1 = actual result was a draw, 0 = wrong winner. MAX_PTS = 5 per game.
-  const MAX_PTS = 5;
+  // services.prediction_points): 3 = correct winner, 1 = actual result was a
+  // draw, 0 = wrong winner. MAX_PTS = 3 per game. Exact-scoreline hits are a
+  // separate bonus tally (predictionExactBonus), not part of this total.
+  const MAX_PTS = 3;
 
   const accuracy = useMemo(() => {
     const pl = (allData ?? []).filter((m: any) => m.played);
     const n = pl.length;
     if (!n) return null;
     const pts = pl.reduce((sum: number, m: any) => sum + predictionPoints(m), 0);
-    const exact = pl.filter((m: any) =>
-      m.top_score && m.top_score.score === `${m.home_score}-${m.away_score}`).length;
+    const exact = pl.filter((m: any) => predictionExactBonus(m)).length;
     const maxPts = n * MAX_PTS;
     return { n, pts, maxPts, pct: Math.round((pts / maxPts) * 100),
              exact, exactPct: Math.round((exact / n) * 100) };
@@ -119,8 +121,8 @@ export default function MatchesPage() {
     );
     if (!playedWithPred.length) return null;
 
-    const byRound: Record<string, { n: number; pts: number; games: number[] }> = {};
-    let totalN = 0, totalPts = 0;
+    const byRound: Record<string, { n: number; pts: number; bonus: number; games: { pts: number; bonus: boolean }[] }> = {};
+    let totalN = 0, totalPts = 0, totalBonus = 0;
 
     for (const m of playedWithPred) {
       const hs = m.home_score as number;
@@ -135,19 +137,23 @@ export default function MatchesPage() {
 
       // Use model_predicted_winner if available (original pre-match pick)
       const modelPick = m.model_predicted_winner ?? m.predicted_winner;
-      const pts = predictionPoints({ ...m, predicted_winner: modelPick, played: true }, actual);
+      const scored = { ...m, predicted_winner: modelPick, played: true };
+      const pts = predictionPoints(scored, actual);
+      const bonus = predictionExactBonus(scored);
       const round: string = m.round ?? "Knockout";
-      if (!byRound[round]) byRound[round] = { n: 0, pts: 0, games: [] };
+      if (!byRound[round]) byRound[round] = { n: 0, pts: 0, bonus: 0, games: [] };
       byRound[round].n++;
       byRound[round].pts += pts;
-      byRound[round].games.push(pts);
+      byRound[round].bonus += bonus ? 1 : 0;
+      byRound[round].games.push({ pts, bonus });
       totalN++;
       totalPts += pts;
+      totalBonus += bonus ? 1 : 0;
     }
 
     if (!totalN) return null;
     const maxPts = totalN * MAX_PTS;
-    return { byRound, totalN, totalPts, maxPts,
+    return { byRound, totalN, totalPts, totalBonus, maxPts,
              totalPct: Math.round((totalPts / maxPts) * 100) };
   }, [knockoutData]);
 
@@ -160,7 +166,11 @@ export default function MatchesPage() {
     const totalPts = grpPts + (koAccuracy?.totalPts ?? 0);
     const maxPts = grpMax + (koAccuracy?.maxPts ?? 0);
     if (!maxPts) return null;
-    return { pts: totalPts, maxPts, pct: Math.round((totalPts / maxPts) * 100) };
+    // Exact-score bonus is a separate tally, not part of the 0-3 total above.
+    const bonus = (accuracy?.exact ?? 0) + (koAccuracy?.totalBonus ?? 0);
+    const n = (accuracy?.n ?? 0) + (koAccuracy?.totalN ?? 0);
+    return { pts: totalPts, maxPts, pct: Math.round((totalPts / maxPts) * 100),
+             bonus, bonusPct: n ? Math.round((bonus / n) * 100) : 0 };
   }, [accuracy, koAccuracy]);
 
   const knockoutRounds: any[] = useMemo(() => {
@@ -292,15 +302,15 @@ export default function MatchesPage() {
                         )}
                       </div>
 
-                      {/* Dot chart for this round — colored by points tier: gold=5 (exact score),
-                          green=3 (correct winner), gray=1 (draw), red=0 (miss) */}
+                      {/* Dot chart for this round — colored by points tier: gold=3 + exact-score
+                          bonus, green=3 (correct winner), gray=1 (draw), red=0 (miss) */}
                       <div className="flex items-center gap-3 border-t border-white/5 pt-3">
                         <span className="chip-gold text-[9px] shrink-0">{label}</span>
                         <span className="text-[11px] text-muted">{rs.pts}/{rsMax} pts</span>
                         <div className="ml-auto flex gap-1.5">
-                          {rs.games.map((pts, i) => (
-                            <span key={i} title={`+${pts}pt${pts === 1 ? "" : "s"}`}
-                              className={`h-3 w-3 rounded-full border ${pointsDotClass(pts)}`} />
+                          {rs.games.map(({ pts, bonus }, i) => (
+                            <span key={i} title={`+${pts}pt${pts === 1 ? "" : "s"}${bonus ? " +1 bonus" : ""}`}
+                              className={`h-3 w-3 rounded-full border ${pointsDotClass(pts, bonus)}`} />
                           ))}
                         </div>
                       </div>
@@ -372,13 +382,15 @@ export default function MatchesPage() {
                     </div>
                   </div>
 
-                  {/* Exact score */}
-                  <div>
-                    <div className="font-display text-2xl font-bold tabnum text-gold">{accuracy.exactPct}%</div>
-                    <div className="text-[10px] uppercase tracking-wider text-muted">
-                      Exact score · <span className="text-stadium">{accuracy.exact}/{accuracy.n}</span>
+                  {/* Exact score bonus — separate tally, not part of the 0-3 points above */}
+                  {overallAccuracy && (
+                    <div>
+                      <div className="font-display text-2xl font-bold tabnum text-gold">{overallAccuracy.bonusPct}%</div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted">
+                        Exact score bonus · <span className="text-stadium">{overallAccuracy.bonus}</span>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Per-round KO breakdown */}
@@ -393,12 +405,12 @@ export default function MatchesPage() {
                         {Math.round((stats.pts / roundMax) * 100)}%
                       </span>
                       <span className="text-[11px] text-muted">
-                        {stats.pts}/{roundMax} pts
+                        {stats.pts}/{roundMax} pts · {stats.bonus} exact
                       </span>
                       <div className="ml-auto flex gap-1">
-                        {stats.games.map((pts, i) => (
-                          <span key={i} title={`+${pts}pt${pts === 1 ? "" : "s"}`}
-                            className={`h-2 w-2 rounded-full ${pointsDotClass(pts)}`} />
+                        {stats.games.map(({ pts, bonus }, i) => (
+                          <span key={i} title={`+${pts}pt${pts === 1 ? "" : "s"}${bonus ? " +1 bonus" : ""}`}
+                            className={`h-2 w-2 rounded-full ${pointsDotClass(pts, bonus)}`} />
                         ))}
                       </div>
                     </div>

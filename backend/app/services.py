@@ -6,14 +6,16 @@ from . import fixtures, ml_engine
 
 # ── prediction scoring ───────────────────────────────────────────────────────
 # Points ladder for grading a prediction against a played match's actual
-# result. Same rule for group-stage and knockout matches: pass an
-# already-penalty-resolved `actual_winner` for knockout ties (a shootout
-# always produces a decisive winner, never "Draw" — the 1pt draw tier is
-# reachable only for group-stage matches).
-#   5 pts — predicted_winner correct AND predicted_score is an exact match
-#   3 pts — predicted_winner correct (result direction right, score wasn't exact)
-#   1 pt  — actual result was a draw (regulation draw; not already a 5pt exact hit)
-#   0 pts — predicted_winner wrong (the other side won)
+# result, out of 3 per match. Same rule for group-stage and knockout matches:
+# pass an already-penalty-resolved `actual_winner` for knockout ties (a
+# shootout always produces a decisive winner, never "Draw" — the 1pt draw
+# tier is reachable only for group-stage matches).
+#   3 pts — predicted_winner correct AND the actual result wasn't a draw
+#   1 pt  — actual result was a draw (flat, regardless of what was predicted —
+#           even correctly calling "Draw" caps here, it does not reach 3)
+#   0 pts — predicted_winner wrong (the other side won, no draw)
+# Exact-scoreline hits are NOT part of this 0-3 total — see
+# `prediction_exact_bonus()` below, tracked as its own separate stat.
 def prediction_points(predicted_winner: str | None, predicted_score: str | None,
                       home_team: str, away_team: str,
                       actual_home: int, actual_away: int,
@@ -23,14 +25,21 @@ def prediction_points(predicted_winner: str | None, predicted_score: str | None,
     if actual_winner is None:
         actual_winner = (home_team if actual_home > actual_away
                          else away_team if actual_away > actual_home else "Draw")
-    exact = predicted_score is not None and predicted_score == f"{actual_home}-{actual_away}"
-    if predicted_winner == actual_winner and exact:
-        return 5
-    if predicted_winner == actual_winner:
-        return 3
     if actual_winner == "Draw":
         return 1
+    if predicted_winner == actual_winner:
+        return 3
     return 0
+
+
+# Separate exact-scoreline bonus (+1), independent of the 0-3 ladder above —
+# tracked as its own tally (e.g. "N exact scores"), never summed into a
+# match's points total.
+def prediction_exact_bonus(predicted_score: str | None,
+                           actual_home: int, actual_away: int) -> int:
+    if predicted_score is None:
+        return 0
+    return 1 if predicted_score == f"{actual_home}-{actual_away}" else 0
 
 
 def _conditions(home: str, away: str, match: dict | None) -> dict:
