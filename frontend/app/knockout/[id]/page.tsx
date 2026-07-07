@@ -6,6 +6,7 @@ import { api } from "@/lib/api";
 import { Flag, LowConfidenceTag, isLowConfidence, predictionPoints, predictionExactBonus } from "@/components/ui";
 import { MatchFlowReport } from "@/components/match-flow";
 import { CaiScenarios, CaiPainPoints, CaiCompareBar } from "@/components/cai-blocks";
+import { KisPoweredCard } from "@/components/kis-powered-card";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList,
 } from "recharts";
@@ -510,6 +511,11 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
             </div>
           )}
         </div>
+
+        {/* Upcoming (unplayed) ties: a live KIS vector simulation for this
+            exact matchup, click-to-expand "how it works" explainer. Played
+            ties already have their own post-match analysis above. */}
+        {!m.played && <KisPoweredCard home={m.home_team} away={m.away_team} />}
 
         {/* road to here — both teams' journeys */}
         <section>

@@ -99,6 +99,63 @@ def test_kis_route_registered_in_openapi_schema():
     assert "/api/v1/predict/kis" in r.json()["paths"]
 
 
+def test_kis_stress_repeated_calls_stay_fast_and_consistent():
+    # Phase 5 "stress testing": the route (including the cache layer —
+    # ml_engine.kis()'s Redis-with-in-process-fallback, see cache.py) under
+    # repeated load. First call is a cold compute; later calls should hit
+    # cache and be at least as fast, and every call must return the identical
+    # predicted_winner (proves the cache isn't serving stale/wrong data
+    # across repeated identical requests).
+    import time
+    payload = {"home_team": "Norway", "away_team": "England"}
+    times = []
+    winners = set()
+    for _ in range(20):
+        t0 = time.perf_counter()
+        r = client.post("/api/v1/predict/kis", json=payload)
+        times.append((time.perf_counter() - t0) * 1000)
+        assert r.status_code == 200
+        winners.add(r.json()["predicted_winner"])
+    assert len(winners) == 1, f"predicted_winner changed across repeated calls: {winners}"
+    assert max(times) < 500, f"slowest of 20 repeated calls took {max(times):.1f}ms (budget: 500ms)"
+
+
+def test_kis_route_confidence_and_win_prob_match_bracket_within_tolerance():
+    # Regression guard for a real bug found 2026-07-07: the route originally
+    # built `base` via ml_engine.predict_match() directly, skipping
+    # services.predict()'s injury-availability + squad-strength-differential
+    # context (_ctx_for()) that knockout_engine._resolve_tie() (the bracket's
+    # own prediction path) always builds. That silently dropped real signal
+    # and produced confidence deltas up to ~22 points against the bracket for
+    # the SAME fixture — not modeling disagreement, an implementation gap.
+    # Fixed by routing through services.predict() and replicating
+    # _resolve_tie()'s pipeline-disagreement confidence penalty in
+    # kis_engine.compose(). This test hits the full HTTP route (not just
+    # ml_engine.kis()) because the bug lived in the router, not the engine.
+    from app import knockout_engine
+    bracket = knockout_engine.resolve_bracket()
+    upcoming = [m for m in bracket["matches"]
+               if m.get("home_score") is None and m.get("home_team")]
+    assert upcoming, "expected at least one unresolved bracket tie to check"
+
+    failures = []
+    for m in upcoming:
+        h, a = m["home_team"], m["away_team"]
+        r = client.post("/api/v1/predict/kis", json={"home_team": h, "away_team": a})
+        assert r.status_code == 200
+        kis = r.json()
+        wp_delta = abs(m["win_probability"] - kis["win_probability"]) * 100
+        conf_delta = (abs(m["confidence"] - kis["confidence"])
+                     if m.get("confidence") is not None and kis.get("confidence") is not None
+                     else None)
+        if wp_delta > 5.0:  # generous — pure Monte Carlo noise is usually <1.5pp
+            failures.append(f"{h} v {a}: win_probability delta {wp_delta:.1f}pp")
+        if conf_delta is not None and conf_delta > 0:
+            failures.append(f"{h} v {a}: confidence delta {conf_delta} "
+                            f"(bracket={m['confidence']}, kis={kis['confidence']})")
+    assert not failures, "KIS route diverges from the bracket:\n" + "\n".join(failures)
+
+
 if __name__ == "__main__":
     import pytest
     raise SystemExit(pytest.main([__file__, "-v"]))

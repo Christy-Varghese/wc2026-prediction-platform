@@ -1,11 +1,73 @@
 # KIS — Knockout Intelligence System
 ### Product & architecture spec — extends WC26 CAI Predictor
 
-Status: **Phases 1-4 (Data pipeline + Vector engine + Backend API + Frontend
-KIS Hub) shipped 2026-07-07.** `/kis` is live, browser-verified (desktop +
-mobile), and wired to the real backend end to end. Only Phase 5 (regression
-across every played match + stress testing) remains. All four open decisions
-(D1-D4) are resolved — see §10.
+Status: **All 5 phases shipped 2026-07-07. KIS v1 is complete.** `/kis` is
+live end to end — data pipeline, vector engine, API, frontend, and now full
+regression coverage across every played WC2026 knockout match plus stress/
+edge-case testing. 116/116 backend tests passing. All four open decisions
+(D1-D4) resolved — see §10. One known, documented gap remains (DB
+idempotency, acceptance criterion 5 — can't be exercised in this dev
+environment; see the Phase 5 status note).
+
+**Post-v1 — KIS surfaced on the live bracket (2026-07-07):**
+- Ran KIS against every one of the 9 currently-unresolved bracket ties (R16
+  through the Final, via `knockout_engine.resolve_bracket()`'s live
+  cascade — not a frozen list) and compared to the existing engine's
+  projected winner for each. **Answer: no, KIS does not change any
+  projected result.** Argentina remains projected champion, Spain runner-up,
+  every intermediate tie agrees. Expected, given Phase 5 already confirmed
+  100% agreement across all 23 *played* matches — KIS reprojects the same
+  underlying model at higher N, it isn't a competing model. Enforced going
+  forward as `test_kis_agrees_with_bracket_on_every_upcoming_tie` (checks
+  the live bracket, not a hardcoded snapshot, so it keeps validating as
+  results come in).
+- `frontend/components/kis-powered-card.tsx` (new) — surfaces a live KIS
+  simulation on `/knockout/[id]`, the per-tie detail page every bracket
+  match already links to, for **upcoming (unplayed) ties only** (played
+  ties keep their own post-match analysis). Reuses `KisVectorGrid`/
+  `KisPressureGauge` from the `/kis` Hub — no duplicated vector-rendering
+  logic. A click-to-expand "ⓘ How it works" section explains the Skill/Luck
+  methodology in plain language, closing the loop the original request
+  asked for ("when clicked on it will describe how it works").
+- Browser-verified (France v Morocco QF, an upcoming tie): collapsed and
+  expanded states both render correctly, zero console errors, the existing
+  pre-match prediction and the new KIS card visibly agree on the same
+  winner/scoreline — which is itself useful UI signal (independent
+  confirmation, not a contradiction a user has to reconcile).
+
+**Post-v1 follow-up — a real bug found by asking "does KIS change the win% and
+confidence, specifically" (2026-07-07):** Predicted *winner* agreement (above)
+turned out to hide a real gap: comparing win_probability/confidence directly
+against `resolve_bracket()`'s numbers for the same 9 fixtures showed
+confidence deltas up to **22 points** — not modeling disagreement, an
+implementation bug.
+
+- **Root cause**: `backend/app/routers/kis.py` built `base` via
+  `ml_engine.predict_match()` directly, skipping `services.predict()`'s
+  `_ctx_for()` context (injury-availability + squad-strength differentials)
+  that `knockout_engine._resolve_tie()` — the bracket's own prediction path —
+  always builds. Confirmed directly: `services.predict("France","Morocco")`
+  → conf 29; the same call via bare `ml_engine.predict_match()` → conf 39.
+  Real signal was silently dropped.
+- **Second gap**: `_resolve_tie()` docks confidence by 15 points when the
+  ensemble's stat-driven pick and the Monte Carlo's regulation-time pick
+  disagree (a genuine uncertainty signal). `kis_engine.compose()` never
+  replicated that check, so it always reported the raw, undocked confidence.
+- **Fix**: `routers/kis.py` now calls `services.predict()`; `compose()` now
+  replicates the pipeline-disagreement penalty inline. Re-verified against
+  all 9 upcoming ties, through the actual HTTP route (not just the internal
+  engine call): **confidence now matches exactly (0 delta) on every tie**;
+  win_probability delta dropped to a max of 1.23 percentage points — genuine
+  Monte Carlo noise (N=6,000 vs N=50,000 of the same model), not a bug.
+- **Why Phase 5's regression suite didn't catch this**: those tests built
+  `base` the same (buggy) way for both the `match_flow` and `kis` sides of
+  each comparison — internally consistent, but never checked against the
+  bracket's own `services.predict()`-based numbers. Added
+  `test_kis_route_confidence_and_win_prob_match_bracket_within_tolerance`
+  (routes through the actual FastAPI endpoint, not `ml_engine.kis()`
+  directly, since the bug lived in the router) to close that gap
+  permanently.
+- Full suite: **118/118 passing** (117 + this new test).
 
 **Phase 1 — what actually shipped:**
 - `backend/ml/xgb_model.py` confirmed already trained (`data/processed/xgb_model.ubj`
@@ -171,6 +233,54 @@ across every played match + stress testing) remains. All four open decisions
     not assumed.
   - Zero console errors, zero React warnings in either run.
 - `npx tsc --noEmit` clean.
+
+**Phase 5 — what actually shipped:**
+- `backend/tests/test_kis_regression.py` (35 tests) — the core Phase 5
+  deliverable:
+  - **Full regression, not a sample**: all 23 already-played WC2026
+    knockout matches (`tournament_form.WC2026_PLAYED_KNOCKOUT` — the exact
+    ledger `simulate.py`/`match_flow.py` are keyed on, not a hand-picked
+    list) round-tripped through `ml_engine.kis()`, each checked against
+    `match_flow`'s output for the same fixture: same `predicted_winner`,
+    `win_probability` within simulation noise, valid probability schema.
+    Zero divergences across all 23.
+  - **Basis-label audit** (acceptance criterion 4): confirmed every
+    heuristic/partial field (`tactical_rating`, `pressure_score`,
+    `vector_metrics`) carries its label, and an uncurated team's pedigree
+    lookup reports `basis: "default"` rather than a silent guess.
+  - **Edge cases**: group-stage (`knockout=False`) mode, referee-strictness
+    extremes (0.0/1.0), `Extreme_Heat` with no real venue, a real venue
+    correctly overriding the weather enum, a team with zero curated
+    shootout history, a team entirely absent from every table (Elo-fallback
+    degrades gracefully, doesn't throw).
+  - **Determinism** (the actual testable half of acceptance criterion 5 —
+    see the gap note below): confirmed `kis_engine.compose()` returns
+    byte-identical `vector_metrics`/`chaos_events`/`predicted_score` for two
+    calls with identical inputs, and a genuinely different input
+    (`referee_strictness`) produces a different result — i.e., the
+    upsert-on-identical-inputs behavior the DB schema's `UniqueConstraint`
+    assumes is actually sound at the compute layer.
+  - **Stress/fuzz**: all 48 rostered teams paired against a reference team
+    (47 pairings) at full `n=50,000` — zero exceptions. A 20x repeated-call
+    stress test through the full route (including the cache layer) —
+    single consistent `predicted_winner` across every call, slowest call
+    under 500ms (cold + warm combined).
+- **Acceptance criterion 5 gap — documented, not silently skipped.** Live
+  DB idempotency (`kis_simulations` upserting on
+  `(match_id, weather_condition, referee_strictness)`) cannot be exercised
+  in this dev environment: `backend/app/models.py`'s declarative mapping
+  already fails to import on Python 3.9 for *pre-existing* reasons (the
+  `Match`/`ModelRun` classes' `X | None` union-type annotations need 3.10+
+  — confirmed via `git stash` in the Phase 3 status note, not something
+  this work introduced). What Phase 5 *did* verify is the precondition that
+  makes the DB-level guarantee meaningful in the first place: `compose()`'s
+  determinism (above). Actually exercising the migration needs either a
+  Python 3.10+ environment or a real Postgres instance — recommend doing
+  that as a pre-deploy smoke test once `USE_DB=true` is actually turned on
+  for this feature, not as a blocking item now.
+- Full suite: **116/116 passing** (80 through Phase 4 + 35 new in
+  `test_kis_regression.py` + 1 stress test added to the existing
+  `test_kis_api.py` = 36 net-new).
 
 ---
 
@@ -695,8 +805,8 @@ Data fetching: reuse the existing `frontend/lib/api.ts` `api()` helper
 | §6.1 ORM models added (2 new tables) | 0.5 day | ✅ Done (models added; live migration deferred to Phase 5 — no DB to migrate against yet) |
 | §6.2 `/api/v1/predict/kis` route + `kis_engine.compose()` | 1 day | ✅ Done |
 | §6.4 frontend: nav tab + 3 net-new components + KIS Hub page | 2.5 days | ✅ Done (ticker feed correctly deferred, see Phase 4 note; disclaimer found already done) |
-| Edge-case tests (§11) | 1.5 days | Partial (Phases 1-3 functions covered, 41 backend tests; Phase 4 browser-verified, not unit-tested) |
-| **Remaining (Phase 5 only)** | **~1 day** | |
+| Edge-case tests (§11) | 1.5 days | ✅ Done — 35-test regression + stress suite, all 23 played matches, 47-team fuzz sweep |
+| **Remaining** | **None — v1 complete** | DB idempotency (criterion 5) documented as a known gap, not blocking |
 
 ---
 
@@ -769,13 +879,22 @@ Data fetching: reuse the existing `frontend/lib/api.ts` `api()` helper
   mobile, a real fixture (Argentina/Switzerland) and a hypothetical D4
   what-if fixture (Brazil/Germany), zero console errors.
 
-**Phase 5 — Edge-Case Validation & Stress Testing** (1.5 days)
-- See §11 acceptance criteria + testing pyramid.
-- Regression run against every already-played WC2026 knockout match
-  (Argentina-Egypt, Portugal-Spain, etc. — all already in `knockout.json`)
-  to confirm KIS probabilities don't diverge from the existing
-  `match_flow`/bracket numbers for the same fixture (this is the
-  `knockout_resolve.py`-style consistency check called out in §0).
+**Phase 5 — Edge-Case Validation & Stress Testing** ✅ **DONE** (2026-07-07)
+- ✅ Regression run against all 23 already-played WC2026 knockout matches
+  (sourced from `tournament_form.WC2026_PLAYED_KNOCKOUT`, not hand-picked)
+  — zero divergences from `match_flow`'s output for the same fixture, the
+  `knockout_resolve.py`-style consistency check called out in §0.
+- ✅ Acceptance criteria 1/2/4/6/7 confirmed. Criterion 3 (400ms budget)
+  re-confirmed implicitly — 35 tests including ~70 full-N compose() calls
+  run in under 4 seconds total.
+- ✅ Edge cases: group-stage mode, referee-strictness extremes, weather
+  enum vs. real-venue precedence, zero-pedigree and entirely-unknown teams.
+- ✅ Stress: 47-team fuzz sweep at full N (zero exceptions), 20x repeated
+  API calls through the cache layer (consistent winner, <500ms worst case).
+- **Criterion 5 (DB idempotency) — documented gap, not silently skipped.**
+  See the Phase 5 status note above: can't be exercised in this Python 3.9
+  dev environment for reasons that predate this work. Determinism at the
+  compute layer (the precondition an upsert relies on) IS verified.
 
 ---
 
@@ -814,30 +933,45 @@ this (now-settled) data-model question.
 
 ---
 
-## 11. Acceptance Criteria
+## 11. Acceptance Criteria — final status (2026-07-07)
 
-1. `POST /api/v1/predict/kis` returns a 200 with the schema in §6.2 for
-   any two valid team names present in `teams()`.
-2. For a fixture also served by the existing `GET /api/predict` +
-   `GET /api/knockout`, the KIS response's `predicted_winner` and
-   `win_probability` do not diverge from the existing engine's output by
-   more than simulation noise (same consistency bar `knockout_resolve.py`
-   already enforces between the bracket and tournament-sim paths).
-3. 50,000-iteration KIS simulation completes in under 400ms server-side,
-   measured, not assumed (report actual p50/p95 in the PR).
-4. Every metric in the response carries a `"basis"` field of either
-   `"engine"` (backed by existing model output) or `"heuristic"` (proxy,
-   per §2/D1) — no field silently presents a proxy as measured data.
-5. `kis_simulations` rows are idempotent on `(match_id, weather_condition,
-   referee_strictness)` — rerunning identical inputs upserts, not
-   duplicates.
-6. Regression: KIS predictions for all already-completed WC2026 knockout
-   matches in `knockout.json` (R32 through today's R16) are generated and
-   spot-checked against the actual results for plausibility (not accuracy —
-   these are retrospective, not held-out).
-7. Frontend: KIS Hub renders on mobile (existing nav's `xl:` breakpoint
-   pattern) without layout breakage, matching the rest of the site's
-   responsive behavior.
+1. ✅ **Confirmed.** `POST /api/v1/predict/kis` returns a 200 with the
+   §6.2 schema for any two valid team names — verified across all 23 played
+   knockout matches plus a 47-team fuzz sweep, zero failures.
+2. ✅ **Confirmed — with a real fix along the way.** All 23 already-played
+   knockout matches checked against `match_flow`'s output: same
+   `predicted_winner`, `win_probability` within simulation noise every time.
+   BUT the original Phase 3/5 checks compared `kis` against `match_flow`
+   using the same (as it turned out, incompletely-built) `base` on both
+   sides — internally consistent, not verified against the bracket's own
+   prediction path. Checking the actual HTTP route against
+   `resolve_bracket()`'s real numbers surfaced a genuine bug (confidence
+   deltas up to 22 points — see the "Post-v1 follow-up" status note above),
+   now fixed and locked in by
+   `test_kis_route_confidence_and_win_prob_match_bracket_within_tolerance`.
+   Confidence now matches exactly (0 delta); win_probability within 1.23pp
+   (Monte Carlo noise, N=6k vs N=50k).
+3. ✅ **Confirmed, measured.** 50,000-iteration KIS simulation: p50=3.66ms,
+   p95=4.01ms (Phase 2 benchmark), re-validated implicitly by Phase 5's ~70
+   full-N calls completing in under 4 seconds total.
+4. ✅ **Confirmed.** Audited in `test_every_heuristic_field_carries_a_basis_label`
+   — every heuristic/partial field carries its label; unlisted teams report
+   `basis: "default"` rather than a silent guess.
+5. ⚠️ **Not verifiable in this environment — documented, not silently
+   skipped.** `models.py`'s declarative mapping requires Python 3.10+ for
+   reasons that predate this work (see the Phase 3/5 status notes). What
+   IS verified: `compose()`'s determinism for identical inputs, and that a
+   genuinely different input produces a genuinely different result — the
+   precondition the DB-level upsert guarantee depends on. Recommend
+   re-testing this specific criterion once `USE_DB=true` is turned on in a
+   real (3.10+) environment, before relying on it in production.
+6. ✅ **Confirmed, all 23 matches, not spot-checked.** Every already-played
+   WC2026 knockout match generates a plausible KIS report (valid
+   probability schema, correct team attribution, sane regulation-probability
+   sum) — see `test_kis_regression_all_played_knockout_matches`.
+7. ✅ **Confirmed, browser-verified.** Playwright screenshot at 390px
+   (iPhone-class viewport), a hypothetical Brazil vs Germany matchup — no
+   horizontal overflow, cards stack cleanly, zero console errors (Phase 4).
 
 ## 12. Testing Plan
 
@@ -885,7 +1019,8 @@ this (now-settled) data-model question.
 | `backend/app/ml_engine.py` | Added `kis()` bridge — same Redis-cache pattern as `match_flow()` | ✅ Done |
 | `backend/app/models.py` | Added `KISSimulation`, `TeamPressureInput` ORM models (additive, not yet migrated) | ✅ Done |
 | `backend/app/main.py` | Registered `kis` router | ✅ Done |
-| `backend/tests/test_kis_api.py` | New — 9 integration tests via FastAPI `TestClient` | ✅ Done |
+| `backend/tests/test_kis_api.py` | New — 9 integration tests via FastAPI `TestClient`, +1 stress test (Phase 5) = 10 | ✅ Done |
+| `backend/tests/test_kis_regression.py` | New (Phase 5) — 35 tests: full 23-match regression, basis audit, edge cases, determinism, 47-team fuzz sweep | ✅ Done |
 | `frontend/app/kis/page.tsx` | New — KIS Hub, team picker + result composition | ✅ Done |
 | `frontend/components/kis-vector-grid.tsx` | New | ✅ Done |
 | `frontend/components/kis-chaos-timeline.tsx` | New | ✅ Done |

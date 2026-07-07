@@ -364,6 +364,21 @@ def compose(engine, home: str, away: str, base: dict | None = None, *,
                                                 chaos_run_rate, knockout=knockout)
     gh, ga = sim["modal_score"]
 
+    # Pipeline-disagreement confidence penalty — mirrors
+    # knockout_engine._resolve_tie() exactly, so KIS's confidence doesn't
+    # silently overstate certainty relative to the bracket's own number for
+    # the same fixture. `base` (ensemble.predict, stat-driven) and `sim`
+    # (this module's own regulation-time Monte Carlo) are two separate
+    # calculations that normally agree; when they don't, that disagreement
+    # is a real uncertainty signal the ensemble's own confidence never sees.
+    PIPELINE_DISAGREEMENT_CONF_PENALTY = 15
+    confidence = base.get("confidence")
+    ph, pa = base.get("p_home"), base.get("p_away")
+    if confidence is not None and ph is not None and pa is not None:
+        fh, fa = sim["p_home_90"], sim["p_away_90"]
+        if fh != fa and ph != pa and (ph >= pa) != (fh >= fa):
+            confidence = max(1, confidence - PIPELINE_DISAGREEMENT_CONF_PENALTY)
+
     return {
         "engine": "kis_v1",
         "n_sims": KIS_N_SIMS,
@@ -400,7 +415,7 @@ def compose(engine, home: str, away: str, base: dict | None = None, *,
         "key_players": mf._key_players(prof),
         "risk_factors": mf._risk_factors(prof, sim, base.get("confidence"), knockout=knockout),
         "explainability": mf._explainability(prof, sim, base, favored, knockout=knockout),
-        "confidence": base.get("confidence"),
+        "confidence": confidence,
         "disclaimer": DISCLAIMER,
     }
 

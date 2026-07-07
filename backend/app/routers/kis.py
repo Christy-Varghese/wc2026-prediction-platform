@@ -21,7 +21,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from .. import fixtures, ml_engine
+from .. import fixtures, ml_engine, services
 
 router = APIRouter(prefix="/api/v1/predict", tags=["kis"])
 
@@ -50,7 +50,13 @@ def generate_kis_prediction(payload: KISPredictionRequest):
     if payload.home_team == payload.away_team:
         raise HTTPException(400, "home_team and away_team must differ")
 
-    base = ml_engine.predict_match(payload.home_team, payload.away_team, payload.neutral)
+    # services.predict() (not ml_engine.predict_match() directly) so `base`
+    # carries the same injury-availability + squad-strength-differential
+    # context (_ctx_for()) every other prediction on the site builds — the
+    # bracket's knockout_engine._resolve_tie() goes through this exact path.
+    # Skipping it silently drops real signal and materially shifts
+    # `confidence` (observed up to ~20pt swings without it).
+    base = services.predict(payload.home_team, payload.away_team, neutral=payload.neutral)
     return ml_engine.kis(
         payload.home_team, payload.away_team, base,
         knockout=payload.knockout, neutral=payload.neutral,
