@@ -1,7 +1,7 @@
 # WC2026 — CAI (ChrisAI) Prediction Platform — Session Handover
 
-Date: 2026-07-06 (originally 2026-06-21; updated in place each session — see
-§13 for the latest)
+Date: 2026-07-07 (originally 2026-06-21; updated in place each session — see
+§14 for the latest)
 Branch: `main` · all work committed + pushed to
 `github.com/Christy-Varghese/wc2026-prediction-platform`.
 
@@ -275,6 +275,34 @@ existing engine (one engine, no parallel model):
   retarget should also account for `KO_GOAL_SCALE`'s effect on draw
   likelihood (currently `ensemble.predict()` doesn't know a tie is a
   knockout match) once more knockout-stage results land.
+
+## 14. R16 near-complete (Jul 7) + points-based accuracy scoring + doc audit
+
+- **Results ingested:** Portugal 0-1 Spain, United States 1-4 Belgium (R16,
+  Jul 6); **Argentina 3-2 Egypt** (R16, Jul 7). R16 now 7 of 8 played —
+  only Switzerland vs Colombia (match 96) remains. Re-sim + snapshots
+  regenerated after each; podium currently **Argentina champion (28.2%),
+  Spain runner-up, France third** (Argentina vs Spain in the projected
+  final).
+- **Points-based prediction scoring** (commit `dc942e3`): replaced the old
+  binary hit/miss accuracy tally with a 5/3/1/0 points ladder (exact score /
+  correct winner / draw hit / miss) in `app/services.py::prediction_points`,
+  mirrored in `frontend/components/ui.tsx`. Applied everywhere accuracy is
+  shown (news ticker, `/matches` panels, knockout-tie verdicts). Current:
+  **241/475 pts overall (51%), 71/115 pts knockout (62%)**. Same commit fixed
+  a data bug where match 91's (Brazil v Norway) result note credited
+  Schjelderup with assisting both Haaland goals but the structured event data
+  only had him on one — corrected to match.
+- **Doc audit** (this session): refactored file structure to dedupe Elo math
+  and stale calibration outcomes (commit `a523d17`); removed `match1-check.md`
+  (a stray browser accessibility-tree debug dump, not documentation);
+  `MODEL_DATABASE.md` refreshed — added a per-model breakdown (§1.1–1.10, one
+  subsection per ensemble member + supporting system), replaced the stale
+  R32/R16 tables (previously only 5 of 16 R32 results filled in, no R16 at
+  all) with real current results pulled from `tournament_form.WC2026_PLAYED_KNOCKOUT`
+  and the `api_knockout.json` snapshot, updated the Golden Boot table and
+  accuracy log to the new points system, and fixed a stale `condition_coef`
+  in Appendix A (said 2.45, code has 2.0).
 
 ## Known issues / watch-outs
 - **Production `NEXT_PUBLIC_STATIC_ONLY` gap — FIXED Jul 6.** Neither
