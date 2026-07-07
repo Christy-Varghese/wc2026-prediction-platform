@@ -21,9 +21,10 @@ Usage:
 """
 from __future__ import annotations
 
-import math
 from functools import lru_cache
 from typing import Any
+
+from elo import _expected, _mov_mult, ELO_HOME_ADV
 
 # Lighter K-factor for in-tournament updates (base elo.py uses 40)
 TOURNEY_K = 20.0
@@ -32,19 +33,10 @@ TOURNEY_K = 20.0
 # the pre-tournament prior, so a single shootout fluke can't swing a team's
 # rating for the rest of the bracket.
 TOURNEY_K_KNOCKOUT = 30.0
-ELO_HOME_ADV = 65.0   # same as elo.py; all WC matches are effectively neutral
-
-
-def _expected(r_a: float, r_b: float) -> float:
-    return 1.0 / (1.0 + 10 ** ((r_b - r_a) / 400.0))
-
-
-def _mov_mult(goal_diff: int, elo_diff: float) -> float:
-    """Margin-of-victory multiplier (FiveThirtyEight-style)."""
-    gd = abs(goal_diff)
-    if gd <= 1:
-        return 1.0
-    return math.log(gd + 1) * (2.2 / (0.001 * abs(elo_diff) + 2.2))
+# _expected/_mov_mult/ELO_HOME_ADV imported from elo.py rather than
+# re-implemented here, so a future MOV-formula tune (or an ELO_MOV=False
+# toggle) can't silently drift between the pre-tournament fit and this
+# in-tournament patch.
 
 
 # ---------------------------------------------------------------------------

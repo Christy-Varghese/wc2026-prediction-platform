@@ -25,88 +25,22 @@ sys.path.insert(0, str(ROOT / "ml"))
 
 from ensemble import Ensemble, MatchContext
 import calibration as cal_mod
+from tournament_form import WC2026_PLAYED
 
 PROC = ROOT / "data" / "processed"
 
-# All played WC2026 matches with true outcomes (0=home, 1=draw, 2=away)
-# These are the ground-truth labels for calibration.
+# All played WC2026 matches with true outcomes (0=home, 1=draw, 2=away) —
+# ground-truth labels for calibration. Derived from tournament_form.
+# WC2026_PLAYED (the single source of truth for played results, kept current
+# on every ingest) rather than a hand-maintained list here: a hardcoded copy
+# silently goes stale every time a new round lands (this one stopped at ~75
+# games from Jun 30, missing the 19+ games played since). WC2026_PLAYED
+# already stores the 90'/ET score for shootout-decided ties, not the penalty
+# result, matching this script's "exclude penalty results" requirement for
+# free.
 WC2026_OUTCOMES = [
-    ("Mexico",        "South Africa",           0),
-    ("South Korea",   "Czech Republic",         0),
-    ("Canada",        "Bosnia and Herzegovina", 1),
-    ("United States", "Paraguay",               0),
-    ("Qatar",         "Switzerland",            1),
-    ("Brazil",        "Morocco",                1),
-    ("Haiti",         "Scotland",               2),
-    ("Australia",     "Turkey",                 0),
-    ("Germany",       "Curaçao",                0),
-    ("Netherlands",   "Japan",                  1),
-    ("Ivory Coast",   "Ecuador",                0),
-    ("Sweden",        "Tunisia",                0),
-    ("Spain",         "Cape Verde",             1),
-    ("Belgium",       "Egypt",                  1),
-    ("Saudi Arabia",  "Uruguay",                1),
-    ("Iran",          "New Zealand",            1),
-    ("France",        "Senegal",                0),
-    ("Iraq",          "Norway",                 2),
-    ("Argentina",     "Algeria",                0),
-    ("Austria",       "Jordan",                 0),
-    ("Portugal",      "DR Congo",               1),
-    ("England",       "Croatia",                0),
-    ("Ghana",         "Panama",                 0),
-    ("Uzbekistan",    "Colombia",               2),
-    ("Czech Republic","South Africa",           1),
-    ("Switzerland",   "Bosnia and Herzegovina", 0),
-    ("Canada",        "Qatar",                  0),
-    ("Mexico",        "South Korea",            0),
-    ("United States", "Australia",              0),
-    ("Scotland",      "Morocco",                2),
-    ("Brazil",        "Haiti",                  0),
-    ("Paraguay",      "Turkey",                 0),
-    ("Netherlands",   "Sweden",                 0),
-    ("Germany",       "Ivory Coast",            0),
-    ("Ecuador",       "Curaçao",                1),
-    ("Tunisia",       "Japan",                  2),
-    ("Spain",         "Saudi Arabia",           0),
-    ("Belgium",       "Iran",                   1),
-    ("Uruguay",       "Cape Verde",             1),
-    ("Argentina",     "Austria",                0),
-    ("New Zealand",   "Egypt",                  2),
-    ("France",        "Iraq",                   0),
-    ("Norway",        "Senegal",                0),
-    ("Jordan",        "Algeria",                2),
-    ("Portugal",      "Uzbekistan",             0),
-    ("England",       "Ghana",                  1),
-    ("Panama",        "Croatia",                2),
-    ("Colombia",      "DR Congo",               0),
-    ("Switzerland",   "Canada",                 0),
-    ("Bosnia and Herzegovina", "Qatar",         0),
-    ("Scotland",      "Brazil",                 2),
-    ("Morocco",       "Haiti",                  0),
-    ("South Africa",  "South Korea",            0),
-    ("Czech Republic","Mexico",                 2),
-    ("Ecuador",       "Germany",                0),
-    ("Curaçao",       "Ivory Coast",            2),
-    ("Japan",         "Sweden",                 1),
-    ("Tunisia",       "Netherlands",            2),
-    ("Turkey",        "United States",          0),
-    ("Paraguay",      "Australia",              1),
-    ("Norway",        "France",                 2),
-    ("Senegal",       "Iraq",                   0),
-    ("Cape Verde",    "Saudi Arabia",           1),
-    ("Uruguay",       "Spain",                  2),
-    ("Egypt",         "Iran",                   1),
-    ("New Zealand",   "Belgium",                2),
-    ("Panama",        "England",                2),
-    ("Croatia",       "Ghana",                  0),
-    ("Colombia",      "Portugal",               1),
-    ("DR Congo",      "Uzbekistan",             0),
-    ("Algeria",       "Austria",                1),
-    ("Jordan",        "Argentina",              2),
-    # R32 (exclude penalty results — model predicts 90-min outcome only)
-    ("South Africa",  "Canada",                 2),
-    ("Brazil",        "Japan",                  0),
-    ("Ivory Coast",   "Norway",                 2),
+    (home, away, 0 if hs > as_ else 1 if hs == as_ else 2)
+    for home, away, hs, as_, _neutral in WC2026_PLAYED
 ]
 
 
