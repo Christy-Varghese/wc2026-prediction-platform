@@ -77,6 +77,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
               <div className="text-[11px] text-muted/50">
                 Not affiliated with FIFA. Not betting advice. Tournament predictions for entertainment.
+                <div className="mt-1">
+                  Built by{" "}
+                  <a
+                    href="https://www.linkedin.com/in/christy-varghese/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline decoration-dotted hover:text-gold"
+                  >
+                    Christy Varghese
+                  </a>
+                  {" · "}
+                  <a
+                    href="https://github.com/Christy-Varghese"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline decoration-dotted hover:text-gold"
+                  >
+                    GitHub
+                  </a>
+                </div>
               </div>
             </div>
           </div>

@@ -77,6 +77,27 @@ export function CaiInfo() {
               <p className="mt-3 text-[10px] text-muted/60">
                 For entertainment. Not affiliated with FIFA. Not betting advice.
               </p>
+
+              <p className="mt-2 text-[10px] text-muted/60">
+                Built by{" "}
+                <a
+                  href="https://www.linkedin.com/in/christy-varghese/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted/80 underline decoration-dotted hover:text-gold"
+                >
+                  Christy Varghese
+                </a>
+                {" · "}
+                <a
+                  href="https://github.com/Christy-Varghese"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted/80 underline decoration-dotted hover:text-gold"
+                >
+                  GitHub
+                </a>
+              </p>
             </motion.div>
           </motion.div>
         )}

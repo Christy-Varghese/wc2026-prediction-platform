@@ -30,8 +30,13 @@ frontend/next-env.d.ts
 # env / os / tooling
 .env
 .DS_Store
-.claude/
+.claude/*
+!.claude/hooks/
+.claude/hooks/*
+!.claude/hooks/check-gstack.sh
+!.claude/settings.json
 .playwright-mcp/
 /tmp/
 .vercel
 .env*
+.gstack/

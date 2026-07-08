@@ -20,11 +20,18 @@ const TREND_COLORS = ["#FFD700", "#00D4FF", "#00FFB2", "#FF6B9D", "#B388FF",
  * results (merged in from the old /simulator page). ── */
 function useKnockoutStatus() {
   const { data: ko } = useSWR("/api/knockout", fetcher, { revalidateOnFocus: false });
-  return useMemo<{ eliminated: Set<string>; r16Teams: Set<string> }>(() => {
+  return useMemo<{ eliminated: Set<string>; r16Teams: Set<string>; r32Teams: Set<string> }>(() => {
     const eliminated = new Set<string>();
     const r16Teams   = new Set<string>();
-    if (!ko?.matches) return { eliminated, r16Teams };
+    const r32Teams   = new Set<string>();
+    if (!ko?.matches) return { eliminated, r16Teams, r32Teams };
     for (const m of ko.matches as any[]) {
+      // Collect all teams that made the R32 — anything outside this set
+      // (once the bracket is populated) was knocked out in the group stage.
+      if (m.type === "r32") {
+        if (m.home_team) r32Teams.add(m.home_team);
+        if (m.away_team) r32Teams.add(m.away_team);
+      }
       const hs = m.home_score;
       const aws = m.away_score;
       if (hs == null || aws == null) continue;
@@ -43,7 +50,7 @@ function useKnockoutStatus() {
       eliminated.add(loser);
       if (m.type === "r32") r16Teams.add(winner);
     }
-    return { eliminated, r16Teams };
+    return { eliminated, r16Teams, r32Teams };
   }, [ko]);
 }
 
@@ -64,7 +71,7 @@ export default function AnalyticsPage() {
   const { data: sim } = useSWR("/api/simulate?top=24", fetcher);
   const { data: groups } = useSWR("/api/simulate/groups", fetcher);
   const { data: trend } = useSWR("/api/simulate/champion-trend", fetcher);
-  const { eliminated, r16Teams } = useKnockoutStatus();
+  const { eliminated: koEliminated, r16Teams, r32Teams } = useKnockoutStatus();
   const [sortBy, setSortBy] = useState<SortStage>("Champion");
 
   // Which teams to plot on the trend chart. All teams are selectable; default
@@ -83,6 +90,12 @@ export default function AnalyticsPage() {
     });
 
   const fullTable = (sim?.champion_odds as any[] ?? []).map((r: any) => applyConditional(r, r16Teams));
+  // Once the R32 bracket is populated, any team not in it was knocked out
+  // in the group stage — fold those in alongside knockout-round losers.
+  const eliminated = new Set(koEliminated);
+  if (r32Teams.size > 0) {
+    for (const r of fullTable) if (!r32Teams.has(r.team)) eliminated.add(r.team);
+  }
   const sortFn = (a: any, b: any) => (b[sortBy] ?? 0) - (a[sortBy] ?? 0);
   const activeRows = fullTable.filter((r: any) => !eliminated.has(r.team)).sort(sortFn);
   const eliminatedRows = fullTable.filter((r: any) => eliminated.has(r.team));
