@@ -244,7 +244,7 @@ export default function MatchesPage() {
 
             {isOpen && (
               <div className="mt-4 space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <AnimatePresence>
                     {sortedMatches.map((m: any, i: number) => (
                       <motion.div key={m.id}
@@ -539,7 +539,7 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
               <div className={homeElim ? "grayscale opacity-40 shrink-0" : "shrink-0"}>
                 <Flag url={m.home_flag} name={m.home_team} size={28} />
               </div>
-              <span className={`min-w-0 break-words font-display font-semibold leading-tight text-sm
+              <span className={`min-w-0 break-normal font-display font-semibold leading-tight text-sm
                 ${homeElim ? "text-muted/40" : homeAdv ? "text-gold" : "text-stadium"}`}>
                 {m.home_team}
               </span>
@@ -561,7 +561,7 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
             )}
             {/* away */}
             <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-              <span className={`min-w-0 break-words text-right font-display font-semibold leading-tight text-sm
+              <span className={`min-w-0 break-normal text-right font-display font-semibold leading-tight text-sm
                 ${awayElim ? "text-muted/40" : awayAdv ? "text-gold" : "text-stadium"}`}>
                 {m.away_team}
               </span>
@@ -710,7 +710,7 @@ function BroadcastMatchCard({ m, onClick, eliminated }: {
           <div className={homeElim ? "grayscale opacity-40 shrink-0" : "shrink-0"}>
             <Flag url={m.home_flag} name={m.home_team} size={28} />
           </div>
-          <span className={`min-w-0 break-words leading-tight font-display font-semibold
+          <span className={`min-w-0 break-normal leading-tight font-display font-semibold
             ${homeElim ? "text-muted/40" : "text-stadium"}`}>
             {m.home_team}
           </span>
@@ -723,7 +723,7 @@ function BroadcastMatchCard({ m, onClick, eliminated }: {
           <span className="font-display text-xs font-bold text-muted/50 shrink-0 px-2">VS</span>
         )}
         <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
-          <span className={`min-w-0 break-words text-right leading-tight font-display font-semibold
+          <span className={`min-w-0 break-normal text-right leading-tight font-display font-semibold
             ${awayElim ? "text-muted/40" : "text-stadium"}`}>
             {m.away_team}
           </span>
