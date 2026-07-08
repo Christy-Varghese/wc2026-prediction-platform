@@ -2331,5 +2331,18 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260707"
+  },
+  "Switzerland|Colombia": {
+    "home": "Switzerland",
+    "away": "Colombia",
+    "score": [0, 0],
+    "pen_home": 4,
+    "pen_away": 3,
+    "scorers": {
+      "home": [],
+      "away": []
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260707"
   }
 }

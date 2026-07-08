@@ -472,5 +472,16 @@
     "sources": [
       "ESPN"
     ]
+  },
+  "Switzerland|Colombia": {
+    "headline": "Kobel's shootout heroics send Switzerland past a dominant Colombia and into the last eight for the first time since 1954",
+    "summary": "Colombia had the better of a tense, goalless 120 minutes in Vancouver — Jhon Lucumí's header cannoned back off the crossbar and Jaminton Campaz spurned a clear one-on-one during extra time — but couldn't find a breakthrough against a resolute Swiss backline. The shootout swung on goalkeeper Gregor Kobel's save from Cucho Hernández, and Rubén Vargas made no mistake with the winning kick, sending Camilo Vargas the wrong way to seal it 4-3 on penalties. Switzerland reach the World Cup quarter-finals for the first time since 1954 and will face Argentina next.",
+    "star_player": "Gregor Kobel",
+    "star_reason": "Marshalled a defense that survived a 1.03-to-0.35 xG deficit over 120 minutes, then produced the decisive save in the shootout.",
+    "turning_point": "Kobel's save from Cucho Hernández in the shootout — Switzerland never trailed in the kicks after that.",
+    "what_lacked": "Colombia created the better chances (Lucumí's crossbar header, Campaz's spurned one-on-one; 1.03 xG to Switzerland's 0.35) but converted just 3 of 7 shots on target, unable to turn territory into a goal; Switzerland, by contrast, managed only 1 shot on target from 22 attempts.",
+    "sources": [
+      "ESPN"
+    ]
   }
 }

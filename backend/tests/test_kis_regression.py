@@ -63,10 +63,12 @@ def test_kis_regression_all_played_knockout_matches(home, away):
     assert abs(reg_sum - 1.0) < 0.01, f"{home} v {away}: regulation probs don't sum to 1 ({reg_sum})"
 
 
-def test_kis_regression_covers_all_23_played_matches():
+def test_kis_regression_covers_at_least_all_currently_played_matches():
     # Guards against the parametrized test silently shrinking if
-    # WC2026_PLAYED_KNOCKOUT's shape changes.
-    assert len(PLAYED_PAIRS) == 23
+    # WC2026_PLAYED_KNOCKOUT's shape changes — >= (not ==) so ingesting a new
+    # result doesn't require bumping a hardcoded count here every time.
+    # 24 as of 2026-07-08 (Switzerland-Colombia R16, pens).
+    assert len(PLAYED_PAIRS) >= 24
 
 
 # ─────────────────────────────────────────────────────────────────────────────

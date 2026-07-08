@@ -551,7 +551,34 @@
   "kickoff": "2026-07-07T16:00:00-04:00",
   "city": "Vancouver",
   "home_label": "Winner Match 85",
-  "away_label": "Winner Match 87"
+  "away_label": "Winner Match 87",
+  "home_score": 0,
+  "away_score": 0,
+  "pen_home": 4,
+  "pen_away": 3,
+  "actual_events": [
+   {"minute": 90, "team": null, "type": "phase", "text": "Full time 0-0. Onto extra time."},
+   {"minute": 101, "team": "Colombia", "type": "var", "text": "Jhon Lucumí rises to meet a corner and his header cannons back off the crossbar — Colombia's best chance of the night goes unconverted."},
+   {"minute": 120, "team": null, "type": "phase", "text": "Extra time ends goalless. Penalty shootout."},
+   {"minute": 121, "team": null, "type": "shootout", "text": "Penalty shootout — Switzerland win 4-3. Gregor Kobel saves Cucho Hernández's kick, then Rubén Vargas sends Camilo Vargas the wrong way to seal it — Switzerland reach the World Cup quarter-finals for the first time since 1954."}
+  ],
+  "actual_stats": {"home_xg": 0.35, "away_xg": 1.03, "result_note": "Colombia had the better of a goalless 120 minutes — Lucumí's header off the crossbar and Campaz's one-on-one chance both went begging — but goalkeeper Gregor Kobel and Switzerland's penalty nerve won out. Kobel's save from Cucho Hernández set up Rubén Vargas to convert the winning kick. Switzerland advance to face Argentina in the quarter-finals."},
+  "actual_penalties": {
+   "home": [
+    {"player": "Granit Xhaka", "outcome": "scored"},
+    {"player": "Zeki Amdouni", "outcome": "scored"},
+    {"player": "Manuel Akanji", "outcome": "missed"},
+    {"player": "Cédric Itten", "outcome": "scored"},
+    {"player": "Rubén Vargas", "outcome": "scored"}
+   ],
+   "away": [
+    {"player": "Juan Fernando Quintero", "outcome": "scored"},
+    {"player": "Davinson Sánchez", "outcome": "missed"},
+    {"player": "Jaminton Campaz", "outcome": "scored"},
+    {"player": "Cucho Hernández", "outcome": "saved"},
+    {"player": "Luis Díaz", "outcome": "scored"}
+   ]
+  }
  },
  {
   "id": 97,
