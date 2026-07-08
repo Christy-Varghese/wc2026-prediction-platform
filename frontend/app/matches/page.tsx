@@ -8,10 +8,11 @@ import { api, pct0 } from "@/lib/api";
 import { Flag, ProbBar, LiveBadge, SectionHeader, LowConfidenceTag, isLowConfidence, PredictionBadge, predictionHit, predictionGoldHit, predictionPoints, predictionExactBonus } from "@/components/ui";
 import { KisInline } from "@/components/kis-inline";
 
-// Rounds that get a KIS mini-simulation inline on their card, per the user's
-// scope ("QF, SF and Finals" — Third place deliberately excluded, though the
-// same snapshot data exists for it too if that changes later).
-const KIS_ROUNDS = new Set(["Quarter-final", "Semi-final", "Final"]);
+// Rounds that get a KIS mini-simulation inline on their card — every
+// upcoming knockout tie from the Quarter-final on (all of them already have
+// pre-generated KIS snapshots via gen_snapshots.py's "any unresolved
+// bracket tie" logic, so Third place is free to include for consistency).
+const KIS_ROUNDS = new Set(["Quarter-final", "Semi-final", "Third place", "Final"]);
 
 const fetcher = (p: string) => api(p);
 const GROUPS = "ABCDEFGHIJKL".split("");
