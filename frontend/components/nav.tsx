@@ -12,7 +12,6 @@ const LINKS: [string, string, string][] = [
   ["/matches",   "Matches",    "⚽"],
   ["/groups",    "Groups",     "▦"],
   ["/bracket",   "Bracket",    "⬡"],
-  ["/kis",       "KIS",        "⚡"],
   ["/teams",     "Teams",      "🛡"],
   ["/awards",    "Awards",     "🏆"],
   ["/analytics", "Analytics",  "◈"],

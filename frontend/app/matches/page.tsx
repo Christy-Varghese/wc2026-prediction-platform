@@ -6,6 +6,12 @@ import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
 import { api, pct0 } from "@/lib/api";
 import { Flag, ProbBar, LiveBadge, SectionHeader, LowConfidenceTag, isLowConfidence, PredictionBadge, predictionHit, predictionGoldHit, predictionPoints, predictionExactBonus } from "@/components/ui";
+import { KisInline } from "@/components/kis-inline";
+
+// Rounds that get a KIS mini-simulation inline on their card, per the user's
+// scope ("QF, SF and Finals" — Third place deliberately excluded, though the
+// same snapshot data exists for it too if that changes later).
+const KIS_ROUNDS = new Set(["Quarter-final", "Semi-final", "Final"]);
 
 const fetcher = (p: string) => api(p);
 const GROUPS = "ABCDEFGHIJKL".split("");
@@ -591,6 +597,11 @@ function KnockoutMatchCard({ m, roundLabel, eliminated }: {
               {m.shootout && <span className="text-muted">· pens</span>}
               {!m.shootout && !m.played && m.predicted_score && (() => { const [h,a] = m.predicted_score.split("-").map(Number); return h === a && m.predicted_winner; })() && <span className="text-muted">· AET</span>}
             </div>
+          )}
+
+          {/* KIS mini-simulation — QF/SF/Final, upcoming only */}
+          {!played && KIS_ROUNDS.has(m.round) && (
+            <KisInline home={m.home_team} away={m.away_team} />
           )}
 
           <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-muted">
