@@ -806,7 +806,7 @@ RIGHT HALF
 | 87 | Jul 3 | Colombia | **1–0** | Ghana | — | Colombia |
 | 88 | Jul 3 | Australia | **1–1** | Egypt | 2–4 | **Egypt** |
 
-### Round of 16 Results — 7 of 8 played
+### Round of 16 Results — 8 of 8 played
 
 | Match ID | Date | Home | Score | Away | Winner | Status |
 |----------|------|------|-------|------|--------|--------|
@@ -817,16 +817,19 @@ RIGHT HALF
 | 93 | Jul 6 | Portugal | **0–1** | Spain | Spain | ✅ PLAYED |
 | 94 | Jul 6 | United States | **1–4** | Belgium | Belgium | ✅ PLAYED |
 | 95 | Jul 7 | Argentina | **3–2** | Egypt | Argentina | ✅ PLAYED |
-| 96 | — | Switzerland | — | Colombia | Colombia (predicted) | UPCOMING |
+| 96 | Jul 7 | Switzerland | **0–0** (4–3 pens) | Colombia | Switzerland | ✅ PLAYED — model had favoured Colombia (55%), missed call |
 
-### Quarter-Final Predictions (CAI)
+### Quarter-Final Results / Predictions (CAI)
 
-| Match ID | Home | vs | Away | CAI Winner |
-|----------|------|----|------|------------|
-| 97 | France | vs | Morocco | France |
-| 98 | Spain | vs | Belgium | Spain |
-| 99 | Norway | vs | England | England |
-| 100 | Argentina | vs | Colombia | Argentina |
+| Match ID | Date | Home | vs | Away | Score | CAI Winner | Status |
+|----------|------|------|----|------|-------|------------|--------|
+| 97 | Jul 9 | France | vs | Morocco | **2–0** | France | ✅ PLAYED — correct call |
+| 98 | Jul 10 | Spain | vs | Belgium | — | Spain | UPCOMING |
+| 99 | Jul 11 | Norway | vs | England | — | England | UPCOMING |
+| 100 | Jul 11 | Argentina | vs | Switzerland | — | Argentina | UPCOMING |
+
+Match 100 is now **Argentina vs Switzerland** (not Colombia — Switzerland won
+match 96 on penalties, a genuine model miss; see Section 12).
 
 ### Semi-Final Predictions (CAI)
 
@@ -839,12 +842,17 @@ RIGHT HALF
 
 | Match ID | Home | vs | Away | CAI Winner | Champion % |
 |----------|------|----|------|------------|------------|
-| 104 | Spain | vs | **Argentina** | **Argentina** | 28.2% |
+| 104 | Spain | vs | **Argentina** | **Argentina** | 30.9% |
 
-**Current podium projection** (50k Monte Carlo, full-ensemble retarget — Section 1.9):
-champion **Argentina** (28.2%), runner-up **Spain**, third **France**. Title
-odds for the rest of the field: France 21.1%, Spain 19.5%, England 14.3%,
-Morocco 5.4%, Norway 4.2%.
+**Current podium projection** (50k Monte Carlo, full-ensemble retarget — Section 1.9,
+refreshed after France 2–0 Morocco, Jul 9):
+champion **Argentina** (30.9%), runner-up **France** (21.0%), third **Spain**
+(19.9%). Title odds for the rest of the field: England 14.4%, Morocco 5.7%,
+Norway 4.0%, Belgium 2.6%, Switzerland 1.6%. Note the modal single-path
+projection (used for podium/bracket display) now has France, not Spain,
+reaching the final now that France's own QF is a locked win rather than a
+coin-flip input — Spain still shows higher raw title odds than France did
+pre-QF97, but France's path through the bracket is currently favoured.
 
 ---
 
@@ -869,6 +877,11 @@ Morocco 5.4%, Norway 4.2%.
 | 78 (CIV 1–2 NOR) | 39 | Norway | Antonio Nusa | — | Goal |
 | 78 | 46 | Ivory Coast | Amad Diallo | — | Goal |
 | 78 | 86 | Norway | Erling Haaland | Sander Berge | Goal |
+| 96 (SUI 0–0 COL, pens 4–3) | Pens | Switzerland | Xhaka ✓, Amdouni ✓, Akanji ✗, Itten ✓, Vargas ✓ | — | Shootout |
+| 96 | Pens | Colombia | Quintero ✓, Sánchez ✗, Campaz ✓, Hernández ✗ (saved), Díaz ✓ | — | Shootout |
+| 97 (FRA 2–0 MAR) | 28 | France | Kylian Mbappé (pen missed) | — | Penalty saved |
+| 97 | 60 | France | Kylian Mbappé | — | Goal |
+| 97 | 66 | France | Ousmane Dembélé | — | Goal |
 
 ### 11.2 Notable Group Stage Scorers (from ESPN feed)
 
@@ -882,18 +895,22 @@ Morocco 5.4%, Norway 4.2%.
 | Norway 3–2 Senegal | Pedersen, Haaland 48', Sørloth; Sarr 64', 90' |
 | Senegal 5–0 Iraq | Diatta, Sarr (×2), Dia, Diedhiou |
 
-### 11.3 WC2026 Top Scorers (Golden Boot — as of Jul 7)
+### 11.3 WC2026 Top Scorers (Golden Boot — as of Jul 9)
 
 | Rank | Player | Team | Goals |
 |------|--------|------|-------|
-| 1 | Lionel Messi | Argentina | **8** |
-| 2 | Erling Haaland | Norway | 7 |
-| 3 | Kylian Mbappé | France | 7 |
+| 1 | Kylian Mbappé | France | **8** (tiebreak: assists) |
+| 2 | Lionel Messi | Argentina | 8 |
+| 3 | Erling Haaland | Norway | 7 |
 | 4 | Harry Kane | England | 5 |
-| 5 | Ismaïla Sarr | Senegal | 4 |
-| 6 | Julián Quiñones | Mexico | 4 |
-| 7 | Mikel Oyarzabal | Spain | 4 |
-| 8 | Ousmane Dembélé | France | 4 |
+| 5 | Ousmane Dembélé | France | 5 |
+| 6 | Ismaïla Sarr | Senegal | 4 |
+| 7 | Julián Quiñones | Mexico | 4 |
+| 8 | Mikel Oyarzabal | Spain | 4 |
+
+Mbappé's brace of chances against Morocco (a converted 60th-minute finish
+after an earlier saved penalty) drew him level with Messi at 8 — his QF-stage
+tiebreak edge is on assists, per the live standings.
 
 Source: `backend/data/raw/awards.json` (`golden_boot`, live-computed from
 `tournament_stats.player_goals()` off the ESPN scorer feed — auto-updates on
@@ -912,16 +929,16 @@ winner correct, **1 pt** actual result was a draw (flat — correctly calling
 matches played. An **exact-scoreline hit is a separate +1 bonus**, tracked
 alongside but never summed into this total.
 
-### 12.1 Current Totals (as of Jul 7, 95 matches played)
+### 12.1 Current Totals (as of Jul 9, 96 matches played)
 
 | Scope | Points | Max | Accuracy | Exact-score bonus |
 |-------|--------|-----|----------|--------------------|
-| **Overall** (72 group + 23 knockout) | 215 | 285 | **75%** | 15 |
+| **Overall** (72 group + 24 knockout) | 218 | 291 | **75%** | 15 |
 | Group stage only | 152 | 216 | 70% | 11 |
-| **Knockout stage** (R32 + R16 so far) | 63 | 69 | **91%** | 4 |
+| **Knockout stage** (R32 + R16 + QF97 so far) | 66 | 75 | **88%** | 4 |
 
 Source: `frontend/public/snapshot/api_news.json` ticker
-(`"CAI accuracy: 215/285 pts (75%) · 15 exact scores · KO: 63/69 pts (91%)"`),
+(`"CAI accuracy: 218/291 pts (75%) · 15 exact scores · KO: 66/75 pts (88%)"`),
 regenerated by `gen_snapshots.py` after every result ingest. Knockout accuracy
 running well ahead of group-stage accuracy tracks with the form-led thesis
 (Section 1) — teams still in the tournament are, by construction, in better
@@ -929,13 +946,14 @@ recent form than the ones already eliminated, and the flat 1pt draw floor
 (rather than a 0) means the group stage's higher draw rate costs it less than
 it used to under the old ladder.
 
-### 12.2 Knockout Stage Accuracy (R32 + R16, 23 matches played)
+### 12.2 Knockout Stage Accuracy (R32 + R16 + QF97, 24 matches played)
 
 | Round | Matches | Points | Max | Accuracy |
 |-------|---------|--------|-----|----------|
-| Round of 32 | 16 | — | 48 | — |
-| Round of 16 (7 of 8 played) | 7 | — | 21 | — |
-| **Total knockout so far** | **23** | **63** | **69** | **91%** |
+| Round of 32 | 16 | 42 | 48 | 88% (Paraguay/Germany, Morocco/Netherlands both missed) |
+| Round of 16 (8 of 8 played) | 8 | 21 | 24 | 88% (Switzerland/Colombia missed) |
+| Quarter-final (1 of 4 played) | 1 | 3 | 3 | 100% (France/Morocco correct) |
+| **Total knockout so far** | **24** | **66** | **75** | **88%** |
 
 Per-match predicted-winner/points breakdown isn't reproduced here — the
 model's prediction for an already-played match keeps changing retrospectively

@@ -483,5 +483,17 @@
     "sources": [
       "ESPN"
     ]
+  },
+  "France|Morocco": {
+    "headline": "Mbappé makes amends for a missed penalty as France ease past Morocco and into the semi-finals",
+    "summary": "Kylian Mbappé saw a first-half penalty saved by Yassine Bounou after Didier Deschamps left him waiting to take it, but made up for it just after the hour with a curling finish into the far corner, and Ousmane Dembélé doubled the lead six minutes later with a low drive. France dominated the underlying numbers (3.69 xG to 0.14) despite Morocco holding more of the ball, ending the last African side's run in the tournament and reaching a third straight World Cup semi-final — a feat only Brazil and Germany have managed. Mbappé took a knock on the ankle late on but allayed any injury concern.",
+    "star_player": "Kylian Mbappé",
+    "star_reason": "Missed a penalty, then scored the opener and set up the tone for Dembélé's second — his eighth goal of the tournament, level with Messi.",
+    "turning_point": "Mbappé's 60th-minute curler, breaking the deadlock right after his earlier spot-kick miss.",
+    "what_lacked": "Morocco held 52% possession but managed just 1 shot on target and 0.14 xG, unable to trouble Maignan's goal after Bounou's heroics from the penalty spot.",
+    "sources": [
+      "ESPN",
+      "FIFA"
+    ]
   }
 }

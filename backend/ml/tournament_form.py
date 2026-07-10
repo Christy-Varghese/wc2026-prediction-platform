@@ -170,6 +170,8 @@ WC2026_PLAYED_KNOCKOUT: list[tuple[str, str, int, int, bool]] = [
     # ── Round of 16 (Jul 7) ──
     ("Argentina",       "Egypt",                   3, 2, True),
     ("Switzerland",     "Colombia",                0, 0, True),  # Switzerland won 4-3 pens
+    # ── Quarter-final (Jul 9) ──
+    ("France",          "Morocco",                 2, 0, True),
 ]
 
 # Full play-order ledger for consumers that don't care about stage (form/

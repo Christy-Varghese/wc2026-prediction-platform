@@ -588,7 +588,15 @@
   "kickoff": "2026-07-09T16:00:00-04:00",
   "city": "Boston",
   "home_label": "Winner Match 89",
-  "away_label": "Winner Match 90"
+  "away_label": "Winner Match 90",
+  "home_score": 2,
+  "away_score": 0,
+  "actual_events": [
+   {"minute": 28, "team": "France", "type": "penalty_missed", "scorer": "Kylian Mbappé", "assist": null, "text": "Mbappé is awarded a penalty after a VAR review, but Yassine Bounou guesses right and saves it — Morocco survive."},
+   {"minute": 60, "team": "France", "type": "goal", "scorer": "Kylian Mbappé", "assist": null, "text": "Mbappé makes amends for his earlier miss, curling a superb effort into the far corner. France lead 1-0."},
+   {"minute": 66, "team": "France", "type": "goal", "scorer": "Ousmane Dembélé", "assist": null, "text": "Dembélé drives forward and finishes low past Bounou — France 2-0 up."}
+  ],
+  "actual_stats": {"home_xg": 3.69, "away_xg": 0.14, "home_possession": 48, "away_possession": 52, "home_shots_on_target": 8, "away_shots_on_target": 1, "result_note": "Mbappé missed a first-half penalty after Deschamps left him waiting to take it, but atoned with a curling finish just after the hour, and Dembélé doubled the lead six minutes later. France dominate the underlying numbers (3.69 xG to 0.14) despite Morocco's share of possession, and end the last African nation's run in the tournament. Mbappé takes a knock on the ankle late on but allays injury concern; France reach a third straight World Cup semi-final, joining Brazil and Germany."}
  },
  {
   "id": 98,

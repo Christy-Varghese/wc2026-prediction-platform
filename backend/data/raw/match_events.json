@@ -2344,5 +2344,19 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260707"
+  },
+  "France|Morocco": {
+    "home": "France",
+    "away": "Morocco",
+    "score": [2, 0],
+    "scorers": {
+      "home": [
+        {"player": "Kylian Mbappé", "minute": 60, "type": "goal"},
+        {"player": "Ousmane Dembélé", "minute": 66, "type": "goal"}
+      ],
+      "away": []
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260709"
   }
 }
