@@ -171,6 +171,17 @@ PLAYER_DB: dict[str, dict[str, Any]] = {
         "impact": 0.92, "status": "fit",
         "club": "Real Madrid", "age": 21, "caps": 42,
     },
+    "Declan Rice": {
+        # Doubtful for the semi-final: subbed at half-time in the QF win over
+        # Norway after a sickness bug (3 days in bed beforehand), and carries a
+        # chronic lower-back/hamstring issue. England making a late call
+        # (BBC, 13 Jul 2026). Numeric fields get refreshed by the Kaggle merge
+        # on load; `status` is preserved from here (see _merge_external_players).
+        "team": "England", "position": "CM",
+        "form": 7.5, "fitness": 0.65, "goals_last5": 0, "assists_last5": 1,
+        "impact": 0.85, "status": "doubtful",
+        "club": "Arsenal", "age": 27, "caps": 78,
+    },
     "Phil Foden": {
         "team": "England", "position": "FW",
         "form": 8.6, "fitness": 0.95, "goals_last5": 4, "assists_last5": 3,
