@@ -161,6 +161,45 @@ def test_kis_route_confidence_and_win_prob_match_bracket_within_tolerance():
     assert not failures, "KIS route diverges from the bracket:\n" + "\n".join(failures)
 
 
+def test_kis_confidence_matches_match_flow_for_a_near_coinflip_fixture():
+    # Regression guard for a real bug found 2026-07-14, pinned to a specific
+    # fixture (rather than "whichever bracket tie is next", which stops
+    # exercising this once that tie resolves): kis_engine.compose() checked
+    # its pipeline-disagreement penalty against ITS OWN KIS_N_SIMS=50,000
+    # regulation-time simulation instead of match_flow.simulate_tie()'s
+    # N_SIMS=6,000 one. Both start from the identical seed
+    # (match_flow._seed(home, away)), but `_simulate()` draws home goals then
+    # away goals sequentially off the SAME rng: the home-goals draw is
+    # prefix-stable across `n`, but by the away-goals draw the underlying
+    # bit-stream position has already diverged (it depends on how many
+    # samples the home-goals draw consumed, which depends on `n`). So a
+    # 6,000-sample and a 50,000-sample run from the same seed are two
+    # independent realizations past the first draw, not the same estimate at
+    # different precision -- for a near-50/50 fixture like France v Spain
+    # they can land on opposite sides of "who's favored in regulation",
+    # producing a confidence delta against the bracket for the SAME fixture
+    # (observed pre-fix: bracket confidence 32, KIS confidence 17).
+    from app import knockout_engine, ml_engine
+
+    bracket = knockout_engine.resolve_bracket()
+    tie = next((m for m in bracket["matches"]
+               if {m.get("home_team"), m.get("away_team")} == {"France", "Spain"}), None)
+    if tie is None or tie.get("home_score") is not None:
+        import pytest
+        pytest.skip("France v Spain is no longer an unresolved bracket tie")
+
+    flow = ml_engine.match_flow("France", "Spain", neutral=True)
+    r = client.get("/api/v1/predict/kis", params={"home_team": "France", "away_team": "Spain"})
+    assert r.status_code == 200
+    kis_confidence = r.json()["confidence"]
+
+    assert kis_confidence == tie["confidence"], (
+        f"KIS confidence ({kis_confidence}) diverges from the bracket's "
+        f"({tie['confidence']}) for France v Spain -- regulation split was "
+        f"{flow['probabilities']['regulation']}"
+    )
+
+
 def test_kis_get_request_is_snapshottable_shape():
     # The whole point of switching to GET: gen_snapshots.py's grab() only
     # does client.get(path) — this locks in that the route stays GET-shaped

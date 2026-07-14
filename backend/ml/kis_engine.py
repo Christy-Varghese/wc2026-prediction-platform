@@ -366,16 +366,35 @@ def compose(engine, home: str, away: str, base: dict | None = None, *,
 
     # Pipeline-disagreement confidence penalty — mirrors
     # knockout_engine._resolve_tie() exactly, so KIS's confidence doesn't
-    # silently overstate certainty relative to the bracket's own number for
-    # the same fixture. `base` (ensemble.predict, stat-driven) and `sim`
-    # (this module's own regulation-time Monte Carlo) are two separate
-    # calculations that normally agree; when they don't, that disagreement
-    # is a real uncertainty signal the ensemble's own confidence never sees.
+    # silently overstate (or overstate) certainty relative to the bracket's
+    # own number for the same fixture. `base` (ensemble.predict, stat-driven)
+    # and the bracket's own regulation-time Monte Carlo
+    # (`match_flow.simulate_tie()`, N_SIMS=6000) are two separate
+    # calculations that normally agree; when they don't, that disagreement is
+    # a real uncertainty signal the ensemble's own confidence never sees.
+    #
+    # This MUST be checked against a fresh `_simulate()` run at `mf.N_SIMS`
+    # (matching `simulate_tie()` exactly), not against `sim` above (this
+    # module's own KIS_N_SIMS=50,000 run). Both start from the identical
+    # seed, but `_simulate()` draws home goals then away goals sequentially
+    # off the SAME rng: the home-goals draw is prefix-stable across `n`, but
+    # by the away-goals draw the underlying bit-stream position has already
+    # diverged (it depends on how many samples the home-goals draw consumed,
+    # which depends on `n`). So a 6000-sample and a 50000-sample run from the
+    # same seed are two independent realizations past the first draw, not
+    # "the same estimate at different precision" — for a near-50/50 fixture
+    # they can land on opposite sides of the "who's favored in regulation"
+    # line, making this route's penalty check disagree with the bracket's
+    # for the identical fixture (observed for France v Spain: bracket
+    # confidence 32, KIS confidence 17). Re-running `_simulate()` at
+    # `mf.N_SIMS` reproduces the bracket's regulation split bit-for-bit.
     PIPELINE_DISAGREEMENT_CONF_PENALTY = 15
     confidence = base.get("confidence")
     ph, pa = base.get("p_home"), base.get("p_away")
     if confidence is not None and ph is not None and pa is not None:
-        fh, fa = sim["p_home_90"], sim["p_away_90"]
+        penalty_rng = np.random.default_rng(mf._seed(home, away) + (0 if knockout else 1))
+        penalty_sim = mf._simulate(prof, penalty_rng, knockout=knockout, n=mf.N_SIMS)
+        fh, fa = penalty_sim["p_home_90"], penalty_sim["p_away_90"]
         if fh != fa and ph != pa and (ph >= pa) != (fh >= fa):
             confidence = max(1, confidence - PIPELINE_DISAGREEMENT_CONF_PENALTY)
 
