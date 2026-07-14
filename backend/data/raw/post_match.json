@@ -531,5 +531,17 @@
       "ESPN",
       "FIFA"
     ]
+  },
+  "France|Spain": {
+    "headline": "Oyarzabal and Porro send Spain past France and into the final",
+    "summary": "Mikel Oyarzabal converted a 22nd-minute penalty and Pedro Porro doubled the lead with a well-taken finish in the 58th, and Spain controlled the game from there, with Rodri and the midfield starving France's front line of service. Kylian Mbappe and France never found a way past Unai Simon. Spain reach their first World Cup final since 2010.",
+    "star_player": "Pedro Porro",
+    "star_reason": "Scored the decisive second goal and was a constant outlet down the right, named Man of the Match.",
+    "turning_point": "Oyarzabal's 22nd-minute penalty, which forced France to chase the game against a Spain side content to sit on the ball.",
+    "what_lacked": "France managed just 3 shots on target and never troubled Unai Simon after going behind, with Mbappe starved of service.",
+    "sources": [
+      "ESPN",
+      "FIFA"
+    ]
   }
 }

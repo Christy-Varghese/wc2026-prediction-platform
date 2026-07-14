@@ -661,7 +661,14 @@
   "kickoff": "2026-07-14T15:00:00-04:00",
   "city": "Dallas",
   "home_label": "Winner Match 97",
-  "away_label": "Winner Match 98"
+  "away_label": "Winner Match 98",
+  "home_score": 0,
+  "away_score": 2,
+  "actual_events": [
+   {"minute": 22, "team": "Spain", "type": "penalty_goal", "scorer": "Mikel Oyarzabal", "assist": null, "text": "Oyarzabal sends Maignan the wrong way from the spot — Spain lead 1-0."},
+   {"minute": 58, "team": "Spain", "type": "goal", "scorer": "Pedro Porro", "assist": null, "text": "Porro arrives late at the back post and finishes clinically — Spain 2-0 up, and France are running out of road."}
+  ],
+  "actual_stats": {"home_xg": 0.87, "away_xg": 1.74, "home_possession": 42, "away_possession": 58, "home_shots_on_target": 3, "away_shots_on_target": 7, "result_note": "Spain controlled this from Oyarzabal's 22nd-minute penalty onward, with Rodri and the midfield trio starving France's front line of service. Porro's 58th-minute finish put it out of reach, and France never found a way past Unai Simón. A shutout for Spain's back line, who reach the final for the first time since 2010 and hand France's Mbappé and Deschamps' era a stinging final-tournament defeat."}
  },
  {
   "id": 102,
