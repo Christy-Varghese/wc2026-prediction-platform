@@ -495,5 +495,41 @@
       "ESPN",
       "FIFA"
     ]
+  },
+  "Spain|Belgium": {
+    "headline": "Merino's late strike sends Spain past Belgium and into the semi-finals",
+    "summary": "Fabián Ruiz put Spain ahead with a crisp finish from the edge of the box in the 30th minute, but Charles De Ketelaere levelled for Belgium right before half-time to set up a nervy second half. Mikel Merino settled it two minutes from time, pouncing after more incisive work from Lamine Yamal, who was again the architect of Spain's attacking play. Spain reach a fourth World Cup semi-final, where they'll face France.",
+    "star_player": "Lamine Yamal",
+    "star_reason": "Drove Spain's attack throughout and was directly involved in the buildup to both goals, named Man of the Match.",
+    "turning_point": "Merino's 88th-minute winner, snatching it back for Spain after Belgium had clawed level.",
+    "what_lacked": "Belgium's De Ketelaere equaliser was their only real moment of quality; they managed just 4 shots on target to Spain's 6.",
+    "sources": [
+      "ESPN",
+      "FIFA"
+    ]
+  },
+  "Norway|England": {
+    "headline": "Bellingham brace sends England past Norway and into the last four",
+    "summary": "Andreas Schjelderup gave Norway a first-half lead that had them dreaming of a first World Cup semi-final since 1938, but Jude Bellingham dragged England level in first-half stoppage time and struck again early in extra time to complete the turnaround. Bellingham's second goal means England now have two players — himself and Harry Kane — with six or more goals in the tournament, a World Cup first. England advance to face Argentina in the semi-final.",
+    "star_player": "Jude Bellingham",
+    "star_reason": "Scored twice, including the extra-time winner, to drag England through a match they trailed for most of normal time.",
+    "turning_point": "Bellingham's stoppage-time equaliser right before half-time, which kept England in the tie.",
+    "what_lacked": "Norway couldn't build on Schjelderup's early goal and managed only 3 shots on target across 120 minutes.",
+    "sources": [
+      "ESPN",
+      "FIFA"
+    ]
+  },
+  "Argentina|Switzerland": {
+    "headline": "Alvarez and Lautaro see off battling Switzerland in extra time",
+    "summary": "Alexis Mac Allister's early strike put Argentina in control, but Dan Ndoye's second-half leveller for Switzerland threatened a shock. Julián Alvarez restored the lead in extra time and Lautaro Martínez wrapped it up in the 121st minute. The result ended Lionel Messi's run of scoring in nine consecutive World Cup matches, but Argentina march on to a semi-final against England.",
+    "star_player": "Julián Alvarez",
+    "star_reason": "Broke the deadlock in extra time with a well-taken finish, named Man of the Match after a tireless performance up front.",
+    "turning_point": "Alvarez's 112th-minute goal, restoring Argentina's lead after Switzerland had drawn level.",
+    "what_lacked": "Switzerland's Ndoye equaliser aside, they created little else, finishing with just 3 shots on target.",
+    "sources": [
+      "ESPN",
+      "FIFA"
+    ]
   }
 }

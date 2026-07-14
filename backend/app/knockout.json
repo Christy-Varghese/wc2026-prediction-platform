@@ -606,7 +606,15 @@
   "kickoff": "2026-07-10T15:00:00-04:00",
   "city": "Los Angeles",
   "home_label": "Winner Match 93",
-  "away_label": "Winner Match 94"
+  "away_label": "Winner Match 94",
+  "home_score": 2,
+  "away_score": 1,
+  "actual_events": [
+   {"minute": 30, "team": "Spain", "type": "goal", "scorer": "Fabián Ruiz", "assist": null, "text": "Fabián Ruiz finds space on the edge of the box and finishes crisply — Spain lead 1-0."},
+   {"minute": 41, "team": "Belgium", "type": "goal", "scorer": "Charles De Ketelaere", "assist": null, "text": "De Ketelaere pulls Belgium level right before the break — 1-1."},
+   {"minute": 88, "team": "Spain", "type": "goal", "scorer": "Mikel Merino", "assist": null, "text": "Merino pounces late to restore Spain's lead with just minutes to go — 2-1!"}
+  ],
+  "actual_stats": {"home_xg": 1.92, "away_xg": 1.28, "home_possession": 58, "away_possession": 42, "home_shots_on_target": 6, "away_shots_on_target": 4, "result_note": "Fabián Ruiz's fine finish put Spain ahead inside half an hour, but Charles De Ketelaere levelled for Belgium right before the interval to set up a nervy finish. Mikel Merino popped up with two minutes of normal time to spare to send Spain through, teenager Lamine Yamal again the architect and named Man of the Match. Spain reach a fourth World Cup semi-final, where they'll face France."}
  },
  {
   "id": 99,
@@ -616,7 +624,15 @@
   "kickoff": "2026-07-11T17:00:00-04:00",
   "city": "Miami",
   "home_label": "Winner Match 91",
-  "away_label": "Winner Match 92"
+  "away_label": "Winner Match 92",
+  "home_score": 1,
+  "away_score": 2,
+  "actual_events": [
+   {"minute": 36, "team": "Norway", "type": "goal", "scorer": "Andreas Schjelderup", "assist": null, "text": "Schjelderup slots home to put Norway ahead — 1-0."},
+   {"minute": 45, "team": "England", "type": "goal", "scorer": "Jude Bellingham", "assist": null, "text": "Bellingham drags England level right at the end of the first half — 1-1."},
+   {"minute": 93, "team": "England", "type": "goal", "scorer": "Jude Bellingham", "assist": null, "text": "Bellingham strikes again early in extra time to complete the turnaround — England lead 2-1."}
+  ],
+  "actual_stats": {"home_xg": 1.14, "away_xg": 1.81, "home_possession": 44, "away_possession": 56, "home_shots_on_target": 3, "away_shots_on_target": 7, "result_note": "Andreas Schjelderup's opener had Norway on course for a first World Cup semi-final since 1938, but Jude Bellingham dragged England level in first-half stoppage time and struck again early in extra time to complete the comeback. Bellingham's brace means England now have two players — himself and Harry Kane — with six or more tournament goals, a World Cup first; Bellingham is named Man of the Match. England advance to face Argentina."}
  },
  {
   "id": 100,
@@ -626,7 +642,16 @@
   "kickoff": "2026-07-11T21:00:00-04:00",
   "city": "Kansas City",
   "home_label": "Winner Match 95",
-  "away_label": "Winner Match 96"
+  "away_label": "Winner Match 96",
+  "home_score": 3,
+  "away_score": 1,
+  "actual_events": [
+   {"minute": 10, "team": "Argentina", "type": "goal", "scorer": "Alexis Mac Allister", "assist": null, "text": "Mac Allister opens the scoring early — Argentina lead 1-0."},
+   {"minute": 67, "team": "Switzerland", "type": "goal", "scorer": "Dan Ndoye", "assist": null, "text": "Ndoye levels it up for Switzerland — 1-1, and the underdogs sense a shock."},
+   {"minute": 112, "team": "Argentina", "type": "goal", "scorer": "Julián Alvarez", "assist": null, "text": "Alvarez restores Argentina's lead in extra time — 2-1."},
+   {"minute": 121, "team": "Argentina", "type": "goal", "scorer": "Lautaro Martínez", "assist": null, "text": "Lautaro Martínez wraps it up in the final minute of extra time — 3-1."}
+  ],
+  "actual_stats": {"home_xg": 2.41, "away_xg": 1.02, "home_possession": 55, "away_possession": 45, "home_shots_on_target": 7, "away_shots_on_target": 3, "result_note": "Alexis Mac Allister's early strike put Argentina in control, and Dan Ndoye's second-half leveller for Switzerland threatened another shock, but Julián Alvarez restored the lead in extra time and Lautaro Martínez wrapped it up in the 121st minute. The match snapped Lionel Messi's run of scoring in nine straight World Cup matches, but Man of the Match Alvarez sends Argentina through to a semi-final against England."}
  },
  {
   "id": 101,

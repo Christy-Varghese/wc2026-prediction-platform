@@ -2038,14 +2038,29 @@
   "Ivory Coast|Norway": {
     "home": "Ivory Coast",
     "away": "Norway",
-    "score": [1, 2],
+    "score": [
+      1,
+      2
+    ],
     "scorers": {
       "home": [
-        {"player": "Amad Diallo", "minute": 46, "type": "goal"}
+        {
+          "player": "Amad Diallo",
+          "minute": 46,
+          "type": "goal"
+        }
       ],
       "away": [
-        {"player": "Antonio Nusa", "minute": 39, "type": "goal"},
-        {"player": "Erling Haaland", "minute": 86, "type": "goal"}
+        {
+          "player": "Antonio Nusa",
+          "minute": 39,
+          "type": "goal"
+        },
+        {
+          "player": "Erling Haaland",
+          "minute": 86,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2054,11 +2069,22 @@
   "Mexico|Ecuador": {
     "home": "Mexico",
     "away": "Ecuador",
-    "score": [2, 0],
+    "score": [
+      2,
+      0
+    ],
     "scorers": {
       "home": [
-        {"player": "Julián Quiñones", "minute": 22, "type": "goal"},
-        {"player": "Raúl Jiménez", "minute": 31, "type": "goal"}
+        {
+          "player": "Julián Quiñones",
+          "minute": 22,
+          "type": "goal"
+        },
+        {
+          "player": "Raúl Jiménez",
+          "minute": 31,
+          "type": "goal"
+        }
       ],
       "away": []
     },
@@ -2068,12 +2094,27 @@
   "France|Sweden": {
     "home": "France",
     "away": "Sweden",
-    "score": [3, 0],
+    "score": [
+      3,
+      0
+    ],
     "scorers": {
       "home": [
-        {"player": "Kylian Mbappé", "minute": 45, "type": "goal"},
-        {"player": "Bradley Barcola", "minute": 53, "type": "goal"},
-        {"player": "Kylian Mbappé", "minute": 74, "type": "goal"}
+        {
+          "player": "Kylian Mbappé",
+          "minute": 45,
+          "type": "goal"
+        },
+        {
+          "player": "Bradley Barcola",
+          "minute": 53,
+          "type": "goal"
+        },
+        {
+          "player": "Kylian Mbappé",
+          "minute": 74,
+          "type": "goal"
+        }
       ],
       "away": []
     },
@@ -2083,14 +2124,29 @@
   "England|DR Congo": {
     "home": "England",
     "away": "DR Congo",
-    "score": [2, 1],
+    "score": [
+      2,
+      1
+    ],
     "scorers": {
       "home": [
-        {"player": "Harry Kane", "minute": 75, "type": "goal"},
-        {"player": "Harry Kane", "minute": 86, "type": "goal"}
+        {
+          "player": "Harry Kane",
+          "minute": 75,
+          "type": "goal"
+        },
+        {
+          "player": "Harry Kane",
+          "minute": 86,
+          "type": "goal"
+        }
       ],
       "away": [
-        {"player": "Brian Cipenga", "minute": 7, "type": "goal"}
+        {
+          "player": "Brian Cipenga",
+          "minute": 7,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2099,16 +2155,39 @@
   "Belgium|Senegal": {
     "home": "Belgium",
     "away": "Senegal",
-    "score": [3, 2],
+    "score": [
+      3,
+      2
+    ],
     "scorers": {
       "home": [
-        {"player": "Romelu Lukaku", "minute": 86, "type": "goal"},
-        {"player": "Youri Tielemans", "minute": 89, "type": "goal"},
-        {"player": "Youri Tielemans", "minute": 125, "type": "goal"}
+        {
+          "player": "Romelu Lukaku",
+          "minute": 86,
+          "type": "goal"
+        },
+        {
+          "player": "Youri Tielemans",
+          "minute": 89,
+          "type": "goal"
+        },
+        {
+          "player": "Youri Tielemans",
+          "minute": 125,
+          "type": "goal"
+        }
       ],
       "away": [
-        {"player": "Habib Diarra", "minute": 25, "type": "goal"},
-        {"player": "Ismaïla Sarr", "minute": 51, "type": "goal"}
+        {
+          "player": "Habib Diarra",
+          "minute": 25,
+          "type": "goal"
+        },
+        {
+          "player": "Ismaïla Sarr",
+          "minute": 51,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2117,11 +2196,22 @@
   "United States|Bosnia and Herzegovina": {
     "home": "United States",
     "away": "Bosnia and Herzegovina",
-    "score": [2, 0],
+    "score": [
+      2,
+      0
+    ],
     "scorers": {
       "home": [
-        {"player": "Folarin Balogun", "minute": 45, "type": "goal"},
-        {"player": "Malik Tillman", "minute": 82, "type": "goal"}
+        {
+          "player": "Folarin Balogun",
+          "minute": 45,
+          "type": "goal"
+        },
+        {
+          "player": "Malik Tillman",
+          "minute": 82,
+          "type": "goal"
+        }
       ],
       "away": []
     },
@@ -2131,12 +2221,27 @@
   "Spain|Austria": {
     "home": "Spain",
     "away": "Austria",
-    "score": [3, 0],
+    "score": [
+      3,
+      0
+    ],
     "scorers": {
       "home": [
-        {"player": "Mikel Oyarzabal", "minute": 36, "type": "goal"},
-        {"player": "Pedro Porro", "minute": 66, "type": "goal"},
-        {"player": "Mikel Oyarzabal", "minute": 88, "type": "goal"}
+        {
+          "player": "Mikel Oyarzabal",
+          "minute": 36,
+          "type": "goal"
+        },
+        {
+          "player": "Pedro Porro",
+          "minute": 66,
+          "type": "goal"
+        },
+        {
+          "player": "Mikel Oyarzabal",
+          "minute": 88,
+          "type": "goal"
+        }
       ],
       "away": []
     },
@@ -2146,14 +2251,29 @@
   "Portugal|Croatia": {
     "home": "Portugal",
     "away": "Croatia",
-    "score": [2, 1],
+    "score": [
+      2,
+      1
+    ],
     "scorers": {
       "home": [
-        {"player": "Cristiano Ronaldo", "minute": 68, "type": "goal"},
-        {"player": "Gonçalo Ramos", "minute": 94, "type": "goal"}
+        {
+          "player": "Cristiano Ronaldo",
+          "minute": 68,
+          "type": "goal"
+        },
+        {
+          "player": "Gonçalo Ramos",
+          "minute": 94,
+          "type": "goal"
+        }
       ],
       "away": [
-        {"player": "Ivan Perišić", "minute": 53, "type": "goal"}
+        {
+          "player": "Ivan Perišić",
+          "minute": 53,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2162,11 +2282,22 @@
   "Switzerland|Algeria": {
     "home": "Switzerland",
     "away": "Algeria",
-    "score": [2, 0],
+    "score": [
+      2,
+      0
+    ],
     "scorers": {
       "home": [
-        {"player": "Breel Embolo", "minute": 10, "type": "goal"},
-        {"player": "Dan Ndoye", "minute": 46, "type": "goal"}
+        {
+          "player": "Breel Embolo",
+          "minute": 10,
+          "type": "goal"
+        },
+        {
+          "player": "Dan Ndoye",
+          "minute": 46,
+          "type": "goal"
+        }
       ],
       "away": []
     },
@@ -2176,15 +2307,26 @@
   "Australia|Egypt": {
     "home": "Australia",
     "away": "Egypt",
-    "score": [1, 1],
+    "score": [
+      1,
+      1
+    ],
     "pen_home": 2,
     "pen_away": 4,
     "scorers": {
       "home": [
-        {"player": "Mohamed Hany", "minute": 55, "type": "own goal"}
+        {
+          "player": "Mohamed Hany",
+          "minute": 55,
+          "type": "own goal"
+        }
       ],
       "away": [
-        {"player": "Emam Ashour", "minute": 13, "type": "goal"}
+        {
+          "player": "Emam Ashour",
+          "minute": 13,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2193,16 +2335,39 @@
   "Argentina|Cape Verde": {
     "home": "Argentina",
     "away": "Cape Verde",
-    "score": [3, 2],
+    "score": [
+      3,
+      2
+    ],
     "scorers": {
       "home": [
-        {"player": "Lionel Messi", "minute": 29, "type": "goal"},
-        {"player": "Lisandro Martínez", "minute": 92, "type": "goal"},
-        {"player": "Diney Borges", "minute": 111, "type": "own goal"}
+        {
+          "player": "Lionel Messi",
+          "minute": 29,
+          "type": "goal"
+        },
+        {
+          "player": "Lisandro Martínez",
+          "minute": 92,
+          "type": "goal"
+        },
+        {
+          "player": "Diney Borges",
+          "minute": 111,
+          "type": "own goal"
+        }
       ],
       "away": [
-        {"player": "Deroy Duarte", "minute": 59, "type": "goal"},
-        {"player": "Sidny Lopes Cabral", "minute": 103, "type": "goal"}
+        {
+          "player": "Deroy Duarte",
+          "minute": 59,
+          "type": "goal"
+        },
+        {
+          "player": "Sidny Lopes Cabral",
+          "minute": 103,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2211,10 +2376,17 @@
   "Colombia|Ghana": {
     "home": "Colombia",
     "away": "Ghana",
-    "score": [1, 0],
+    "score": [
+      1,
+      0
+    ],
     "scorers": {
       "home": [
-        {"player": "Jhon Arias", "minute": 14, "type": "goal"}
+        {
+          "player": "Jhon Arias",
+          "minute": 14,
+          "type": "goal"
+        }
       ],
       "away": []
     },
@@ -2224,13 +2396,28 @@
   "Canada|Morocco": {
     "home": "Canada",
     "away": "Morocco",
-    "score": [0, 3],
+    "score": [
+      0,
+      3
+    ],
     "scorers": {
       "home": [],
       "away": [
-        {"player": "Azzedine Ounahi", "minute": 50, "type": "goal"},
-        {"player": "Azzedine Ounahi", "minute": 82, "type": "goal"},
-        {"player": "Soufiane Rahimi", "minute": 98, "type": "goal"}
+        {
+          "player": "Azzedine Ounahi",
+          "minute": 50,
+          "type": "goal"
+        },
+        {
+          "player": "Azzedine Ounahi",
+          "minute": 82,
+          "type": "goal"
+        },
+        {
+          "player": "Soufiane Rahimi",
+          "minute": 98,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2239,11 +2426,18 @@
   "Paraguay|France": {
     "home": "Paraguay",
     "away": "France",
-    "score": [0, 1],
+    "score": [
+      0,
+      1
+    ],
     "scorers": {
       "home": [],
       "away": [
-        {"player": "Kylian Mbappé", "minute": 70, "type": "penalty"}
+        {
+          "player": "Kylian Mbappé",
+          "minute": 70,
+          "type": "penalty"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2252,14 +2446,29 @@
   "Brazil|Norway": {
     "home": "Brazil",
     "away": "Norway",
-    "score": [1, 2],
+    "score": [
+      1,
+      2
+    ],
     "scorers": {
       "home": [
-        {"player": "Neymar", "minute": 100, "type": "penalty"}
+        {
+          "player": "Neymar",
+          "minute": 100,
+          "type": "penalty"
+        }
       ],
       "away": [
-        {"player": "Erling Haaland", "minute": 79, "type": "goal"},
-        {"player": "Erling Haaland", "minute": 90, "type": "goal"}
+        {
+          "player": "Erling Haaland",
+          "minute": 79,
+          "type": "goal"
+        },
+        {
+          "player": "Erling Haaland",
+          "minute": 90,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2268,16 +2477,39 @@
   "Mexico|England": {
     "home": "Mexico",
     "away": "England",
-    "score": [2, 3],
+    "score": [
+      2,
+      3
+    ],
     "scorers": {
       "home": [
-        {"player": "Julián Quiñones", "minute": 42, "type": "goal"},
-        {"player": "Raúl Jiménez", "minute": 69, "type": "penalty"}
+        {
+          "player": "Julián Quiñones",
+          "minute": 42,
+          "type": "goal"
+        },
+        {
+          "player": "Raúl Jiménez",
+          "minute": 69,
+          "type": "penalty"
+        }
       ],
       "away": [
-        {"player": "Jude Bellingham", "minute": 36, "type": "goal"},
-        {"player": "Jude Bellingham", "minute": 38, "type": "goal"},
-        {"player": "Harry Kane", "minute": 60, "type": "penalty"}
+        {
+          "player": "Jude Bellingham",
+          "minute": 36,
+          "type": "goal"
+        },
+        {
+          "player": "Jude Bellingham",
+          "minute": 38,
+          "type": "goal"
+        },
+        {
+          "player": "Harry Kane",
+          "minute": 60,
+          "type": "penalty"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2286,11 +2518,18 @@
   "Portugal|Spain": {
     "home": "Portugal",
     "away": "Spain",
-    "score": [0, 1],
+    "score": [
+      0,
+      1
+    ],
     "scorers": {
       "home": [],
       "away": [
-        {"player": "Mikel Merino", "minute": 91, "type": "goal"}
+        {
+          "player": "Mikel Merino",
+          "minute": 91,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2299,16 +2538,39 @@
   "United States|Belgium": {
     "home": "United States",
     "away": "Belgium",
-    "score": [1, 4],
+    "score": [
+      1,
+      4
+    ],
     "scorers": {
       "home": [
-        {"player": "Malik Tillman", "minute": 31, "type": "goal"}
+        {
+          "player": "Malik Tillman",
+          "minute": 31,
+          "type": "goal"
+        }
       ],
       "away": [
-        {"player": "Charles De Ketelaere", "minute": 9, "type": "goal"},
-        {"player": "Charles De Ketelaere", "minute": 33, "type": "goal"},
-        {"player": "Hans Vanaken", "minute": 57, "type": "goal"},
-        {"player": "Romelu Lukaku", "minute": 93, "type": "goal"}
+        {
+          "player": "Charles De Ketelaere",
+          "minute": 9,
+          "type": "goal"
+        },
+        {
+          "player": "Charles De Ketelaere",
+          "minute": 33,
+          "type": "goal"
+        },
+        {
+          "player": "Hans Vanaken",
+          "minute": 57,
+          "type": "goal"
+        },
+        {
+          "player": "Romelu Lukaku",
+          "minute": 93,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2317,16 +2579,39 @@
   "Argentina|Egypt": {
     "home": "Argentina",
     "away": "Egypt",
-    "score": [3, 2],
+    "score": [
+      3,
+      2
+    ],
     "scorers": {
       "home": [
-        {"player": "Cristian Romero", "minute": 79, "type": "goal"},
-        {"player": "Lionel Messi", "minute": 83, "type": "goal"},
-        {"player": "Enzo Fernández", "minute": 92, "type": "goal"}
+        {
+          "player": "Cristian Romero",
+          "minute": 79,
+          "type": "goal"
+        },
+        {
+          "player": "Lionel Messi",
+          "minute": 83,
+          "type": "goal"
+        },
+        {
+          "player": "Enzo Fernández",
+          "minute": 92,
+          "type": "goal"
+        }
       ],
       "away": [
-        {"player": "Yasser Ibrahim", "minute": 15, "type": "goal"},
-        {"player": "Mostafa Zico", "minute": 67, "type": "goal"}
+        {
+          "player": "Yasser Ibrahim",
+          "minute": 15,
+          "type": "goal"
+        },
+        {
+          "player": "Mostafa Zico",
+          "minute": 67,
+          "type": "goal"
+        }
       ]
     },
     "source": "FIFA/ESPN",
@@ -2335,7 +2620,10 @@
   "Switzerland|Colombia": {
     "home": "Switzerland",
     "away": "Colombia",
-    "score": [0, 0],
+    "score": [
+      0,
+      0
+    ],
     "pen_home": 4,
     "pen_away": 3,
     "scorers": {
@@ -2348,15 +2636,124 @@
   "France|Morocco": {
     "home": "France",
     "away": "Morocco",
-    "score": [2, 0],
+    "score": [
+      2,
+      0
+    ],
     "scorers": {
       "home": [
-        {"player": "Kylian Mbappé", "minute": 60, "type": "goal"},
-        {"player": "Ousmane Dembélé", "minute": 66, "type": "goal"}
+        {
+          "player": "Kylian Mbappé",
+          "minute": 60,
+          "type": "goal"
+        },
+        {
+          "player": "Ousmane Dembélé",
+          "minute": 66,
+          "type": "goal"
+        }
       ],
       "away": []
     },
     "source": "FIFA/ESPN",
     "date": "20260709"
+  },
+  "Spain|Belgium": {
+    "home": "Spain",
+    "away": "Belgium",
+    "score": [
+      2,
+      1
+    ],
+    "scorers": {
+      "home": [
+        {
+          "player": "Fabián Ruiz",
+          "minute": 30,
+          "type": "goal"
+        },
+        {
+          "player": "Mikel Merino",
+          "minute": 88,
+          "type": "goal"
+        }
+      ],
+      "away": [
+        {
+          "player": "Charles De Ketelaere",
+          "minute": 41,
+          "type": "goal"
+        }
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260710"
+  },
+  "Norway|England": {
+    "home": "Norway",
+    "away": "England",
+    "score": [
+      1,
+      2
+    ],
+    "scorers": {
+      "home": [
+        {
+          "player": "Andreas Schjelderup",
+          "minute": 36,
+          "type": "goal"
+        }
+      ],
+      "away": [
+        {
+          "player": "Jude Bellingham",
+          "minute": 45,
+          "type": "goal"
+        },
+        {
+          "player": "Jude Bellingham",
+          "minute": 93,
+          "type": "goal"
+        }
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260711"
+  },
+  "Argentina|Switzerland": {
+    "home": "Argentina",
+    "away": "Switzerland",
+    "score": [
+      3,
+      1
+    ],
+    "scorers": {
+      "home": [
+        {
+          "player": "Alexis Mac Allister",
+          "minute": 10,
+          "type": "goal"
+        },
+        {
+          "player": "Julián Alvarez",
+          "minute": 112,
+          "type": "goal"
+        },
+        {
+          "player": "Lautaro Martínez",
+          "minute": 121,
+          "type": "goal"
+        }
+      ],
+      "away": [
+        {
+          "player": "Dan Ndoye",
+          "minute": 67,
+          "type": "goal"
+        }
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260711"
   }
 }
