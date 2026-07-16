@@ -1,6 +1,6 @@
 # CAI World Cup 2026 Prediction Model — Master Database
 
-> **Version**: 1.2 · **Updated**: 2026-07-07  
+> **Version**: 1.3 · **Updated**: 2026-07-16  
 > **Author**: CAI (Contextual AI Inference) Prediction Engine  
 > This document is the single source of truth for the prediction model:
 > all coefficients, data sources, match results, team ratings, and methodology.
@@ -12,7 +12,7 @@
 ## Table of Contents
 
 1. [Model Architecture](#1-model-architecture)
-   - [1.1 – 1.10 Model-by-model breakdown](#11-elo--mlelopy--mltournament_formpy)
+   - [1.1 – 1.11 Model-by-model breakdown, incl. KIS](#11-elo--mlelopy--mltournament_formpy)
 2. [Ensemble Coefficients & Weights](#2-ensemble-coefficients--weights)
 3. [Feature Engineering](#3-feature-engineering)
 4. [Player Condition Engine](#4-player-condition-engine)
@@ -34,53 +34,35 @@
 The CAI engine is a **6-member weighted ensemble** that blends statistical,
 machine-learning, and market-based signals into a single calibrated prediction.
 
+```mermaid
+flowchart TB
+    BO["Betting Odds"] --> MKT["Market\nweight 0.35"]
+    HR["Historical Results\n(46k matches, 1872-)"] --> DC["Dixon-Coles\nweight 0.22\nattack/defence rates"]
+    FV["Feature Vector\n(11 features)"] --> XGB["XGBoost\nweight 0.18"]
+    FV --> NN["Neural Net\nweight 0.08\n(optional, torch)"]
+    ER["Elo Ratings\n(live WC2026-updated)"] --> ELO["Elo\nweight 0.10"]
+    ELO -.->|"Elo-derived λ"| POI["Poisson\nweight 0.07"]
+
+    MKT --> BLEND{{"Weighted Blend\n+ Temperature Calibration"}}
+    DC --> BLEND
+    XGB --> BLEND
+    NN --> BLEND
+    ELO --> BLEND
+    POI --> BLEND
+
+    BLEND --> ADJ{{"Post-Blend Adjustments\nAvailability · Travel · Weather · Squad Condition"}}
+    ADJ --> OUT(["p_home · p_draw · p_away · xG\nconfidence · predicted_winner"])
+
+    style BLEND fill:#1f2937,stroke:#60a5fa,color:#fff
+    style ADJ fill:#1f2937,stroke:#f59e0b,color:#fff
+    style OUT fill:#0f766e,stroke:#2dd4bf,color:#fff
 ```
-                    ┌─────────────────────────────────────────┐
-                    │           CAI ENSEMBLE ENGINE            │
-                    │                                         │
-  ┌──────────┐      │  ┌─────────┐  weight: 0.35             │
-  │ Betting  │─────▶│  │ Market  │                            │
-  │  Odds    │      │  └────┬────┘                            │
-  └──────────┘      │       │                                 │
-                    │  ┌────▼────┐  weight: 0.22             │
-  ┌──────────┐      │  │Dixon-   │  (attack/defence rates)   │
-  │Historical│─────▶│  │Coles DC │                            │
-  │ Results  │      │  └────┬────┘                            │
-  └──────────┘      │       │                                 │
-                    │  ┌────▼────┐  weight: 0.18             │
-  ┌──────────┐      │  │XGBoost  │  (11 engineered features) │
-  │ Features │─────▶│  │ Model   │                            │
-  │  Vector  │      │  └────┬────┘                            │
-  └──────────┘      │       │                                 │
-                    │  ┌────▼────┐  weight: 0.08             │
-                    │  │Neural   │  (same feature vector)    │
-                    │  │  Net    │                            │
-                    │  └────┬────┘                            │
-                    │       │                                 │
-  ┌──────────┐      │  ┌────▼────┐  weight: 0.10             │
-  │   Elo    │─────▶│  │  Elo    │  (live WC2026-updated)   │
-  │ Ratings  │      │  └────┬────┘                            │
-  └──────────┘      │       │                                 │
-                    │  ┌────▼────┐  weight: 0.07             │
-                    │  │Poisson  │  (Elo-derived λ)          │
-                    │  └────┬────┘                            │
-                    │       │                                 │
-                    │  ┌────▼──────────────────────┐         │
-                    │  │   Weighted Blend           │         │
-                    │  │   + Temperature Calibration│         │
-                    │  └────┬──────────────────────┘         │
-                    │       │                                 │
-                    │  ┌────▼──────────────────────┐         │
-                    │  │   Post-blend Adjustments  │         │
-                    │  │   • Availability (AVAIL)  │         │
-                    │  │   • Travel fatigue        │         │
-                    │  │   • Weather severity      │         │
-                    │  │   • Squad condition       │         │
-                    │  └────┬──────────────────────┘         │
-                    └───────┼─────────────────────────────────┘
-                            ▼
-                    {p_home, p_draw, p_away, xG, confidence, predicted_winner}
-```
+
+*(Renders as a diagram on GitHub/GitLab/most Markdown viewers. Text
+equivalent: 6 members feed a weighted blend + temperature calibration, then
+post-blend logit shifts for availability/travel/weather/squad condition
+produce the final `{p_home, p_draw, p_away, xG, confidence,
+predicted_winner}`.)*
 
 ### Philosophy
 
@@ -164,6 +146,119 @@ winner. An **exact-scoreline hit is a separate +1 bonus**
 score — it is never summed into the per-match total. Replaced the old binary
 hit/miss tally everywhere accuracy is shown (news ticker, matches-page
 accuracy panels, knockout-tie verdicts). Current numbers in Section 12.
+
+### 1.11 KIS — Knockout Intelligence System — `ml/kis_engine.py`
+A second, independent report for any knockout tie (`GET
+/api/v1/predict/kis?home_team=&away_team=`, wired into the bracket and
+QF/SF/Final match cards as a "KIS" inline row). Full design in
+`KIS_SPEC.md`; this is the operational summary.
+
+**What it adds over the standard prediction**: rather than one win
+probability, KIS decomposes the tie into a **Skill vector (S_t)** and a
+**Luck vector (L_t)** per side, then runs its own **50,000-iteration**
+Monte Carlo (`KIS_N_SIMS`, vs. `match_flow`'s 6,000 for the bracket's own
+tie resolution) on top of that decomposition.
+
+- **S_t (skill_score)** — reprojects `match_flow.MODEL_WEIGHTS` into three
+  renormalized terms: `fatigue` (= `statistical_elo` + `player_form`),
+  `tactical` (`tactical_matchup`), `psychology` (`psychology_penalty`);
+  `weather_location` is deliberately excluded (it's an L_t/chaos input, not
+  a skill input). Folds in `tactical_rating()` (a goals-for/against tempo
+  heuristic, explicitly labeled `"basis": "heuristic"` — no tracking data
+  exists) and `pressure_score()` (knockout composure — **partial, 3 of the
+  spec's 5 inputs**: `knockout_experience` 0.30, `shootout_record` 0.25,
+  `composure` 0.20, renormalized to sum to 1; `captain_maturity` and
+  `crowd_factor` are held out for missing data and labeled
+  `"basis": "partial_3_of_5_inputs"`).
+- **L_t (luck_bias)** — `mu_bias`: mean(actual goals − Dixon-Coles expected
+  goals) across a team's historical matches, i.e. a persistent
+  over/under-performance-vs-model residual. Combined with `sigma_chaos`
+  (environmental volatility from `weather.conditions()` + referee
+  strictness) to define a luck distribution `N(mu_bias, sigma_chaos²)`.
+- **Chaos events** — narrative-only tagging (`CHAOS_SIGMA_THRESHOLD = 2.5`):
+  a simulated run whose goal margin deviates >2.5σ from the expected margin
+  gets flagged for the chaos-timeline narration. It does **not** change any
+  outcome probability, only which simulated runs get narrated as a
+  red-card/own-goal/VAR-swing type moment.
+
+```mermaid
+flowchart LR
+    subgraph SKILL["Skill Vector — S_t"]
+        FAT["Fatigue\nElo + player form"]
+        TAC["Tactical Rating\n(heuristic, GF/GA tempo)"]
+        PRE["Pressure Score\n(3 of 5 spec inputs)"]
+    end
+    subgraph LUCK["Luck Vector — L_t"]
+        MU["mu_bias\n(actual - DC expected goals)"]
+        SIG["sigma_chaos\n(weather + referee)"]
+    end
+
+    FAT --> ST(["S_t = skill_score"])
+    TAC --> ST
+    PRE --> ST
+    MU --> LT(["L_t ~ N(mu_bias, sigma_chaos²)"])
+    SIG --> LT
+
+    ST --> MC{{"50,000-run Monte Carlo\nKIS_N_SIMS"}}
+    LT --> MC
+    MC --> RES(["win prob · predicted score\nchaos events · confidence"])
+
+    style ST fill:#1e3a8a,stroke:#93c5fd,color:#fff
+    style LT fill:#7c2d12,stroke:#fb923c,color:#fff
+    style MC fill:#1f2937,stroke:#60a5fa,color:#fff
+    style RES fill:#0f766e,stroke:#2dd4bf,color:#fff
+```
+
+**Confidence — do not treat KIS's confidence and the bracket's confidence
+as the same number.** Both start from the same `ensemble.predict()`
+confidence and apply the identical `PIPELINE_DISAGREEMENT_CONF_PENALTY = 15`
+when the ensemble's favourite disagrees with the regulation-time
+Monte-Carlo favourite — but each checks that disagreement against a
+**separately-drawn** simulation:
+- The bracket (`knockout_engine._resolve_tie`) checks against the tie's own
+  `match_flow` run (`N_SIMS = 6,000`).
+- KIS (`kis_engine.compose`) re-draws its own regulation-time check at the
+  same `N_SIMS = 6,000`, seeded identically — but since it draws home-goals
+  then away-goals sequentially off one RNG stream, and KIS's 50,000-sample
+  main run consumes that stream differently first, the two runs are
+  independent realizations past the first sample, **not** the same estimate
+  at different precision. For a near-50/50 fixture they can land on
+  opposite sides of "who's favoured in regulation," so the bracket and KIS
+  can legitimately disagree on whether the -15 penalty fires for the
+  *identical* fixture (observed for France v Spain: bracket confidence 32,
+  KIS confidence 17). Treat the two confidence numbers as separate signals,
+  not a bug when they don't match.
+
+```mermaid
+flowchart TB
+    ENS(["ensemble.predict()\nbase confidence"]) --> BRSIM["Bracket: match_flow\nN_SIMS = 6,000\n(own seed)"]
+    ENS --> KISIM["KIS: re-drawn check\nN_SIMS = 6,000\n(same seed, diverges after\nfirst sample block)"]
+
+    BRSIM --> BRQ{"Disagrees with\nensemble favourite?"}
+    KISIM --> KIQ{"Disagrees with\nensemble favourite?"}
+
+    BRQ -->|yes| BRPEN["confidence - 15"]
+    BRQ -->|no| BRSAME["confidence unchanged"]
+    KIQ -->|yes| KIPEN["confidence - 15"]
+    KIQ -->|no| KISAME["confidence unchanged"]
+
+    BRPEN --> BRC(["Bracket confidence\n(top-level match record)"])
+    BRSAME --> BRC
+    KIPEN --> KIC(["KIS confidence\n(flow/explainability block)"])
+    KISAME --> KIC
+
+    style BRC fill:#0f766e,stroke:#2dd4bf,color:#fff
+    style KIC fill:#7c2d12,stroke:#fb923c,color:#fff
+```
+*The two checks can disagree with each other even though they share a
+starting confidence and an identical penalty rule — that's the France v
+Spain 32-vs-17 case above.*
+
+**Querying it directly** (any two valid team names, not just scheduled
+ties — enables "what-if" matchups):
+```bash
+curl "http://localhost:8000/api/v1/predict/kis?home_team=Argentina&away_team=Spain&neutral=true&knockout=true"
+```
 
 ---
 
@@ -1025,88 +1120,167 @@ same `prediction_points()` (Section 1.10) as the 71/115 total above.
 
 ---
 
-## 14. Manual Update Guide
+## 14. Operations Playbook
 
-### 14.1 How to Update After a Match
+> Rewritten 2026-07-16 against the actual pipeline (verified end-to-end
+> ingesting SF match 102, England 1-2 Argentina). The previous version of
+> this section referenced `backend/app/fixtures.py` for match results and
+> `ml/predict_wc2026.py` for re-simulation — **neither is the live-ingestion
+> path**. `fixtures.py` holds static team/venue metadata, not results;
+> `predict_wc2026.py` is a standalone historical-report generator, not part
+> of the tournament-progression loop. The commands below are the ones that
+> actually flow a result through Elo → sim → snapshots → site.
 
-**Step 1** — Add result to `backend/app/fixtures.py` (`MD23` or `WC2026_PLAYED`):
-```python
-# In tournament_form.WC2026_PLAYED add:
-("Home Team", "Away Team", home_score, away_score, neutral_bool),
+### 14.1 Command Reference
+
+All targets run from the repo root via the `Makefile`:
+
+| Command | What it does |
+|---|---|
+| `make dev` | Backend (`:8000`) + frontend (`:3000`) dev servers together |
+| `make dev-backend` | FastAPI only, `--reload` |
+| `make dev-frontend` | Next.js only |
+| `make sim` | Re-run the 50,000-iteration Monte Carlo tournament sim (`ml/simulate.py`) — patches Elo with every result in `tournament_form.WC2026_PLAYED_*` first |
+| `make snapshots` | Regenerate every `frontend/public/snapshot/api_*.json` file (`backend/gen_snapshots.py`) — this is what the Vercel demo actually serves when there's no live backend |
+| `make ingest-scores` | `sim` + `snapshots` in one step — **run this after every data edit below** |
+| `make test` | Backend + ML pytest suites |
+| `make validate` | Hits the live API on `:8000` and checks responses |
+
+### 14.2 Ingesting a Finished Match
+
+There is no ingestion CLI — it's four hand-edited files, then one Makefile
+target. This is the same pattern used for every result so far this
+tournament (see `git log --oneline | grep '^data:'`).
+
+```mermaid
+flowchart TB
+    A["1. backend/app/knockout.json\nhome_score · away_score\nactual_events · actual_stats"]
+    B["2. backend/data/raw/match_events.json\nscorers, keyed Home|Away"]
+    C["3. backend/data/raw/post_match.json\nheadline/summary/star player"]
+    D["4. backend/ml/tournament_form.py\nWC2026_PLAYED_KNOCKOUT tuple\n(the only one that feeds Elo)"]
+
+    A --> M["make ingest-scores"]
+    B --> M
+    C --> M
+    D --> M
+
+    M --> S["make sim\n50k-run Monte Carlo,\nElo re-patched"]
+    S --> N["make snapshots\nfrontend/public/snapshot/*.json"]
+    N --> G["git commit + push"]
+    G --> V["Vercel auto-deploy\n(Git-linked project)"]
+
+    style M fill:#1f2937,stroke:#60a5fa,color:#fff
+    style G fill:#374151,stroke:#9ca3af,color:#fff
+    style V fill:#0f766e,stroke:#2dd4bf,color:#fff
 ```
 
-**Step 2** — Add actual events to `backend/app/knockout.json` (for R32+):
+**1. `backend/app/knockout.json`** — find the match by `"id"` (flat JSON
+array) and add three keys to the existing scheduled entry. A **scheduled**
+match has none of these keys — completion is inferred purely by
+`home_score`/`away_score` being present. (There is no `"played"` boolean in
+the actual data, despite what an older draft of this doc showed — don't add
+one, it's a no-op field the frontend ignores.)
 ```json
 {
-  "id": 73,
-  "played": true,
-  "home_score": 0,
-  "away_score": 1,
+  "id": 102,
+  "...": "... existing scheduled fields unchanged ...",
+  "home_score": 1,
+  "away_score": 2,
   "actual_events": [
-    {"minute": 92, "team": "Canada", "type": "goal", "scorer": "Stephen Eustáquio", "assist": null, "text": "Late winner..."}
+    {"minute": 55, "team": "England", "type": "goal", "scorer": "Anthony Gordon", "assist": "Morgan Rogers", "text": "..."}
   ],
   "actual_stats": {
-    "result_note": "...",
-    "home_xg": 0.82,
-    "away_xg": 1.35,
-    "home_possession": 48,
-    "away_possession": 52,
-    "home_shots_on_target": 3,
-    "away_shots_on_target": 5
-  },
-  "actual_penalties": {
-    "home": [{"player": "Name", "outcome": "scored|saved|missed"}],
-    "away": [{"player": "Name", "outcome": "scored|saved|missed"}]
+    "home_xg": 0.53, "away_xg": 1.59,
+    "home_possession": 36, "away_possession": 64,
+    "home_shots_on_target": 2, "away_shots_on_target": 5,
+    "result_note": "..."
   }
 }
 ```
+Add `"actual_penalties": {"home": [...], "away": [...]}` (list of
+`{"player", "outcome": "scored|saved|missed"}`) only if it went to a
+shootout.
 
-**Step 3** — Fix any `Unknown` scorers in `backend/data/raw/match_events.json`:
+**2. `backend/data/raw/match_events.json`** — keyed `"Home|Away"` (team
+names, pipe-separated, home/away exactly as in `knockout.json`):
 ```json
-"Home|Away": {
+"England|Argentina": {
+  "home": "England", "away": "Argentina", "score": [1, 2],
   "scorers": {
-    "home": [{"player": "Real Name", "minute": 23, "type": "goal"}],
-    "away": [{"player": "Real Name", "minute": 67, "type": "goal"}]
-  }
+    "home": [{"player": "Anthony Gordon", "minute": 55, "type": "goal"}],
+    "away": [{"player": "Enzo Fernández", "minute": 85, "type": "goal"},
+             {"player": "Lautaro Martínez", "minute": 92, "type": "goal"}]
+  },
+  "source": "FIFA/ESPN", "date": "20260715"
 }
 ```
 
-**Step 4** — Regenerate snapshots:
+**3. `backend/data/raw/post_match.json`** — same `"Home|Away"` key, narrative
+fields only (`headline`, `summary`, `star_player`, `star_reason`,
+`turning_point`, `what_lacked`, `sources`) — these feed the match-recap card,
+not the model.
+
+**4. `backend/ml/tournament_form.py`** — append a tuple to
+`WC2026_PLAYED_KNOCKOUT` (or `WC2026_PLAYED_GROUP` pre-R32). **This is the
+only one of the four that actually feeds Elo/the sim** — the other three are
+display data:
+```python
+("England", "Argentina", 1, 2, True),  # (home, away, home_score, away_score, neutral)
+```
+`neutral=False` only when a host nation (USA/Mexico/Canada) plays in its own
+country — everything else, including a nominal "home" team in a World Cup
+bracket slot, is neutral.
+
+**5. Regenerate and verify:**
 ```bash
-cd backend && python3 gen_snapshots.py
+make ingest-scores          # re-patches Elo, re-sims 50k tournaments, regenerates all snapshots
+python3 -c "import json; json.load(open('backend/app/knockout.json'))"   # sanity-check JSON before committing
+```
+Spot-check the result landed by grepping the regenerated snapshot, e.g.
+`grep -A2 '"id": 102' frontend/public/snapshot/api_knockout.json`.
+
+**6. Deploy** — this repo's Vercel project (`chris-fifaworldcup26-prediction`,
+see `.vercel/repo.json`) is Git-linked: pushing to `main` auto-deploys. No
+manual `vercel --prod` needed unless you're deploying uncommitted local
+state.
+```bash
+git add backend/app/knockout.json backend/data/raw/match_events.json \
+        backend/data/raw/post_match.json backend/ml/tournament_form.py \
+        backend/data/processed/ frontend/public/snapshot/
+git commit -m "data: ingest <Home> <score>-<score> <Away> (<round> match <id>, <date>)"
+git push
 ```
 
-**Step 5** — Type-check and deploy:
+### 14.3 Updating Player Availability
+
+Injuries/doubts live in `backend/ml/player_condition.py`'s `PLAYER_DB` dict
+— add or edit an entry with a `status` (`"available"` / `"doubtful"` /
+`"out"`). Numeric fields (`form`, `fitness`, etc.) are refreshed from the
+Kaggle merge on load (`_merge_external_players()`), but `status` is always
+preserved from this file — it's the one field the automated merge won't
+overwrite. Re-run `make ingest-scores` afterward to flow the availability
+change through the sim.
+
+### 14.4 Querying Predictions Directly
+
+For spot-checks or what-if matchups without touching any data file (backend
+must be running, `make dev-backend`):
 ```bash
-cd frontend && npx tsc --noEmit
-vercel --prod
+# Standard ensemble prediction (any two team names, not validated against fixtures):
+curl "http://localhost:8000/api/predict?home=Argentina&away=Spain&neutral=true"
+
+# KIS — vector-decomposed knockout report (team names ARE validated, 404s on a typo):
+curl "http://localhost:8000/api/v1/predict/kis?home_team=Argentina&away_team=Spain&neutral=true&knockout=true"
 ```
+See §1.11 for what KIS adds over the standard prediction, and why its
+`confidence` can legitimately differ from the bracket's for the same tie.
 
-### 14.2 Accuracy Update (after each round)
+### 14.5 Accuracy & Top Scorer Bookkeeping (after each round)
 
-Update Section 12 of this document with:
-- New correct/incorrect rows in the knockout accuracy table
-- Total accuracy metrics per round
-
-### 14.3 Top Scorers Update
-
-Update Section 11.3 with new goal tallies from the ESPN feed or manual
-verification after each matchday.
-
-### 14.4 Re-running the Model
-
-To regenerate all predictions from scratch (after adding new results):
-```bash
-cd backend
-# Update Elo with new results:
-python3 -c "from app.ml_engine import reload_engine; reload_engine()"
-
-# Re-sim the full tournament (10,000 Monte-Carlo runs):
-python3 ml/predict_wc2026.py
-
-# Regenerate API snapshots:
-python3 gen_snapshots.py
-```
+Update Section 12 with new correct/incorrect rows and totals, and Section
+11.3 with new Golden Boot tallies — both are hand-maintained narrative
+snapshots of what `make ingest-scores` already computed; there's no command
+that writes these sections for you.
 
 ---
 
