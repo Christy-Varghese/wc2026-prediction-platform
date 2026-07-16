@@ -30,7 +30,7 @@ export default function AwardsPage() {
       <AwardSection
         icon="🥇" title="GOLDEN BOOT" sub="Top scorer"
         badge={{ text: "LIVE — real goal data", tone: "gold" }}
-        caption={`as of ${data.as_of} · scorers from match events`}
+        caption={`as of ${data.boot_as_of} · scorers from match events`}
         rows={(data.golden_boot || []).slice(0, 15)}
         stat={(r) => [
           { label: "G", value: r.goals ?? 0, big: true },

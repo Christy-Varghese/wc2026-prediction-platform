@@ -53,6 +53,25 @@ def _curated() -> dict:
         return {}
 
 
+def _boot_as_of() -> str:
+    """Date of the most recent scorer feed entry (YYYY-MM-DD).
+
+    Golden Boot is live-computed from `match_events.json`, so its "as of" date
+    has to track that feed's freshest match, not `_curated()`'s `as_of` —
+    which is a one-time hand-curation date for the Glove/Ball lists and goes
+    stale (currently 2026-06-30) the moment more knockout goals are ingested.
+    """
+    try:
+        events = json.loads(_EVENTS.read_text())
+    except Exception:  # noqa: BLE001
+        return ""
+    dates = [rec["date"] for rec in events.values() if rec.get("date")]
+    if not dates:
+        return ""
+    d = max(dates)  # "YYYYMMDD" strings sort chronologically as-is
+    return f"{d[0:4]}-{d[4:6]}-{d[6:8]}"
+
+
 def build() -> dict:
     """Full awards payload. Boot is live; glove/ball are curated + enriched."""
     cur = _curated()
@@ -96,6 +115,7 @@ def build() -> dict:
 
     return {
         "as_of": cur.get("as_of", ""),
+        "boot_as_of": _boot_as_of(),
         "sources": cur.get("sources", []),
         "golden_boot": boot,
         "golden_glove": glove,
