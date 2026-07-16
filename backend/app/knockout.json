@@ -678,7 +678,15 @@
   "kickoff": "2026-07-15T15:00:00-04:00",
   "city": "Atlanta",
   "home_label": "Winner Match 99",
-  "away_label": "Winner Match 100"
+  "away_label": "Winner Match 100",
+  "home_score": 1,
+  "away_score": 2,
+  "actual_events": [
+   {"minute": 55, "team": "England", "type": "goal", "scorer": "Anthony Gordon", "assist": "Morgan Rogers", "text": "Gordon smashes England ahead after being picked out by Rogers' pinpoint delivery — England 1-0 up."},
+   {"minute": 85, "team": "Argentina", "type": "goal", "scorer": "Enzo Fernández", "assist": null, "text": "Fernández bends in a brilliant finish from distance to level it at 1-1, moments after seeing an earlier effort tipped over."},
+   {"minute": 92, "team": "Argentina", "type": "goal", "scorer": "Lautaro Martínez", "assist": "Lionel Messi", "text": "Messi picks out Martínez at the back post and he heads home in the second minute of stoppage time — Argentina complete the turnaround, 2-1."}
+  ],
+  "actual_stats": {"home_xg": 0.53, "away_xg": 1.59, "home_possession": 36, "away_possession": 64, "home_shots_on_target": 2, "away_shots_on_target": 5, "result_note": "Gordon's 55th-minute strike had England on course for a first World Cup final since 1966, but Argentina turned the screw after falling behind — Mac Allister crashed a header off the post before Fernández leveled it in the 85th. Messi, again the architect, teed up Martínez for a stoppage-time header that completed another dramatic Argentina comeback. Argentina advance to face Spain in the final; England meet France in Saturday's third-place play-off."}
  },
  {
   "id": 103,

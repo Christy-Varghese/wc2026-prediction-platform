@@ -179,6 +179,8 @@ WC2026_PLAYED_KNOCKOUT: list[tuple[str, str, int, int, bool]] = [
     ("Argentina",       "Switzerland",             3, 1, True),  # AET
     # ── Semi-final (Jul 14) ──
     ("France",          "Spain",                   0, 2, True),
+    # ── Semi-final (Jul 15) ──
+    ("England",         "Argentina",               1, 2, True),
 ]
 
 # Full play-order ledger for consumers that don't care about stage (form/

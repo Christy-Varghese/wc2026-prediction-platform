@@ -543,5 +543,17 @@
       "ESPN",
       "FIFA"
     ]
+  },
+  "England|Argentina": {
+    "headline": "Messi conjures another late Argentina comeback to sink England",
+    "summary": "Anthony Gordon's 55th-minute strike had England on course for a first World Cup final since 1966, but Argentina turned the screw after falling behind. Enzo Fernandez leveled with a bent finish from distance in the 85th, and Messi teed up Lautaro Martinez for a stoppage-time header that completed the turnaround. Argentina reach a second straight final; England face France in the third-place playoff.",
+    "star_player": "Lionel Messi",
+    "star_reason": "Assisted both Argentina goals, including the stoppage-time winner for Martinez, in what may be his final World Cup match.",
+    "turning_point": "Fernandez's 85th-minute equalizer, which broke England's resistance and set up Messi's late assist for Martinez.",
+    "what_lacked": "England managed just 2 shots on target and sat too deep after taking the lead, letting Argentina dominate territory and chances late on.",
+    "sources": [
+      "ESPN",
+      "FIFA"
+    ]
   }
 }

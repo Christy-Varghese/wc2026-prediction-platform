@@ -2780,5 +2780,36 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260714"
+  },
+  "England|Argentina": {
+    "home": "England",
+    "away": "Argentina",
+    "score": [
+      1,
+      2
+    ],
+    "scorers": {
+      "home": [
+        {
+          "player": "Anthony Gordon",
+          "minute": 55,
+          "type": "goal"
+        }
+      ],
+      "away": [
+        {
+          "player": "Enzo Fernández",
+          "minute": 85,
+          "type": "goal"
+        },
+        {
+          "player": "Lautaro Martínez",
+          "minute": 92,
+          "type": "goal"
+        }
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260715"
   }
 }
