@@ -47,9 +47,10 @@ export function FinalStretchPromo({ matches }: { matches: any[] | undefined }) {
           {final && <PromoMatchCard m={final} highlight />}
         </div>
 
-        {final && (
-          <div className="mt-5">
-            <FanVote m={final} />
+        {(thirdPlace || final) && (
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {thirdPlace && <FanVote m={thirdPlace} />}
+            {final && <FanVote m={final} />}
           </div>
         )}
       </div>
