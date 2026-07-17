@@ -11,6 +11,7 @@ import {
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
+import { FinalStretchPromo } from "@/components/final-match/homepage-promo";
 
 const fetcher = (p: string) => api(p);
 
@@ -337,6 +338,9 @@ export default function Home() {
           </div>
         </motion.section>
       )}
+
+      {/* ════════════ FINAL COUNTDOWN — Third place / Final spotlight ════════════ */}
+      <FinalStretchPromo matches={knockoutData?.matches} />
 
       {/* ════════════ TODAY'S MATCHES ════════════ */}
       {todayMatches.length > 0 && (
