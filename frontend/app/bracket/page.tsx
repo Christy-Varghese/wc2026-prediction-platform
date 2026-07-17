@@ -112,24 +112,36 @@ function FlagCircle({
         )}
       </defs>
 
-      {/* Outer glow / accent ring */}
+      {/* Outer glow / accent ring — gentle continuous pulse so a confirmed
+          win feels alive rather than a static badge. */}
       {winner && !gold && (
-        <circle cx={cx} cy={cy} r={r + 4}
-          fill="none" stroke="rgba(22,163,74,0.35)" strokeWidth={2} />
+        <motion.circle cx={cx} cy={cy} r={r + 4}
+          fill="none" stroke="rgba(22,163,74,0.35)" strokeWidth={2}
+          initial={{ r: r + 4, opacity: 0.5 }}
+          animate={{ r: [r + 4, r + 6.5, r + 4], opacity: [0.5, 0.9, 0.5] }}
+          transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+        />
       )}
       {gold && (
-        <circle cx={cx} cy={cy} r={r + 5}
-          fill="none" stroke="rgba(255,215,0,0.4)" strokeWidth={2.5} />
+        <motion.circle cx={cx} cy={cy} r={r + 5}
+          fill="none" stroke="rgba(255,215,0,0.4)" strokeWidth={2.5}
+          initial={{ r: r + 5, opacity: 0.55 }}
+          animate={{ r: [r + 5, r + 8, r + 5], opacity: [0.55, 1, 0.55] }}
+          transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+        />
       )}
-      {/* Predicted (not yet played) winner: cyan dashed outline — visually
-          distinct from the solid green "confirmed" ring above, so a
-          projection never reads as an already-settled result. */}
+      {/* Predicted (not yet played) winner: cyan dashed outline, marching
+          continuously — the crawling dashes read as "still in motion /
+          projected", visually distinct from the confirmed ring's calm pulse
+          above, so a projection never reads as an already-settled result. */}
       {predictedWinner && !winner && !gold && (
-        <circle cx={cx} cy={cy} r={r + 4}
+        <motion.circle cx={cx} cy={cy} r={r + 4}
           fill="none"
           stroke="rgba(0,212,255,0.55)"
           strokeWidth={2}
           strokeDasharray="4 3"
+          animate={{ strokeDashoffset: [0, -14] }}
+          transition={{ repeat: Infinity, duration: 1.4, ease: "linear" }}
         />
       )}
       {/* Predicted loser: yellow dashed outline */}
@@ -231,23 +243,42 @@ function ConfettiBurst({ cx, cy, celebratory }: { cx: number; cy: number; celebr
   );
 }
 
-/* ── Animated connector line ── */
+/* ── Animated connector line — draws in once on mount, then (when `flow`
+   is set) keeps a small glowing spark travelling along it on a loop, so a
+   team's path forward through the bracket reads as motion, not just a
+   static connector. `flow`/`flowColor` are only passed for connectors
+   where a winner is already known or projected — an undecided tie's line
+   stays still. ── */
 function ConnLine({
-  x1, y1, x2, y2, delay, color = "rgba(255,255,255,0.08)",
+  x1, y1, x2, y2, delay, color = "rgba(255,255,255,0.08)", flow, flowColor,
 }: {
   x1: number; y1: number; x2: number; y2: number;
-  delay: number; color?: string;
+  delay: number; color?: string; flow?: boolean; flowColor?: string;
 }) {
   const len = Math.hypot(x2 - x1, y2 - y1);
   return (
-    <motion.line
-      x1={x1} y1={y1} x2={x2} y2={y2}
-      stroke={color} strokeWidth={1.2}
-      strokeDasharray={len}
-      initial={{ strokeDashoffset: len, opacity: 0 }}
-      animate={{ strokeDashoffset: 0, opacity: 1 }}
-      transition={{ duration: 0.4, delay, ease: "easeOut" }}
-    />
+    <>
+      <motion.line
+        x1={x1} y1={y1} x2={x2} y2={y2}
+        stroke={color} strokeWidth={1.2}
+        strokeDasharray={len}
+        initial={{ strokeDashoffset: len, opacity: 0 }}
+        animate={{ strokeDashoffset: 0, opacity: 1 }}
+        transition={{ duration: 0.4, delay, ease: "easeOut" }}
+      />
+      {flow && (
+        <motion.circle
+          cx={x1} cy={y1} r={2}
+          fill={flowColor ?? color}
+          initial={{ cx: x1, cy: y1, opacity: 0 }}
+          animate={{ cx: [x1, x2], cy: [y1, y2], opacity: [0, 1, 1, 0] }}
+          transition={{
+            duration: 1.6, delay: delay + 0.5,
+            repeat: Infinity, repeatDelay: 1.1, ease: "easeInOut",
+          }}
+        />
+      )}
+    </>
   );
 }
 
@@ -352,17 +383,24 @@ export default function BracketPage() {
                 strokeWidth={1} strokeDasharray="3 7" />
             ))}
 
-            {/* ── CONNECTORS: Team → R32 node ── */}
+            {/* ── CONNECTORS: Team → R32 node ──
+                flowColor differs by whether the result is confirmed (green,
+                the team actually won) or CAI's projection (cyan) — the
+                travelling spark's color carries the same honesty distinction
+                as the flag rings, not just the static line color. */}
             {teamSlots.map((slot, ti) => {
               const p1 = teamXY(ti);
               const p2 = r32XY(Math.floor(ti / 2));
               const m = byId[slot.matchId];
               const isWinner = slot.team && slot.team === winnerOf(m);
+              const flowColor = isWinner ? "#22c55e" : "#00D4FF";
               return (
                 <ConnLine key={`t-r32-${ti}`}
                   x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y}
                   delay={0.02 + ti * 0.012}
                   color={isWinner ? "rgba(22,163,74,0.25)" : "rgba(255,255,255,0.06)"}
+                  flow={!!isWinner}
+                  flowColor={flowColor}
                 />
               );
             })}
@@ -373,11 +411,14 @@ export default function BracketPage() {
               const p2 = r16XY(Math.floor(j / 2));
               const m = byId[matchId];
               const advancing = !!winnerOf(m);
+              const flowColor = m?.played ? "#22c55e" : "#00D4FF";
               return (
                 <ConnLine key={`r32-r16-${j}`}
                   x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y}
                   delay={0.35 + j * 0.018}
                   color={advancing ? "rgba(22,163,74,0.2)" : "rgba(255,255,255,0.06)"}
+                  flow={advancing}
+                  flowColor={flowColor}
                 />
               );
             })}
@@ -386,24 +427,34 @@ export default function BracketPage() {
             {R16_CIRCLE_ORDER.map((matchId, k) => {
               const p1 = r16XY(k);
               const p2 = qfXY(Math.floor(k / 2));
+              const m = byId[matchId];
+              const advancing = !!winnerOf(m);
+              const flowColor = m?.played ? "#22c55e" : "#00D4FF";
               return (
                 <ConnLine key={`r16-qf-${k}`}
                   x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y}
                   delay={0.62 + k * 0.022}
-                  color="rgba(255,255,255,0.07)"
+                  color={advancing ? "rgba(22,163,74,0.16)" : "rgba(255,255,255,0.07)"}
+                  flow={advancing}
+                  flowColor={flowColor}
                 />
               );
             })}
 
             {/* ── CONNECTORS: QF → SF ── */}
-            {QF_CIRCLE_ORDER.map((matchId, m) => {
-              const p1 = qfXY(m);
-              const p2 = sfXY(Math.floor(m / 2));
+            {QF_CIRCLE_ORDER.map((matchId, mi) => {
+              const p1 = qfXY(mi);
+              const p2 = sfXY(Math.floor(mi / 2));
+              const m = byId[matchId];
+              const advancing = !!winnerOf(m);
+              const flowColor = m?.played ? "#22c55e" : "#FFD700";
               return (
-                <ConnLine key={`qf-sf-${m}`}
+                <ConnLine key={`qf-sf-${mi}`}
                   x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y}
-                  delay={0.85 + m * 0.03}
+                  delay={0.85 + mi * 0.03}
                   color="rgba(255,215,0,0.15)"
+                  flow={advancing}
+                  flowColor={flowColor}
                 />
               );
             })}
@@ -411,11 +462,16 @@ export default function BracketPage() {
             {/* ── CONNECTORS: SF → center ── */}
             {SF_CIRCLE_ORDER.map((matchId, n) => {
               const p1 = sfXY(n);
+              const m = byId[matchId];
+              const advancing = !!winnerOf(m);
+              const flowColor = m?.played ? "#22c55e" : "#FFD700";
               return (
                 <ConnLine key={`sf-final-${n}`}
                   x1={p1.x} y1={p1.y} x2={CX} y2={CY}
                   delay={1.0}
                   color="rgba(255,215,0,0.25)"
+                  flow={advancing}
+                  flowColor={flowColor}
                 />
               );
             })}
@@ -641,6 +697,7 @@ export default function BracketPage() {
               {/* Pulsing aura */}
               <motion.circle cx={CX} cy={CY} r={54}
                 fill="none" stroke="rgba(255,215,0,0.15)" strokeWidth={1}
+                initial={{ r: 54, opacity: 0.15 }}
                 animate={{ r: [54, 60, 54], opacity: [0.15, 0.05, 0.15] }}
                 transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
               />
