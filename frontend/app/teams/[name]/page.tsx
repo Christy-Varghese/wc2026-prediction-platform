@@ -4,13 +4,13 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { api, pct, pct0 } from "@/lib/api";
 import { Flag, StatRow, Meter, ProbBar, PredictionBadge, predictionHit } from "@/components/ui";
+import { computeTeamAttributes } from "@/lib/team-attributes";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   Cell, LabelList,
 } from "recharts";
 
 const fetcher = (p: string) => api(p);
-const avg = (a: number[]) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
 
 const ET = "America/New_York";
 const fmtDate = (iso: string) =>
@@ -133,20 +133,17 @@ export default function TeamPage({ params }: { params: { name: string } }) {
   const sq: any[] = data.squad ?? [];
   const history = getHistory(name);
 
-  /* squad grouped */
+  /* squad grouped by position — used below for the squad-list-by-position UI */
   const byPos = {
     GK:  sq.filter(p => p.position === "GK"),
     DEF: sq.filter(p => p.position === "DF" || p.position === "DEF"),
     MID: sq.filter(p => p.position === "MF" || p.position === "MID"),
     FWD: sq.filter(p => p.position === "FW" || p.position === "FWD"),
   };
+  const fit = sq.filter(p => p.fitness === "fit").length;
 
-  /* team attributes */
-  const attackAvg  = avg(byPos.FWD.map(p => p.impact)) || avg(sq.map(p => p.impact));
-  const midfieldAvg = avg(byPos.MID.map(p => p.impact)) || avg(sq.map(p => p.impact));
-  const defAvg     = avg([...byPos.DEF, ...byPos.GK].map(p => p.impact)) || avg(sq.map(p => p.impact));
-  const fit        = sq.filter(p => p.fitness === "fit").length;
-  const fitPct     = sq.length ? (fit / sq.length) * 100 : 100;
+  /* team attributes — derived from squad impact scores, see lib/team-attributes.ts */
+  const { attack: attackAvg, midfield: midfieldAvg, defence: defAvg, fitPct } = computeTeamAttributes(sq);
 
   /* group stage matches */
   const teamMatches: any[] = (allMatches ?? []).filter(

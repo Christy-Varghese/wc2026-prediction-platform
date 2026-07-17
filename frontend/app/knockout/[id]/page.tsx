@@ -7,9 +7,22 @@ import { Flag, LowConfidenceTag, isLowConfidence, predictionPoints, predictionEx
 import { MatchFlowReport } from "@/components/match-flow";
 import { CaiScenarios, CaiPainPoints, CaiCompareBar } from "@/components/cai-blocks";
 import { KisPoweredCard } from "@/components/kis-powered-card";
+import { MatchHero } from "@/components/final-match/match-hero";
+import { ScorePredictor } from "@/components/final-match/score-predictor";
+import { HeadToHead } from "@/components/final-match/head-to-head";
+import { FanVote } from "@/components/final-match/fan-vote";
+import { AIInsights } from "@/components/final-match/ai-insights";
+import { SharePrediction } from "@/components/final-match/share-prediction";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList,
 } from "recharts";
+
+// The tournament's final two remaining fixtures — everything else on this
+// page (played SF/QF ties, every other round) keeps the plain pre-match
+// hero. Gated separately from KIS_ROUNDS (matches/page.tsx) since KIS shows
+// for every unplayed knockout tie, while the richer final-match treatment
+// below is scoped to just these two.
+const FINAL_STRETCH_ROUNDS = new Set(["Final", "Third place"]);
 
 const fetcher = (p: string) => api(p);
 const ET = "America/New_York";
@@ -34,6 +47,7 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
   const journeys = data.journeys ?? {};
   const homeWin = m.predicted_winner === m.home_team;
   const a = m.analysis ?? {};
+  const isFinalStretch = !m.played && FINAL_STRETCH_ROUNDS.has(m.round);
 
   /* ── determine actual winner when played ── */
   let actualWinner: string | null = null;
@@ -476,46 +490,63 @@ export default function KnockoutMatchPage({ params }: { params: { id: string } }
           </>
         )}
 
-        {/* ══ PRE-MATCH PREDICTION (always shown, labelled as prediction for played matches) ══ */}
-        <div className="card-broadcast overflow-hidden p-0">
-          <div className="flex items-center justify-between bg-white/[0.04] px-4 py-2 text-[11px] text-muted">
-            <span className="chip">{m.round} · Match {m.id}</span>
-            <span>{fmt(m.kickoff)} · 📍 {m.venue}, {m.city}</span>
-          </div>
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 p-5">
-            <TeamHead name={m.home_team} flag={m.home_flag} win={homeWin}
-              title={m.home_title_pct} />
-            <div className="text-center">
-              <div className="font-display text-3xl font-bold text-gold">
-                {m.predicted_score}
-              </div>
-              <div className="text-[10px] uppercase tracking-widest text-muted">
-                {m.played ? "model predicted" : m.shootout ? "after pens" : (() => { const [h,aw] = (m.predicted_score ?? "0-0").split("-").map(Number); return !m.played && h === aw && m.predicted_winner ? "predicted AET" : "predicted"; })()}
-              </div>
+        {/* ══ PRE-MATCH PREDICTION (always shown, labelled as prediction for played matches) ══
+            The tournament's final two remaining fixtures (Third place, Final) get the richer
+            animated MatchHero treatment instead — see components/final-match/match-hero.tsx. */}
+        {isFinalStretch ? (
+          <MatchHero m={m} />
+        ) : (
+          <div className="card-broadcast overflow-hidden p-0">
+            <div className="flex items-center justify-between bg-white/[0.04] px-4 py-2 text-[11px] text-muted">
+              <span className="chip">{m.round} · Match {m.id}</span>
+              <span>{fmt(m.kickoff)} · 📍 {m.venue}, {m.city}</span>
             </div>
-            <TeamHead name={m.away_team} flag={m.away_flag} win={!homeWin}
-              title={m.away_title_pct} right />
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 px-4 py-3 text-sm">
-            <span><span className="font-bold text-gold">{m.predicted_winner}</span> {m.played ? "was predicted to advance" : "advances"}</span>
-            <span className="text-muted">·</span>
-            <span>win prob <span className="font-bold text-stadium">{Math.round((m.win_probability ?? 0) * 100)}%</span></span>
-            {m.confidence != null && <><span className="text-muted">·</span><span>conf <span className="font-bold">{m.confidence}</span></span></>}
-            {isLowConfidence(m) && <LowConfidenceTag confidence={m.confidence} />}
-          </div>
-          {m.survival?.advance_stage && (
-            <div className="flex justify-center gap-6 border-t border-white/10 px-4 py-2 text-[11px] text-muted">
-              <span>↗ reach {m.survival.advance_stage}:</span>
-              <span>{m.home_team} <b className="text-stadium">{pctStr(m.survival.home?.advance)}</b></span>
-              <span>{m.away_team} <b className="text-stadium">{pctStr(m.survival.away?.advance)}</b></span>
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 p-5">
+              <TeamHead name={m.home_team} flag={m.home_flag} win={homeWin}
+                title={m.home_title_pct} />
+              <div className="text-center">
+                <div className="font-display text-3xl font-bold text-gold">
+                  {m.predicted_score}
+                </div>
+                <div className="text-[10px] uppercase tracking-widest text-muted">
+                  {m.played ? "model predicted" : m.shootout ? "after pens" : (() => { const [h,aw] = (m.predicted_score ?? "0-0").split("-").map(Number); return !m.played && h === aw && m.predicted_winner ? "predicted AET" : "predicted"; })()}
+                </div>
+              </div>
+              <TeamHead name={m.away_team} flag={m.away_flag} win={!homeWin}
+                title={m.away_title_pct} right />
             </div>
-          )}
-        </div>
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 px-4 py-3 text-sm">
+              <span><span className="font-bold text-gold">{m.predicted_winner}</span> {m.played ? "was predicted to advance" : "advances"}</span>
+              <span className="text-muted">·</span>
+              <span>win prob <span className="font-bold text-stadium">{Math.round((m.win_probability ?? 0) * 100)}%</span></span>
+              {m.confidence != null && <><span className="text-muted">·</span><span>conf <span className="font-bold">{m.confidence}</span></span></>}
+              {isLowConfidence(m) && <LowConfidenceTag confidence={m.confidence} />}
+            </div>
+            {m.survival?.advance_stage && (
+              <div className="flex justify-center gap-6 border-t border-white/10 px-4 py-2 text-[11px] text-muted">
+                <span>↗ reach {m.survival.advance_stage}:</span>
+                <span>{m.home_team} <b className="text-stadium">{pctStr(m.survival.home?.advance)}</b></span>
+                <span>{m.away_team} <b className="text-stadium">{pctStr(m.survival.away?.advance)}</b></span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Upcoming (unplayed) ties: a live KIS vector simulation for this
             exact matchup, click-to-expand "how it works" explainer. Played
             ties already have their own post-match analysis above. */}
         {!m.played && <KisPoweredCard home={m.home_team} away={m.away_team} />}
+
+        {/* ══ Final-stretch interactive experience (Third place, Final only) ══ */}
+        {isFinalStretch && (
+          <>
+            <ScorePredictor m={m} />
+            <HeadToHead m={m} />
+            <FanVote m={m} />
+            <AIInsights m={m} />
+            <SharePrediction m={m} />
+          </>
+        )}
 
         {/* road to here — both teams' journeys */}
         <section>
