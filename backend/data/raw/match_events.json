@@ -2811,5 +2811,71 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260715"
+  },
+  "France|England": {
+    "home": "France",
+    "away": "England",
+    "score": [
+      4,
+      6
+    ],
+    "scorers": {
+      "home": [
+        {
+          "player": "Kylian Mbappé",
+          "minute": 48,
+          "type": "goal"
+        },
+        {
+          "player": "Bradley Barcola",
+          "minute": 54,
+          "type": "goal"
+        },
+        {
+          "player": "Kylian Mbappé",
+          "minute": 66,
+          "type": "goal"
+        },
+        {
+          "player": "Ousmane Dembélé",
+          "minute": 96,
+          "type": "goal"
+        }
+      ],
+      "away": [
+        {
+          "player": "Declan Rice",
+          "minute": 3,
+          "type": "goal"
+        },
+        {
+          "player": "Ezri Konsa",
+          "minute": 18,
+          "type": "goal"
+        },
+        {
+          "player": "Bukayo Saka",
+          "minute": 37,
+          "type": "goal"
+        },
+        {
+          "player": "Bukayo Saka",
+          "minute": 46,
+          "type": "goal"
+        },
+        {
+          "player": "Bukayo Saka",
+          "minute": 87,
+          "type": "penalty"
+        },
+        {
+          "player": "Jude Bellingham",
+          "minute": 98,
+          "type": "goal"
+        }
+      ]
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260718"
   }
 }

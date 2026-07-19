@@ -11,9 +11,14 @@ import { FanVote } from "@/components/final-match/fan-vote";
 
 export function FinalStretchPromo({ matches }: { matches: any[] | undefined }) {
   if (!matches?.length) return null;
-  const thirdPlace = matches.find((m: any) => m.round === "Third place");
-  const final = matches.find((m: any) => m.round === "Final");
+  // Only spotlight ties that are still upcoming — once a match is played it
+  // has its own full post-match analysis on /knockout/[id]; showing a stale
+  // "kickoff" countdown and an open vote prompt for a finished match here
+  // would be misleading, not just redundant.
+  const thirdPlace = matches.find((m: any) => m.round === "Third place" && !m.played);
+  const final = matches.find((m: any) => m.round === "Final" && !m.played);
   if (!thirdPlace && !final) return null;
+  const remaining = [thirdPlace, final].filter(Boolean).length;
 
   return (
     <motion.section
@@ -37,7 +42,9 @@ export function FinalStretchPromo({ matches }: { matches: any[] | undefined }) {
               <h2 className="gold-text font-display text-2xl font-extrabold uppercase tracking-tight sm:text-3xl">
                 The Final Countdown
               </h2>
-              <p className="text-[12px] text-muted">Two matches left. Make your call, then see if CAI agrees.</p>
+              <p className="text-[12px] text-muted">
+                {remaining > 1 ? "Two matches left." : "One match left."} Make your call, then see if CAI agrees.
+              </p>
             </div>
           </div>
         </div>

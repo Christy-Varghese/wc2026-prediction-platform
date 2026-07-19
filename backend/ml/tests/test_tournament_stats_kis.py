@@ -22,7 +22,7 @@ def test_defensive_variance_zero_for_unplayed_team():
 
 def test_defensive_variance_sane_for_played_team():
     r = ts.defensive_variance("Argentina")
-    assert r["played"] == 6
+    assert r["played"] == 7
     assert r["mean_ga"] is not None and r["variance"] is not None
     assert r["mean_ga"] >= 0
     assert r["variance"] >= 0

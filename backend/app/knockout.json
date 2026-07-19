@@ -696,7 +696,23 @@
   "kickoff": "2026-07-18T17:00:00-04:00",
   "city": "Miami",
   "home_label": "Loser Match 101",
-  "away_label": "Loser Match 102"
+  "away_label": "Loser Match 102",
+  "home_score": 4,
+  "away_score": 6,
+  "actual_events": [
+   {"minute": 3, "team": "England", "type": "goal", "scorer": "Declan Rice", "assist": null, "text": "Rice fires England ahead inside three minutes — a flying start in Miami."},
+   {"minute": 18, "team": "England", "type": "goal", "scorer": "Ezri Konsa", "assist": null, "text": "Konsa doubles England's lead — 2-0."},
+   {"minute": 37, "team": "England", "type": "goal", "scorer": "Bukayo Saka", "assist": null, "text": "Saka gets in on the act — England 3-0 up and cruising."},
+   {"minute": 46, "team": "England", "type": "goal", "scorer": "Bukayo Saka", "assist": null, "text": "Saka's second, right on the stroke of half-time — England go in 4-0 up, a ruthless first-half performance."},
+   {"minute": 48, "team": "France", "type": "goal", "scorer": "Kylian Mbappé", "assist": null, "text": "Mbappé pulls one back three minutes into the second half — France's comeback begins."},
+   {"minute": 54, "team": "France", "type": "goal", "scorer": "Bradley Barcola", "assist": null, "text": "Barcola makes it 4-2 — England's cushion is shrinking fast."},
+   {"minute": 66, "team": "France", "type": "goal", "scorer": "Kylian Mbappé", "assist": null, "text": "Mbappé's second of the match — his 22nd World Cup goal, breaking the all-time men's World Cup scoring record. France are within one, 4-3."},
+   {"minute": 79, "team": "England", "type": "sub", "text": "Jude Bellingham comes on for England — an impact substitution that steadies the Three Lions."},
+   {"minute": 87, "team": "England", "type": "goal", "scorer": "Bukayo Saka", "assist": null, "text": "Saka converts from the penalty spot to complete his hat-trick — England restore a two-goal cushion, 5-3."},
+   {"minute": 96, "team": "France", "type": "goal", "scorer": "Ousmane Dembélé", "assist": null, "text": "Dembélé pulls one straight back in stoppage time — 5-4, France won't go quietly."},
+   {"minute": 98, "team": "England", "type": "goal", "scorer": "Jude Bellingham", "assist": null, "text": "Bellingham seals it with a dazzling solo goal deep into stoppage time — England win 6-4 in a 10-goal thriller, their best World Cup finish since 1966."}
+  ],
+  "actual_stats": {"result_note": "One of the great third-place play-offs: England raced into a 4-0 half-time lead through Rice, Konsa and a Saka brace, only to see France haul themselves back to 4-3 as Mbappé (twice, the second his record-breaking 22nd World Cup goal) and Barcola struck. Saka's 87th-minute penalty completed his hat-trick and looked to have settled it, but Dembélé's stoppage-time reply set up a grandstand finish before substitute Jude Bellingham's late solo goal sealed a 6-4 England win — their best World Cup finish since 1966. Full advanced match stats (xG, possession, shots on target) weren't confidently available at ingest time and are left unset rather than estimated."}
  },
  {
   "id": 104,

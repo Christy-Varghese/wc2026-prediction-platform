@@ -555,5 +555,19 @@
       "ESPN",
       "FIFA"
     ]
+  },
+  "France|England": {
+    "headline": "Saka's hat-trick sees England past Mbappé and France 6-4 in a 10-goal thriller",
+    "summary": "England raced into a 4-0 half-time lead in Miami through Declan Rice, Ezri Konsa and a Bukayo Saka brace, then had to hold on as France came storming back. Kylian Mbappé (twice, the second breaking the all-time men's World Cup scoring record on 22) and Bradley Barcola dragged France to within one at 4-3, but Saka's 87th-minute penalty completed his hat-trick. Ousmane Dembélé's stoppage-time reply set up one last twist before substitute Jude Bellingham sealed a 6-4 England win with a stoppage-time solo goal — England's best World Cup finish since 1966.",
+    "star_player": "Bukayo Saka",
+    "star_reason": "Scored a first-half brace and completed his hat-trick from the penalty spot in the 87th minute, the difference between a comfortable England win and a France comeback for the ages.",
+    "turning_point": "Saka's 87th-minute penalty, restoring England's two-goal cushion just as France's fightback threatened to complete an extraordinary turnaround.",
+    "what_lacked": "France couldn't find a foothold before the break, conceding four in the first 46 minutes, and their fightback — for all its quality — ultimately left them too much to do.",
+    "sources": [
+      "ESPN",
+      "FIFA",
+      "Sky Sports",
+      "Al Jazeera"
+    ]
   }
 }
