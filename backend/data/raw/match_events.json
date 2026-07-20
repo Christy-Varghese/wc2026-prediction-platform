@@ -2877,5 +2877,25 @@
     },
     "source": "FIFA/ESPN",
     "date": "20260718"
+  },
+  "Spain|Argentina": {
+    "home": "Spain",
+    "away": "Argentina",
+    "score": [
+      1,
+      0
+    ],
+    "scorers": {
+      "home": [
+        {
+          "player": "Ferran Torres",
+          "minute": 106,
+          "type": "goal"
+        }
+      ],
+      "away": []
+    },
+    "source": "FIFA/ESPN",
+    "date": "20260719"
   }
 }

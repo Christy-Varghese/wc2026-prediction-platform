@@ -256,6 +256,17 @@ export default function Home() {
 
   const winner = hero ? (hero.p_home >= hero.p_away ? hero.home_team : hero.away_team) : "";
   const winP = hero ? Math.max(hero.p_home, hero.p_away) : 0;
+  // Once the Final's been played there's no "next match" left — falling
+  // through to the generic hero would show the Final itself as an upcoming
+  // "NEXT MATCH / KICKOFF" with stale pre-match odds, which is actively
+  // wrong, not just idle. Show a champion banner instead.
+  const tournamentComplete = hero?.isKnockout && hero?.round === "Final" && hero?.played;
+  const championName = tournamentComplete
+    ? (hero.home_score > hero.away_score ? hero.home_team : hero.away_team)
+    : null;
+  const championFlag = tournamentComplete
+    ? (hero.home_score > hero.away_score ? hero.home_flag : hero.away_flag)
+    : null;
 
   return (
     <div className="space-y-12">
@@ -267,8 +278,37 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* ════════════ TOURNAMENT COMPLETE — champion banner ════════════ */}
+      {tournamentComplete && (
+        <motion.section
+          variants={FADE_UP} initial="hidden" animate="show" transition={stagger(0)}
+          className="relative overflow-hidden rounded-3xl border border-gold/30 bg-gradient-to-br from-ink-2 via-ink-3/80 to-ink p-7 text-center shadow-[0_0_60px_rgba(255,215,0,0.08)] sm:p-10"
+        >
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-32 left-1/4 h-96 w-px bg-gradient-to-b from-gold/25 to-transparent" />
+            <div className="absolute -top-32 right-1/4 h-96 w-px bg-gradient-to-b from-gold/15 to-transparent" />
+          </div>
+          <div className="relative z-10">
+            <div className="mb-3 text-5xl">🏆</div>
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.4em] text-gold/70">
+              FIFA World Cup 2026 · Tournament Complete
+            </div>
+            <div className="mb-4 flex items-center justify-center gap-3">
+              <Flag url={championFlag} name={championName} size={44} />
+              <h1 className="gold-text font-display text-2xl font-black uppercase tracking-tight sm:text-4xl">
+                {championName} are World Champions
+              </h1>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
+              <Link href="/champions" className="btn-gold text-xs">Tournament Wrap-Up →</Link>
+              <Link href={`/knockout/${hero.id}`} className="btn-ghost text-xs">Final Match Analysis</Link>
+            </div>
+          </div>
+        </motion.section>
+      )}
+
       {/* ════════════ BROADCAST HERO ════════════ */}
-      {hero && (
+      {hero && !tournamentComplete && (
         <motion.section
           variants={FADE_UP} initial="hidden" animate="show"
           transition={stagger(0)}

@@ -21,8 +21,13 @@ def test_defensive_variance_zero_for_unplayed_team():
 
 
 def test_defensive_variance_sane_for_played_team():
+    # `played` tracks against WC2026_PLAYED rather than a hardcoded count —
+    # this broke on every single knockout-result ingest otherwise (bumped
+    # 6 -> 7 -> 8 across three commits before this fix).
+    from tournament_form import WC2026_PLAYED
+    expected_played = sum(1 for h, a, *_ in WC2026_PLAYED if "Argentina" in (h, a))
     r = ts.defensive_variance("Argentina")
-    assert r["played"] == 7
+    assert r["played"] == expected_played
     assert r["mean_ga"] is not None and r["variance"] is not None
     assert r["mean_ga"] >= 0
     assert r["variance"] >= 0

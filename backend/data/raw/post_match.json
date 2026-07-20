@@ -569,5 +569,19 @@
       "Sky Sports",
       "Al Jazeera"
     ]
+  },
+  "Spain|Argentina": {
+    "headline": "Spain suffocate Argentina to win a second World Cup, Ferran Torres the extra-time hero",
+    "summary": "Spain dominated from the first whistle — 65% possession, 20 shots to 2, 1.94 xG to 0.17 — but a heroic Emiliano Martínez, who made 11 saves, kept Argentina level through a goalless 90 minutes. Enzo Fernández's second-yellow card three minutes into extra time left Argentina a man down, and Spain made the numerical advantage count in the 106th minute: Pedro Porro's ball to the back post was headed back across by Nico Williams for Ferran Torres to finish first-time. Spain win the World Cup for the second time, 16 years after 2010 — and, remarkably, by an identical 1-0 extra-time scoreline.",
+    "star_player": "Ferran Torres",
+    "star_reason": "Scored the only goal of the final, converting a back-post cutback in extra time to settle a game Spain dominated territorially but couldn't break down for 105 minutes.",
+    "turning_point": "Enzo Fernández's 93rd-minute red card, which finally gave Spain's overwhelming possession and territory a numerical advantage to work with.",
+    "what_lacked": "Argentina managed just 2 shots all game, none on target, and never remotely threatened Spain's goal — Emiliano Martínez's 11 saves were the entire reason it stayed level as long as it did.",
+    "sources": [
+      "ESPN",
+      "FIFA",
+      "Yahoo Sports",
+      "NBC News"
+    ]
   }
 }

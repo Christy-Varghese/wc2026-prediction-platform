@@ -10,6 +10,13 @@ numbers. The UI labels its calls **"CAI picks"**.
 
 🌐 **Live demo:** https://chris-fifaworldcup26-prediction.vercel.app
 
+> 🏆 **The tournament is complete.** Spain beat Argentina 1-0 (AET) in the
+> Final on Jul 19, 2026 — Spain's second World Cup title. CAI backed Argentina
+> pre-match at a low-confidence 58.6% (11/100 — flagged as a near-coin-flip at
+> the time); the model's own tournament-long prediction accuracy, the full
+> award-winner list, and an honest retrospective on the Final miss are all on
+> [`/champions`](https://chris-fifaworldcup26-prediction.vercel.app/champions).
+
 ```
 ┌────────────┐   REST / JSON  ┌──────────────┐   artifacts   ┌─────────────────┐
 │ Next.js UI │ ─────────────▶ │  FastAPI API │ ◀──────────── │   ML engine     │
@@ -70,6 +77,16 @@ numbers. The UI labels its calls **"CAI picks"**.
 - **Post-match analysis** — news-sourced (ESPN + others) write-up per completed
   match: headline, summary, star man, turning point, what was missing — plus real
   goalscorers and a model-generated shot/heat/passing map (clearly labeled)
+- **Interactive final-stretch match center** — for the tournament's last two
+  fixtures (Third place, Final), an animated scoreboard, a user score-predictor
+  compared against CAI's own call, a head-to-head radar comparison, live fan
+  voting (Supabase-backed, one vote per browser), curated AI insight cards, and
+  social sharing with a downloadable result card
+  (`frontend/components/final-match/`)
+- **Tournament wrap-up** (`/champions`, once the Final's played) — champion
+  celebration, final standings, every FIFA award winner, and CAI's full
+  prediction-accuracy retrospective, including an honest disclosure of its
+  biggest miss
 
 ## How the prediction works
 Each match probability is an **ensemble blend** that degrades gracefully when a
@@ -281,6 +298,8 @@ cd backend && python gen_player_images.py
 | GET | `/api/knockout` | bracket (R32 → Final) |
 | GET | `/api/teams` · `/api/teams/{name}` | teams + profiles |
 | GET | `/api/home` · `/api/insights` | dashboard + dark horse / upset feeds |
+| GET | `/api/awards` | Golden Boot (live) / Golden Ball / Golden Glove / Best Young Player |
+| GET | `/api/tournament-summary` | champion + finalists + full-tournament CAI accuracy breakdown (`/champions` page) |
 | POST | `/api/admin/login` → JWT; `/api/admin/retrain` 🔒 | admin |
 
 Smoke-test a running API: `python backend/validate_api.py`
@@ -288,12 +307,15 @@ Smoke-test a running API: `python backend/validate_api.py`
 ## Frontend pages
 | Route | Content |
 |-------|---------|
-| `/` | featured match, title-odds chart, dark horses, model freshness |
-| `/live` | up-next hero + all upcoming fixtures with live predictions |
+| `/` | featured match (or a champion banner once the Final's done), title-odds chart, dark horses, model freshness, the final-stretch spotlight while any of the last two ties are still upcoming |
+| `/champions` | tournament wrap-up once the Final's played: champion celebration, final standings, all award winners, CAI's full accuracy retrospective |
+| `/live` | up-next hero + all upcoming fixtures with live predictions (or "all ties completed" once the tournament's over) |
 | `/matches` · `/matches/[id]` | fixture list; full match center + post-match analytics |
 | `/groups` | live group standings table + advancement % |
-| `/knockout` | projected bracket (R32 → Final), podium, title-% per team, click-a-tie analysis modal |
+| `/bracket` | circular R32 → Final bracket visualization with animated advancement + confetti at the center once a champion's decided |
+| `/knockout/[id]` | per-tie analysis: pre-match prediction + KIS simulation, or full post-match report once played; the Third place/Final ties additionally get the interactive score-predictor, head-to-head, fan-vote, AI-insights and share sections while unplayed |
 | `/teams` · `/teams/[name]` | all 48 teams by strength; profile + squad |
+| `/awards` | Golden Boot (live-computed), Golden Ball, Golden Glove, Best Young Player |
 | `/analytics` | champion-probability chart + trend, stage-by-stage odds, group projections, upset alerts, dark horses |
 
 ## Deployment

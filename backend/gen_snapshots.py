@@ -50,6 +50,7 @@ def main() -> None:
     grab("/api/insights")
     knockout = grab("/api/knockout")
     grab("/api/awards")
+    grab("/api/tournament-summary")
     grab("/api/teams")
     grab("/api/simulate/groups")
     grab("/api/simulate/champion-trend")

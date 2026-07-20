@@ -113,6 +113,15 @@ def build() -> dict:
                      "goals": int(goals.get(nm, 0)), "note": e.get("note", "")})
     ball.sort(key=lambda r: (r["rank"] is None, r["rank"] or 0))
 
+    # ── Best Young Player: curated (FIFA's own judged award, no live feed) ──
+    young = []
+    for e in cur.get("best_young_player", []):
+        nm = e["player"]
+        young.append({"rank": e.get("rank"), "player": nm, "team": e.get("team", ""),
+                      "age": e.get("age"), "goals": int(goals.get(nm, 0)),
+                      "note": e.get("note", "")})
+    young.sort(key=lambda r: (r["rank"] is None, r["rank"] or 0))
+
     return {
         "as_of": cur.get("as_of", ""),
         "boot_as_of": _boot_as_of(),
@@ -120,6 +129,7 @@ def build() -> dict:
         "golden_boot": boot,
         "golden_glove": glove,
         "golden_ball": ball,
+        "best_young_player": young,
     }
 
 

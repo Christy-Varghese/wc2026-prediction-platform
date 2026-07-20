@@ -722,6 +722,15 @@
   "kickoff": "2026-07-19T15:00:00-04:00",
   "city": "New York/NJ",
   "home_label": "Winner Match 101",
-  "away_label": "Winner Match 102"
+  "away_label": "Winner Match 102",
+  "home_score": 1,
+  "away_score": 0,
+  "actual_events": [
+   {"minute": 90, "team": null, "type": "phase", "text": "Full time 0-0. Onto extra time."},
+   {"minute": 93, "team": "Argentina", "type": "red", "player": "Enzo Fernández", "text": "Fernández is shown a second yellow card for a late challenge on Pau Cubarsí — Argentina down to 10 men early in extra time."},
+   {"minute": 106, "team": "Spain", "type": "goal", "scorer": "Ferran Torres", "assist": "Nico Williams", "text": "Porro lifts a ball to the back post, Nico Williams heads it back across goal, and Torres arrives to smash a first-time finish past Martínez — Spain 1-0 up in extra time."},
+   {"minute": 120, "team": null, "type": "phase", "text": "Full time: Spain win 1-0 after extra time to become world champions for the second time."}
+  ],
+  "actual_stats": {"home_xg": 1.94, "away_xg": 0.17, "home_possession": 65, "away_possession": 35, "home_shots_on_target": 12, "away_shots_on_target": 0, "result_note": "Spain were utterly dominant for long stretches — 20 shots to 2, 65% possession, 1.94 xG to 0.17 — but Emiliano Martínez stood on his head, making 11 saves to keep Argentina level through 90 goalless minutes. Enzo Fernández's second-yellow sending off early in extra time (93') finally tilted the game beyond Argentina's ability to hold out: Pedro Porro's ball to the back post, headed back across by Nico Williams, was smashed home by Ferran Torres in the 106th minute. Spain win their second World Cup, 16 years on from 2010 — and in almost identical fashion, a single extra-time goal settling it. CAI had Argentina favored pre-match (58.6%), but flagged it as a near-coin-flip at the time (confidence 11/100, well inside toss-up territory) — this was one of the model's lowest-confidence calls of the entire knockout stage, and it landed on the wrong side of it."}
  }
 ]

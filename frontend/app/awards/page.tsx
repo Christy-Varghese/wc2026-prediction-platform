@@ -9,7 +9,7 @@ const fetcher = (p: string) => api(p);
 type Row = {
   rank?: number; player: string; team: string;
   flag_url?: string; photo_url?: string; note?: string;
-  goals?: number; assists?: number;
+  goals?: number; assists?: number; age?: number;
   clean_sheets?: number; goals_against?: number; played?: number;
 };
 
@@ -25,12 +25,16 @@ export default function AwardsPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeader title="TOURNAMENT AWARDS" sub="FIFA World Cup 2026 · Golden Boot · Golden Glove · Golden Ball" />
+      <SectionHeader title="TOURNAMENT AWARDS" sub="FIFA World Cup 2026 · Final Winners" />
+
+      <div className="rounded-2xl border border-gold/25 bg-gold/5 px-4 py-2.5 text-center text-[12px] text-gold">
+        🏆 Tournament complete — Spain won the Final 1-0 (AET) over Argentina on Jul 19. Awards below are the final results.
+      </div>
 
       <AwardSection
         icon="🥇" title="GOLDEN BOOT" sub="Top scorer"
-        badge={{ text: "LIVE — real goal data", tone: "gold" }}
-        caption={`as of ${data.boot_as_of} · scorers from match events`}
+        badge={{ text: "FINAL — real goal data", tone: "gold" }}
+        caption={`Final tally as of ${data.boot_as_of} · scorers from match events`}
         rows={(data.golden_boot || []).slice(0, 15)}
         stat={(r) => [
           { label: "G", value: r.goals ?? 0, big: true },
@@ -38,9 +42,16 @@ export default function AwardsPage() {
         ]} />
 
       <AwardSection
+        icon="⭐" title="GOLDEN BALL" sub="Best player"
+        badge={{ text: "FIFA official award", tone: "gold" }}
+        caption={`Final result, ${data.as_of} · rank 1 = winner`}
+        rows={data.golden_ball || []}
+        stat={(r) => [{ label: "G", value: r.goals ?? 0, big: true }]} />
+
+      <AwardSection
         icon="🧤" title="GOLDEN GLOVE" sub="Best goalkeeper"
-        badge={{ text: "clean sheets + reputation", tone: "cyan" }}
-        caption={`as of ${data.as_of} · ranked by clean sheets — no live save-count feed exists`}
+        badge={{ text: "FIFA official award", tone: "gold" }}
+        caption={`Final clean-sheet tally, ${data.as_of} · ranked by clean sheets`}
         rows={data.golden_glove || []}
         stat={(r) => [
           { label: "CS", value: r.clean_sheets ?? 0, big: true },
@@ -48,11 +59,11 @@ export default function AwardsPage() {
         ]} />
 
       <AwardSection
-        icon="⭐" title="GOLDEN BALL" sub="Best player"
-        badge={{ text: "media power ranking", tone: "cyan" }}
-        caption={`as of ${data.as_of} · curated ranking, enriched with live goals`}
-        rows={data.golden_ball || []}
-        stat={(r) => [{ label: "G", value: r.goals ?? 0, big: true }]} />
+        icon="🌟" title="BEST YOUNG PLAYER" sub="Outstanding player age 21 or under"
+        badge={{ text: "FIFA official award", tone: "gold" }}
+        caption={`Final result, ${data.as_of}`}
+        rows={data.best_young_player || []}
+        stat={(r) => [{ label: "AGE", value: r.age ?? "—", big: true }]} />
 
       {Array.isArray(data.sources) && data.sources.length > 0 && (
         <p className="px-1 text-[11px] text-muted">

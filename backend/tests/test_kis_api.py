@@ -19,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -141,7 +142,8 @@ def test_kis_route_confidence_and_win_prob_match_bracket_within_tolerance():
     bracket = knockout_engine.resolve_bracket()
     upcoming = [m for m in bracket["matches"]
                if m.get("home_score") is None and m.get("home_team")]
-    assert upcoming, "expected at least one unresolved bracket tie to check"
+    if not upcoming:
+        pytest.skip("tournament complete — no unresolved bracket ties left to check")
 
     failures = []
     for m in upcoming:

@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 
 const LINKS: [string, string, string][] = [
   ["/",          "Home",       "⌂"],
+  ["/champions", "Champions",  "🏆"],
   ["/live",      "Live",       "◉"],
   ["/matches",   "Matches",    "⚽"],
   ["/groups",    "Groups",     "▦"],
@@ -38,6 +39,10 @@ export function Nav() {
   // the static list if /api/news (or its snapshot) is unavailable.
   const { data: news } = useSWR("/api/news", (p: string) => api(p));
   const ticker: string[] = news?.items?.length ? news.items : NEWS_FALLBACK;
+  // Once the Final is played there's nothing left to be "live" about — a
+  // permanently-glowing red LIVE pill would be stale, not just idle.
+  const { data: summary } = useSWR("/api/tournament-summary", (p: string) => api(p));
+  const tournamentOver = !!summary?.final_played;
 
   return (
     <header className="sticky top-0 z-50">
@@ -99,7 +104,7 @@ export function Nav() {
                       className="absolute bottom-0 left-2 right-2 h-px bg-cyan rounded-full"
                     />
                   )}
-                  {label === "Live" && (
+                  {label === "Live" && !tournamentOver && (
                     <span className="ml-1.5 inline-flex h-1.5 w-1.5 rounded-full bg-danger animate-live" />
                   )}
                 </Link>
@@ -108,11 +113,21 @@ export function Nav() {
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
-            {/* Live status pill */}
-            <div className="hidden items-center gap-1.5 rounded-full border border-danger/30 bg-danger/10 px-3 py-1 sm:flex">
-              <span className="live-dot" />
-              <span className="font-display text-[10px] uppercase tracking-widest text-danger">Live</span>
-            </div>
+            {/* Live status pill — swaps to a champion pill once the Final is played */}
+            {tournamentOver ? (
+              <Link href="/champions"
+                className="hidden items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 sm:flex">
+                <span>🏆</span>
+                <span className="font-display text-[10px] uppercase tracking-widest text-gold">
+                  Champions: {summary.champion}
+                </span>
+              </Link>
+            ) : (
+              <div className="hidden items-center gap-1.5 rounded-full border border-danger/30 bg-danger/10 px-3 py-1 sm:flex">
+                <span className="live-dot" />
+                <span className="font-display text-[10px] uppercase tracking-widest text-danger">Live</span>
+              </div>
+            )}
 
             {/* Mobile hamburger */}
             <button

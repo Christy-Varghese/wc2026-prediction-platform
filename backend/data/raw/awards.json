@@ -1,36 +1,32 @@
 {
-  "as_of": "2026-06-30",
+  "as_of": "2026-07-19",
   "sources": [
-    "https://www.goal.com/en/lists/world-cup-2026-golden-boot-standings-fifa-award/blt29fdba0896b8fd09",
-    "https://www.goal.com/en/lists/world-cup-2026-golden-ball-power-rankings-fifa-award/bltebb443122ae575ac",
-    "https://blog.wego.com/fifa-world-cup-golden-glove-winners/",
-    "https://www.espn.com/soccer/story/_/id/49024760/2026-world-cup-awards-golden-ball-golden-boot-golden-glove-trophies-revealed"
+    "https://www.espn.com/soccer/match/_/gameId/760517/argentina-spain",
+    "https://www.nbcsports.com/soccer/news/2026-world-cup-award-winners-golden-boot-golden-ball-best-young-player-golden-glove",
+    "https://athlonsports.com/soccer/fifa-world-cup-2026-award-winners-golden-boot-golden-ball-golden-glove-best-young-player-more",
+    "https://sports.yahoo.com/articles/2026-world-cup-award-winners-225707815.html"
   ],
   "golden_boot_assists": {
     "Deniz Undav": 2
   },
   "golden_glove": [
-    {"player": "Guillermo Ochoa",    "team": "Mexico",    "note": "3 shutouts, 0 conceded in 3 matches at 41 — perfect group stage, joint-best in tournament"},
-    {"player": "Unai Simón",         "team": "Spain",     "note": "3 shutouts, 0 conceded — tied for most clean sheets; flawless behind Spain's disciplined defence"},
-    {"player": "Emiliano Martínez",  "team": "Argentina", "note": "2 clean sheets behind unbeaten Argentina; reigning Golden Glove holder and world-class in big moments"},
-    {"player": "Alisson Becker",     "team": "Brazil",    "note": "2 shutouts in group stage; beat Japan 2-1 in R32 — conceded to Kaishu Sano (29') but solid overall with 3 CS across 4 games"},
-    {"player": "Diogo Costa",        "team": "Portugal",  "note": "2 clean sheets — penalty-save specialist, key behind Portugal's composure in tight matches"},
-    {"player": "Camilo Vargas",      "team": "Colombia",  "note": "2 clean sheets incl. the Portugal stalemate in MD3 — Colombia's unsung defensive hero"},
-    {"player": "Mike Maignan",       "team": "France",    "note": "1 clean sheet (vs Iraq) as France topped Group I 9/9 — strong saves kept France in control throughout"},
-    {"player": "Jordan Pickford",    "team": "England",   "note": "2 shutouts — kept England tight in MD2 and MD3 after conceding 2 to Croatia in the opener"},
-    {"player": "Vozinha",            "team": "Cape Verde","note": "2 clean sheets incl. a heroic 0-0 vs Spain in MD1 — Cape Verde's standout individual performer"},
-    {"player": "Thibaut Courtois",   "team": "Belgium",   "note": "2018 Golden Glove winner; 1 clean sheet vs Iran — Belgium's big-tournament pedigree shows"}
+    {"player": "Unai Simón",         "team": "Spain",     "note": "FIFA Golden Glove winner — a record seven clean sheets across the tournament, flawless behind Spain's title-winning defence"},
+    {"player": "Guillermo Ochoa",    "team": "Mexico",    "note": "Perfect group stage at 41 — Mexico's veteran shot-stopper"},
+    {"player": "Emiliano Martínez",  "team": "Argentina", "note": "11 saves in the final alone kept Argentina in it to extra time — world-class in the biggest moment, on the losing side"},
+    {"player": "Alisson Becker",     "team": "Brazil",    "note": "Solid throughout Brazil's run to the knockout stage"},
+    {"player": "Diogo Costa",        "team": "Portugal",  "note": "Penalty-save specialist, key behind Portugal's composure in tight matches"},
+    {"player": "Camilo Vargas",      "team": "Colombia",  "note": "Colombia's unsung defensive hero through the group stage"},
+    {"player": "Mike Maignan",       "team": "France",    "note": "Anchored France's run to the semi-finals"},
+    {"player": "Jordan Pickford",    "team": "England",   "note": "Kept England tight en route to a third-place finish"},
+    {"player": "Vozinha",            "team": "Cape Verde","note": "A heroic 0-0 vs Spain in MD1 — Cape Verde's standout individual performer"},
+    {"player": "Thibaut Courtois",   "team": "Belgium",   "note": "2018 Golden Glove winner; big-tournament pedigree showed again"}
   ],
   "golden_ball": [
-    {"rank": 1,  "player": "Lionel Messi",       "team": "Argentina",   "note": "6 goals in group stage — WC all-time top scorer. Argentina top Group J unbeaten; R32 vs Cape Verde next"},
-    {"rank": 2,  "player": "Kylian Mbappé",      "team": "France",      "note": "6 goals (4 group + brace vs Sweden in R32) — TIED with Messi for Golden Boot lead; France into R16 with dominant 3-0 win"},
-    {"rank": 3,  "player": "Ousmane Dembélé",    "team": "France",      "note": "4 goals incl. hat-trick vs Norway in MD3 — most electric winger in the tournament; R32 vs Sweden"},
-    {"rank": 4,  "player": "Vinícius Júnior",    "team": "Brazil",      "note": "4 goals in group stage; Brazil beat Japan 2-1 in R32 (Casemiro + Martinelli scored) — through to R16"},
-    {"rank": 5,  "player": "Erling Haaland",     "team": "Norway",      "note": "5 goals (4 group + 1 vs Ivory Coast in R32) — sole challenger to Messi's Golden Boot lead; Norway into R16"},
-    {"rank": 6,  "player": "Deniz Undav",        "team": "Germany",     "note": "3 goals + 2 assists in group stage — Germany ELIMINATED in R32 by Paraguay (pens 3-4, Havertz scored)"},
-    {"rank": 7,  "player": "Brian Brobbey",      "team": "Netherlands", "note": "3 goals as Netherlands topped Group D — ELIMINATED in R32 by Morocco (pens 2-3, Gakpo scored)"},
-    {"rank": 8,  "player": "Harry Kane",         "team": "England",     "note": "2 goals + captain's presence; England through to R32 with 2 clean sheets in MD2–MD3"},
-    {"rank": 9,  "player": "Alexander Isak",     "team": "Sweden",      "note": "1 goal in group stage; Sweden's talisman — ELIMINATED 0-3 by France in R32 (Mbappé brace + Barcola)"},
-    {"rank": 10, "player": "Michael Olise",      "team": "France",      "note": "Creative force for Group I winners France; FIFA Man of the Match vs Senegal — France beat Sweden 3-0 in R32, into R16"}
+    {"rank": 1, "player": "Rodri",           "team": "Spain",     "note": "FIFA Golden Ball winner — anchored Spain's midfield control all tournament, the engine behind a run to a second World Cup title"},
+    {"rank": 2, "player": "Lionel Messi",    "team": "Argentina", "note": "Runner-up — carried Argentina to the final in what was widely expected to be his last World Cup, before Spain's defence shut it down on the day"},
+    {"rank": 3, "player": "Kylian Mbappé",   "team": "France",    "note": "Third — also won the Golden Boot outright with 10 goals, including a record-breaking 22nd career World Cup goal in the third-place match"}
+  ],
+  "best_young_player": [
+    {"rank": 1, "player": "Pau Cubarsí", "team": "Spain", "age": 19, "note": "FIFA Young Player of the Tournament — the 19-year-old centre-back was a rock at the back of Spain's title-winning defence, joining a list of past winners that includes Mbappé, Müller and Enzo Fernández"}
   ]
 }

@@ -25,6 +25,6 @@ def _decorate(rows: list[dict]) -> list[dict]:
 @router.get("")
 def get_awards():
     data = awards_mod.build()
-    for key in ("golden_boot", "golden_glove", "golden_ball"):
+    for key in ("golden_boot", "golden_glove", "golden_ball", "best_young_player"):
         _decorate(data.get(key, []))
     return data

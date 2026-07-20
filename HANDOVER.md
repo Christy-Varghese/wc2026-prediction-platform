@@ -1,7 +1,7 @@
 # WC2026 — CAI (ChrisAI) Prediction Platform — Session Handover
 
-Date: 2026-07-07 (originally 2026-06-21; updated in place each session — see
-§14 for the latest)
+Date: 2026-07-19 (originally 2026-06-21; updated in place each session — see
+§15 for the latest)
 Branch: `main` · all work committed + pushed to
 `github.com/Christy-Varghese/wc2026-prediction-platform`.
 
@@ -320,6 +320,94 @@ existing engine (one engine, no parallel model):
   exact-score bonuses, 63/69 pts knockout (91%)** — jumped from the 5-point
   system's 51%/62% purely from the rescale (draws no longer eat a full 0-4
   point swing) and from the flat-draw floor.
+
+## 15. Tournament complete — final-stretch interactive experience, Final ingested, Champions page
+
+- **Interactive final-stretch match center** (commit `a37e069` + follow-ups
+  `ce5f6bb`/`26532d2`/`d62452f`/`0e02272`): for the tournament's last two
+  fixtures only (Third place, Final — gated on `round` + `!played`), added an
+  animated `MatchHero` scoreboard, a `ScorePredictor` (user pick vs CAI's,
+  localStorage-only), a `HeadToHead` radar comparison (attack/midfield/defence
+  derived from squad `impact` scores — extracted the calc out of
+  `teams/[name]/page.tsx` into shared `lib/team-attributes.ts`), a Supabase-
+  backed `FanVote` (one vote per browser via localStorage; `votes` table,
+  RLS: anon can insert+select, not delete/update), curated `AIInsights` cards
+  (deliberately **excluding** "expected possession" — no real pre-match
+  possession data exists anywhere in this codebase, wasn't worth fabricating),
+  and `SharePrediction` (share-intent links + a `next/og`-rendered downloadable
+  PNG, no new screenshot dependency). Homepage got a matching "Final Countdown"
+  promo with the same live vote widgets embedded.
+- **Bracket page animation** (`d62452f`, `0e02272`): confetti burst at the
+  center Final node (brighter once actually played vs. still-projected),
+  travelling sparks along every connector line once a winner's known/projected
+  (extended from R32→R16 only to every round), continuous pulse on winner/gold
+  rings. Found and fixed a real Framer Motion bug along the way: animating an
+  SVG `r`/`cx`/`cy` attribute via `animate={{...}}` silently fails
+  ("Expected length, undefined" in console) unless you also pass a matching
+  `initial` — true for a **pre-existing** instance too (the center pulsing
+  aura), not just the new code. Fix is just adding the missing `initial`.
+- **Supabase project was paused** (free-tier auto-pause) when the `votes`
+  feature was first wired up — surfaced as Cloudflare `521`s indistinguishable
+  at first glance from a sandbox network issue. Restoring the project +
+  re-running the `CREATE TABLE` (the first attempt silently hadn't landed —
+  confirmed via `information_schema.tables`, not the Table Editor UI, which
+  was misleading) fixed it. **Takeaway:** don't trust "it shows in the Table
+  Editor" as confirmation — query `information_schema.tables` directly, and
+  after any pause/restore expect a PostgREST schema-cache lag before a
+  genuinely-existing table starts resolving via the REST API.
+- **Third place ingested:** England 6-4 France (Miami, Jul 18) — Rice/Konsa/
+  Saka-brace had England 4-0 up at the break, Mbappé (×2, second his
+  record-breaking 22nd World Cup goal) + Barcola dragged France to 4-3, Saka's
+  87th-minute penalty completed his hat-trick, Dembélé replied in stoppage
+  time, sub Bellingham sealed it 6-4 (commit `c790081`). Advanced stats
+  (xG/possession/shots split) weren't confidently sourceable — left unset in
+  `actual_stats` rather than estimated, matching this repo's existing honesty
+  convention.
+- **Final ingested:** Spain 1-0 Argentina (AET, MetLife Stadium, Jul 19) —
+  Ferran Torres 106' (Porro → Nico Williams → Torres), Enzo Fernández red
+  card 93' (second yellow), Emiliano Martínez 11 saves, Spain 65% possession /
+  1.94 xG to 0.17. CAI backed Argentina pre-match at 58.6% but only 11/100
+  confidence (toss-up territory, flagged as such at the time) — a genuine
+  miss, disclosed honestly on `/champions` rather than glossed over.
+- **Every knockout-ingest hardcoded test-count assertion is now dynamic.**
+  `test_defensive_variance_sane_for_played_team` (Argentina played-match
+  count) broke on *three consecutive* result ingests (6→7→8) before finally
+  being rewritten to derive the expected count from `WC2026_PLAYED` itself,
+  same pattern its sibling test already used. Also added `pytest.skip` (not a
+  failing `assert`) to the two KIS tests that assume "at least one unresolved
+  bracket tie exists" — genuinely false now that the tournament's over.
+- **Awards refreshed to real FIFA results** (`backend/data/raw/awards.json`):
+  Golden Ball — Rodri (1st), Messi (2nd), Mbappé (3rd), replacing a stale
+  mid-tournament "power rankings" snapshot that didn't even include Rodri.
+  Golden Glove — Unai Simón (live-recomputed from real clean-sheet counts,
+  already correctly floats to #1 once the curated note is refreshed, no
+  ranking-logic change needed). Added a **new** award category, Best Young
+  Player (Pau Cubarsí) — `backend/ml/awards.py::build()`,
+  `app/routers/awards.py`, and the frontend `AwardSection` (already generic,
+  zero new component code) all extended with one new `best_young_player` key.
+  Golden Boot was already correct (Mbappé, 10) — it's fully live-computed from
+  `match_events.json`, no manual update needed all tournament.
+- **New `/champions` page + `/api/tournament-summary`:** the tournament
+  wrap-up capstone — champion celebration hero, final standings podium, all
+  four award-winner cards, and CAI's full-tournament accuracy retrospective
+  (group vs. knockout breakdown, exact-scoreline count, an explicit honest
+  disclosure of the Final miss). The accuracy math itself was refactored out
+  of `app/news.py`'s ticker-string logic into a reusable
+  `news.compute_accuracy()` so the ticker and the new endpoint share one
+  source of truth instead of two computations that could drift.
+- **Homepage/nav accuracy pass, once there was truly nothing left "live"
+  about:** the homepage's main hero fell back to showing the *already-played*
+  Final as a "NEXT MATCH / KICKOFF" card with stale pre-match odds (the
+  `nextKo` fallback logic was never written with "tournament over" in mind) —
+  now swaps to a champion banner once `round === "Final" && played`. The nav's
+  permanently-glowing red "LIVE" pill and per-link live-dot are gated on the
+  same `tournamentOver` check now (swaps to a gold "🏆 Champions: Spain" pill
+  linking to `/champions`). `/live` already handled this gracefully
+  ("All Final ties completed") — no change needed there.
+- See `RETROSPECTIVE.md` for an honest end-of-tournament assessment of what
+  worked, what didn't, and concrete process/engineering improvements — kept
+  separate from this changelog and deliberately not surfaced anywhere on the
+  live site.
 
 ## Known issues / watch-outs
 - **Production `NEXT_PUBLIC_STATIC_ONLY` gap — FIXED Jul 6.** Neither

@@ -183,6 +183,8 @@ WC2026_PLAYED_KNOCKOUT: list[tuple[str, str, int, int, bool]] = [
     ("England",         "Argentina",               1, 2, True),
     # ── Third place (Jul 18) ──
     ("France",          "England",                 4, 6, True),
+    # ── Final (Jul 19) ──
+    ("Spain",           "Argentina",               1, 0, True),  # AET
 ]
 
 # Full play-order ledger for consumers that don't care about stage (form/
