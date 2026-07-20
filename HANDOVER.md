@@ -1,7 +1,7 @@
 # WC2026 — CAI (ChrisAI) Prediction Platform — Session Handover
 
-Date: 2026-07-19 (originally 2026-06-21; updated in place each session — see
-§15 for the latest)
+Date: 2026-07-20 (originally 2026-06-21; updated in place each session — see
+§16 for the latest)
 Branch: `main` · all work committed + pushed to
 `github.com/Christy-Varghese/wc2026-prediction-platform`.
 
@@ -408,6 +408,26 @@ existing engine (one engine, no parallel model):
   worked, what didn't, and concrete process/engineering improvements — kept
   separate from this changelog and deliberately not surfaced anywhere on the
   live site.
+
+## 16. Post-tournament nav cleanup — 9 tabs → 7, `/live` retired (Jul 20)
+- §15 left `/live` rendering "All Final ties completed" gracefully, but that's
+  still dead weight, not a fix — the whole page's reason to exist ("what's the
+  next match") stopped applying the moment the Final was played, and it was
+  duplicating `/matches`' knockout data in a stale framing. `/live` now
+  redirects to `/matches`, same pattern as `/knockout/[id]`'s existing
+  redirect. Removed from `components/nav.tsx`'s `LINKS`, along with its
+  now-dead `label === "Live"` pulsing-dot branch.
+- Dropped `/awards` from the top nav too (route unchanged) — `/champions`
+  already teases the top winner per category and links out to
+  `/awards` for the full leaderboards, so it didn't need a permanent tab.
+  Nav is 7 tabs now: Home, Champions, Matches, Groups, Bracket, Teams,
+  Analytics.
+- Fixed a doc inconsistency this surfaced: `README.md`'s Frontend Pages table
+  still described `/live`'s old up-next-hero content — updated to match the
+  redirect.
+- Verified: `tsc --noEmit` clean, `pytest` 126 passed/3 skipped, both routes
+  checked live via `browse` (`/live` → 302s to `/matches`; `/awards` still
+  loads directly and via the Champions page link).
 
 ## Known issues / watch-outs
 - **Production `NEXT_PUBLIC_STATIC_ONLY` gap — FIXED Jul 6.** Neither

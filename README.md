@@ -309,7 +309,6 @@ Smoke-test a running API: `python backend/validate_api.py`
 |-------|---------|
 | `/` | featured match (or a champion banner once the Final's done), title-odds chart, dark horses, model freshness, the final-stretch spotlight while any of the last two ties are still upcoming |
 | `/champions` | tournament wrap-up once the Final's played: champion celebration, final standings, all award winners, CAI's full accuracy retrospective |
-| `/live` | up-next hero + all upcoming fixtures with live predictions (or "all ties completed" once the tournament's over) |
 | `/matches` · `/matches/[id]` | fixture list; full match center + post-match analytics |
 | `/groups` | live group standings table + advancement % |
 | `/bracket` | circular R32 → Final bracket visualization with animated advancement + confetti at the center once a champion's decided |
@@ -317,6 +316,11 @@ Smoke-test a running API: `python backend/validate_api.py`
 | `/teams` · `/teams/[name]` | all 48 teams by strength; profile + squad |
 | `/awards` | Golden Boot (live-computed), Golden Ball, Golden Glove, Best Young Player |
 | `/analytics` | champion-probability chart + trend, stage-by-stage odds, group projections, upset alerts, dark horses |
+
+The tournament's over, so `/live` (built for "what's the next match") now just
+redirects to `/matches`, same as `/knockout`. `/awards` also dropped off the
+top nav — `/champions` teases the winners and links out to it — but the route
+itself is unchanged.
 
 ## Deployment
 - **Frontend → Vercel** (auto-deploys from `main`, root dir `frontend`). Live at
