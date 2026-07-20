@@ -6,15 +6,18 @@ import useSWR from "swr";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 
+// "Live" and "Awards" were dropped from top-level nav once the tournament
+// finished (2026-07-19): Live's "up next" concept has nothing left to show
+// (every knockout tie is resolved, duplicating /matches in a stale framing),
+// and Awards is already one click away via the "Full leaderboards →" link
+// on /champions, so it doesn't need its own tab. Both routes still exist.
 const LINKS: [string, string, string][] = [
   ["/",          "Home",       "⌂"],
   ["/champions", "Champions",  "🏆"],
-  ["/live",      "Live",       "◉"],
   ["/matches",   "Matches",    "⚽"],
   ["/groups",    "Groups",     "▦"],
   ["/bracket",   "Bracket",    "⬡"],
   ["/teams",     "Teams",      "🛡"],
-  ["/awards",    "Awards",     "🏆"],
   ["/analytics", "Analytics",  "◈"],
 ];
 
@@ -82,11 +85,10 @@ export function Nav() {
           </Link>
 
           {/* Desktop links — switches at xl (1280px), not the usual md/lg,
-              because all 9 links + logo + live pill only fit cleanly above
+              because all links + logo + live pill only fit cleanly above
               ~1152px; anything narrower (including both iPad orientations,
               768px and 1024px) silently overflowed this row with no visible
-              scrollbar, hiding Teams/Awards/Analytics with zero indication
-              more items existed. */}
+              scrollbar, hiding later items with zero indication more existed. */}
           <div className="no-scrollbar hidden flex-1 items-center gap-0.5 overflow-x-auto xl:flex">
             {LINKS.map(([href, label]) => {
               const active = href === "/" ? path === "/" : path.startsWith(href);
@@ -103,9 +105,6 @@ export function Nav() {
                       layoutId="nav-indicator"
                       className="absolute bottom-0 left-2 right-2 h-px bg-cyan rounded-full"
                     />
-                  )}
-                  {label === "Live" && !tournamentOver && (
-                    <span className="ml-1.5 inline-flex h-1.5 w-1.5 rounded-full bg-danger animate-live" />
                   )}
                 </Link>
               );
