@@ -89,6 +89,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   </a>
                   {" · "}
                   <a
+                    href="https://github.com/Christy-Varghese/wc2026-prediction-platform"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline decoration-dotted hover:text-gold"
+                  >
+                    Source
+                  </a>
+                  {" · "}
+                  <a
                     href="https://github.com/Christy-Varghese"
                     target="_blank"
                     rel="noopener noreferrer"
